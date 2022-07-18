@@ -7,9 +7,7 @@ website:
     background: light
     center:
         - text: "© 2022 Sangwon Ju"
-    right:
-        - text: "This Page is written by Quarto Markdown and RStudio"
-          href: "https://quarto.org/"
+
   navbar:
     background: dark
     pinned: true
