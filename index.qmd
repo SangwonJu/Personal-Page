@@ -7,8 +7,7 @@ about:
   links:
     - icon: mailbox2
       href: "mailto: sangwon.ju@snu.ac.kr"
-      text: "E-mail"
-    - text: sangwon.ju@snu.ac.kr
+      text: "E-mail: sangwon.ju@snu.ac.kr"
     - icon: github
       href: https://github.com/SangwonJu
       text: Github
