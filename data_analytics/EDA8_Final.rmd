@@ -1,0 +1,1400 @@
+---
+title: "EDA Assignment 8: Final Exam"
+author: "연세대학교 행정학과 2015128003 주상원"
+date: '2021 06 15'
+---
+
+EDA 방법 이외의 회귀분석, 다변량, 실험계획 등에서 배운 다른 방법도 사용할 수 있으나 EDA 방법이 기본이 되어야 한다. 같은 자료를 여러 가지 방법으로 분석할 수 있다. 한 가지 방법으로 끝내지 말고 다른 방법은 없는지 생각하여 보아라. 자료파일은 ASCII 형태로 되어 있다. \[보조프로그램\]의 \[메모장\]으로 파일을 열어 그 형식을 확인한 후 엑셀을 통하거나 R에서 직접 읽어 들여라. 아래한글에서도 열 수 있으나 <문자코드>를 잘 선택하여야 한다.
+
+작업한 부분은 기한 이내에 제출하여야 그 부분만이라도 감점없이 점수를 받을 수 있다.
+
+# 1.
+
+다음 자료는 사춘기 여성의 신경성 식욕 감퇴증에 대하여 일정 기간 동안 세 가지 방법으로 치료한 결과이다. 어느 방법이 가장 큰 효과를 보았나? \[ANOREXIA.DAT\]
+
+I Cognitive behavioral treatment
+
+II Control; standard treatment
+
+III Family therapy
+
+Weights in Kg
+
+전처리 후 정리
+
+```{r}
+# weights 
+
+# I Cognitive behavioral treatment 
+cbt=read.delim(file="C://r/ANOREXIA.DAT",header=F)[c(1,2)]
+names(cbt)=c("before","after")
+head(cbt,5)
+dim(cbt)
+
+# II Control; standard treatment
+control=read.delim(file="C://r/ANOREXIA.DAT",header=F)[c(3,4)][c(1:26),]
+names(control)=c("before","after")
+head(control,5)
+dim(control)
+
+# III Family therapy
+family=read.delim(file="C://r/ANOREXIA.DAT",header=F)[c(5,6)][c(1:17),]
+names(family)=c("before","after")
+head(family,5)
+dim(family)
+```
+
+항목의 수가 Cognitive behavioral treatment: 29 Control group: 26 Family Therapy: 17로 서로 다르다. 따라서 결측치를 처리하여 각각을 나누어서 표현하였다.
+
+Treatment별로 기술통계량을 제시하고 시각화 한 후 자료의 특성을 확인하고 각 Sample에 대한 paired t-Test를 진행할 예정이다.
+
+먼저, Cognitive behavioral treatment의 분석이다.
+
+```{r}
+summary(cbt)
+85.7-82.69
+83.9-82.60
+# Cognitive behavioral treatment를 시행하기 이전 집단과 이후집단의 평균은 약 3kg정도 차이나고, median값은 1.3kg정도 차이나는 것으로 보인다.
+# 성장기의 식용 감퇴증이 다소 완화되어진 것을 확인할 수 있다.
+fivenum(cbt$before)
+fivenum(cbt$after)
+
+# Stem and leaf Plot을 통해서 두 집단의 분포를 비교해 보았는데 treament 이전 집단의 경우 stem 8*을 기준으로 leaf들이 어느정도 종모양의 대칭적 분포를 이루고 있는데, 반면 treatment 이후 집단의 경우 stem 8*이 중심이 되어지는 것은 맞지만 다소 퍼지게 된 것을 확인할 수 있다. 
+library(aplpack)
+stem.leaf.backback(cbt$before,cbt$after,rule.line = "Sturges")
+
+# Boxplot
+boxplot(cbt,main="Boxplot of before and after Cognitive behavioral treatment")
+boxplot(cbt)$out #처리 이전 집단의 총 두개의 Outlier: lower fence인 76.3 밖의 값과 outer fence인 89.2 밖의 두개의 값
+boxplot(cbt)$stats
+
+# Skewness
+skewness = function(x) {
+  hl=fivenum(x)[2]
+  median=fivenum(x)[3]
+  hu=fivenum(x)[4]
+  skew=((hu-median)-(median-hl))/((hu-median)+(median-hl))
+  return(skew)
+}
+skewness(cbt$before) # 거의 Skewed 되어지지 않음 (매우 미세하게 skewed to the right)
+skewness(cbt$after) # Boxplot에서 확인하였듯이 Skewed to the right 되어 있음.
+
+# Letter Value Display
+source("http://mgimond.github.io/ES218/es218.R")
+lvd1=(lsum(cbt$before,6))
+lvd2=(lsum(cbt$after,6))
+lvd1
+lvd2
+
+# H-Spread
+lsum(cbt$before)[2,5]-lsum(cbt$before)[2,3]
+lsum(cbt$after)[2,5]-lsum(cbt$after)[2,3] #더 넓게 퍼져있는 것을 확인할 수 있음. 
+
+# Kurtosis (E-spread / H-spread - 1.705)
+(lvd1[3,5]-lvd1[3,3])/(lvd1[2,5]-lvd1[2,3])-1.705 # more peaked than normal
+(lvd2[3,5]-lvd2[3,3])/(lvd2[2,5]-lvd2[2,3])-1.705 # more peaked than normal (Kurtosis값도 더 크게 나타남)
+
+# 정규성
+qqnorm(cbt$before, ylab="before quantiles",main="before");qqline(cbt$before, col='red',lty=2,lwd=2) #위에서 언급했던 두개의 Outlier들만 제외하면 대부분 정규분포를 잘 따르고 있는 것이 확인되어지고 있다. 
+fiv1=fivenum(cbt$before)
+(pseudosigma1 = (fiv1[4]-fiv1[2])/1.34)
+sd(cbt$before) # 약 1.4정도의 차이
+abline(fiv1[3],pseudosigma1,col="blue",lty=2,lwd=2)
+legend(x = -2, y = 92, c("qqline", "robustline"), 
+       lty=2,lwd=2,col = c("red","blue")) # 거의 일치중
+
+qqnorm(cbt$after, ylab="after quantiles", main="after");qqline(cbt$after, col='red',lty=2,lwd=2) #정규분포를 따른다고 보기 어려운 이유가 값들이 직선을 따르기 보다는 곡선의 형태를 띄고 있음을 확인할 수 있다.  
+fiv2=fivenum(cbt$after)
+(pseudosigma2 = (fiv2[4]-fiv2[2])/1.34)
+sd(cbt$after) # 약 1.6정도의 차이
+abline(fiv2[3],pseudosigma2,col="blue",lty=2,lwd=2)
+legend(x = -2, y = 100, c("qqline", "robustline"), 
+       lty=2,lwd=2,col = c("red","blue")) # 약간차이를 보임
+
+# Paired T-test
+# H0: cbt$after-cbt$before=0  H1: cbt$after-cbt$before>0 
+cbt_test<-t.test(cbt$after,cbt$before, paired=TRUE, alternative="greater",conf.level=0.05)
+cbt_test # reject null hypothesis, the weight of after treatment is heavier
+```
+
+다음으로는 통제집단의 분석이다.
+
+```{r}
+summary(control)
+mean(control$after)-mean(control$before)
+median(control$after)-median(control$before)
+
+# 통제집단의 경우 실험 시행하기 이전 집단과 실험 이후 집단의 평균은 0.45kg정도 차이를 보이며 중위값은 큰 차이가 없다.
+# Cognitive behavioral treatment에서 보였던 차이보다 적은 차이를 보이고 있는 것을 확인할 수 있다.
+
+fivenum(control$before)
+fivenum(control$after)
+
+# Stem and leaf Plot을 통해서 두 집단의 분포를 비교해 보았는데 처치 이전 집단의 경우 stem 7. stem 8. 두개의 축을 기준으로 Cluster를 가지고 있는데 비해 처치 이후의 집단의 경우 stem 7., stem8*두개의 stem을 기준으로 어느정도 대칭적으로 종모양을 보이고 있는 것이 확인된다.
+stem.leaf.backback(control$before,control$after,rule.line = "Sturge")
+
+# Boxplot
+boxplot(control,main="Boxplot of before and after standard treatment")
+boxplot(control)$out #처리 이전 이후 둘다 outlier는 없는 것으로 보인다. 
+boxplot(control)$stats
+
+# Skewness
+skewness(control$before) # skewed to the right
+skewness(control$after) # 거의 Skewed 되어지지 않음 (매우 미세하게 skewed to the right)
+
+# Letter Value Display
+source("http://mgimond.github.io/ES218/es218.R")
+lvd3=(lsum(control$before,6))
+lvd4=(lsum(control$after,6))
+lvd3
+lvd4
+
+# H-Spread
+lsum(control$before)[2,5]-lsum(control$before)[2,3]
+lsum(control$after)[2,5]-lsum(control$after)[2,3] # 처치 이후 spread의 크기가 더 줄어들었음 
+
+# Kurtosis (E-spread / H-spread - 1.705)
+(lvd3[3,5]-lvd3[3,3])/(lvd3[2,5]-lvd3[2,3])-1.705 # less peaked than normal
+(lvd4[3,5]-lvd4[3,3])/(lvd4[2,5]-lvd4[2,3])-1.705 # less peaked than normal (Kurtosis값은 after집단에서 더 작게 나타남)
+
+# 정규성
+qqnorm(control$before, ylab="before quantiles",main="before");qqline(control$before, col='red',lty=2) # 점들이 완벽히 qqline을 따르기 보다는 곡선의 형태를 이루고 있는 것을 확인할 수 있다.
+fiv3=fivenum(control$before)
+(pseudosigma3 = (fiv3[4]-fiv3[2])/1.34)
+sd(control$before) # 약 0.5정도의 차이
+abline(fiv3[3],pseudosigma3,col="blue",lty=2)
+legend(x = -2, y = 92, c("qqline", "robustline"), 
+       lty=2,lwd=2,col = c("red","blue")) # 약간차이를 보임
+
+qqnorm(control$after, ylab="after quantiles", main="after");qqline(control$after, col='red',lty=2) # 처치 이전에 비해서 처치 이후의 데이터들이 직선을 따르기 때문에 정규분포를 조금 더 따르고 있다.  
+fiv4=fivenum(control$after)
+(pseudosigma4 = (fiv4[4]-fiv4[2])/1.34)
+sd(control$after) # 약 0.7정도의 차이
+abline(fiv4[3],pseudosigma4,col="blue",lty=2)
+legend(x = -2, y = 88, c("qqline", "robustline"), 
+       lty=2,lwd=2,col = c("red","blue")) # 거의 차이가 없음
+
+# Paired T-test
+# H0: 처지 이전의 집단과 처치 이후의 집단의 몸무게 차이는 없다. H1: 처치 이후의 집단의 몸무게가 처지 이전의 집단보다 더 무겁다.
+control_test<-t.test(control$after,control$before, paired=TRUE, alternative="greater",conf.level=0.05)
+control_test # do not reject null hypothesis.
+```
+
+마지막으로 Family therapy에 대한 분석이다.
+
+```{r}
+summary(family)
+mean(family$after)-mean(family$before)
+median(family$after)-median(family$before)
+
+# Family Therapy의 경우 실험 시행하기 이전 집단과 실험 이후 집단의 평균은 7.2kg정도 차이를 보이며 중위값은 9.2kg정도 차이가 나타난다.
+# Cognitive behavioral treatment에서 보였던 차이보다 적은 차이를 보이고 있는 것을 확인할 수 있다.
+
+fivenum(family$before)
+fivenum(family$after)
+
+# Stem and leaf Plot을 통해서 두 집단의 분포를 비교해 보았는데 처치 이전 집단의 경우  stem 8*을 기준으로 대칭적인 종모양을 보이는데 비해 처치 이후의 집단의 경우 stem 9*이 가장 많고 대칭적이지 않으며 중간에 빈 부분이 보인다.
+stem.leaf.backback(family$before,family$after,rule.line = "Sturge")
+
+
+# Boxplot
+boxplot(family,main="Boxplot of before and after family treatment")
+boxplot(family)$out #처리 이후의 집단에서 4개의 outlier 확인됨. (아까 Stem and leaf에서 확인 한 부분 재확인)
+boxplot(family)$stats # lower fence=lower hinge
+
+# Skewness
+skewness(family$before) # skewed to the left (but 매우 미세함)
+skewness(family$after) # skewed to the right
+
+# Letter Value Display
+source("http://mgimond.github.io/ES218/es218.R")
+lvd5=(lsum(family$before,6))
+lvd6=(lsum(family$after,6))
+lvd5
+lvd6
+
+# H-Spread
+lvd5[2,5]-lvd5[2,3]
+lvd6[2,5]-lvd6[2,3] # 처치 이전이후의 차이가 1정도로 크지 않음.
+
+# Kurtosis (E-spread / H-spread - 1.705)
+(lvd5[3,5]-lvd5[3,3])/(lvd5[2,5]-lvd5[2,3])-1.705 # 정규분포와 거의 차이가 없음
+(lvd6[3,5]-lvd6[3,3])/(lvd6[2,5]-lvd6[2,3])-1.705 # more peaked than normal (Kurtosis값은 after집단에서 더 작게 나타남) 
+# 다만 after집단의 분포가 17개의 자료중 4개의 outlier로 인해서 왜곡되었을 가능성이 있다.
+
+# 정규성
+qqnorm(family$before, ylab="before quantiles",main="before");qqline(family$before, col='red',lty=2) # 점들이 직선을 잘 따르고 있는 것으로 보인다. 
+fiv5=fivenum(family$before)
+(pseudosigma5 = (fiv5[4]-fiv5[2])/1.34)
+sd(family$before) # 약 0.9정도의 차이
+abline(fiv5[3],pseudosigma5,col="blue",lty=2)
+legend(x = -1.8, y = 92, c("qqline", "robustline"), 
+       lty=2,lwd=2,col = c("red","blue")) # 거의 차이가 없음
+
+qqnorm(family$after, ylab="after quantiles", main="after");qqline(family$after, col='red',lty=2) # 이상치 4개를 제외하면 나머지들이 직선을 잘 따르는 것으로 보이나 표본이 작아 신뢰성이 낮다.   
+fiv6=fivenum(family$after)
+(pseudosigma6 = (fiv6[4]-fiv6[2])/1.34)
+sd(family$after) # 약 5 정도의 차이 - 매우 큼
+abline(fiv6[3],pseudosigma6,col="blue",lty=2)
+legend(x = -1.8, y = 99, c("qqline", "robustline"), 
+       lty=2,lwd=2,col = c("red","blue")) # 거의 차이가 없음 
+
+# Paired T-test
+# H0: family$after-family$before=0 H1:family$after-family$before>0
+family_test<-t.test(family$after,family$before, paired=TRUE, alternative="greater",conf.level=0.05)
+family_test # Reject Null Hypothesis. The weight of treated group is larger than the group without treatment.
+
+```
+
+세집단의 차이에 대해 일원분산분석을 진행하고자 한다.
+
+```{r}
+
+cbt_diff=cbt$after-cbt$before
+con_diff=control$after-control$before
+fam_diff=family$after-family$before
+
+boxplot(cbt_diff,con_diff,fam_diff,names=c("Cognitive","Control","Family"))$out #Cognitive Behavior Treament 7개의 outlier
+
+
+naming=c(rep("cbt",length(cbt_diff)),rep("control",length(con_diff)),rep("family",length(fam_diff)))
+value=c(cbt_diff,con_diff,fam_diff)
+diffs=data.frame(naming,value)
+
+aov1=aov(value~naming,data=diffs)
+summary(aov1)
+#H0: 각 집단간 평균은 차이가 없다. #H1: 각 집단간 평균은 차이가 없지 않다.
+# Reject Null Hypothesis. 신뢰수준 95% 수준에서 사춘기 여성의 신경성 식욕 감퇴증의 각 치료 방법(Cognitive behavior, control, family treatment)을 적용할 경우 각 집단간 몸무게에서 차이를 보인다. 
+
+bartlett.test(value~naming, data = diffs) #H0: 오차의 등분산성, 유의수준 10%에서 Select Null Hypothesis. (오차의 등분산성 만족)
+
+tapply(value,naming,mean)  
+
+TukeyHSD(aov1) # Tukey multiple comparisons of means 95% family-wise
+
+# install.packages("agricolae")
+library(agricolae)
+HSD.test(aov1, "naming", group=TRUE,console=TRUE)
+LSD.test(aov1, "naming", group=TRUE,console=TRUE)
+
+```
+
+통제집단에 비해서 cognitive behavior treatemnt는 3.46kg정도 높음. cognitive behavior treatment 집단에 비해서 family treatemnt 집단의 경우 4.26kg 정도 높음. 따라서 가장 효과가 좋은 순서대로 family treatment, cognitive behavior treatment, control 순이다.
+
+그러나 cognitive behavior treatment집단이 다른 집단에 비해서 크거나 작다라고 보기에는 HSD, LSD test를 통해서 확인할 경우 신뢰구간이 겹쳐 다소 모호한 부분이 있다. 실제 Boxplot을 통해 확인할 경우 outlier들이 넓게 퍼져있어서 cognitive behavior treatment집단의 몸무게가 유의수준 5%수준에서 두 집단의 몸무게와 완전히 다르다고 보기 어렵다.
+
+```{r}
+# 이원분산분석 
+
+library(reshape2)
+
+control2=melt(control)
+control2=cbind(rep("control",dim(control2)[1]),control2)
+names(control2)=c("treatment","ba","value")
+
+cbt2=melt(cbt)
+cbt2=cbind(rep("cognitive",dim(cbt2)[1]),cbt2)
+names(cbt2)=c("treatment","ba","value")
+
+family2=melt(family)
+family2=cbind(rep("family",dim(family2)[1]),family2)
+names(family2)=c("treatment","ba","value")
+family2
+
+aov2=rbind(control2,cbt2,family2)
+aov3=aov(value~treatment+ba,data=aov2) 
+summary(aov3)
+
+
+library(doBy)
+summaryBy(value ~ treatment, data=aov2, FUN = c(mean, sd, min, max))
+
+
+HSD.test(aov3, "treatment", group=TRUE,console=TRUE) # family cognitive standard 순이지만 cognitive behavior treatment는 a그룹 b그룹 모두에 속하므로 해석에 유의해야 한다. 
+HSD.test(aov3, "ba", group=TRUE,console=TRUE) # 전반적으로 더 높다 treatment 취한 그룹에서 
+
+# Interaction Plot
+
+id=(1:dim(aov2)[1])
+aov2=cbind(id,aov2)
+aov2
+aov2$treatment=as.factor(aov2$treatment)
+aov2$ba=as.factor(aov2$ba)
+aov2$id=as.factor(aov2$id)
+str(aov2)
+
+aov4=aov(value~treatment*ba,data=aov2)
+summary(aov4)
+
+interaction.plot(aov2$ba, aov2$treatment, aov2$value,main="Interaction plot")
+
+HSD.test(aov4, "treatment", group=T,console=TRUE)
+HSD.test(aov4, "ba", group=T,console=TRUE)
+```
+
+# 2.
+
+근육 피로도의 지표로 쓰이는 혈중젖산농도의 참값과 계측기에서의 값의 자료이다. 계측기가 정확하다면 두 자료의 직선식은 원점을 지나는 45도 직선이어야 한다. 분석하여라.
+
+```{r}
+true_val=c(rep(1,4),rep(3,5),rep(5,3),rep(10,4),rep(15,4))
+est_val=c(1.1,0.7,1.8,0.4,3.0,1.4,4.9,4.4,4.5,7.3,8.2,6.2,12,13.1,12.6,13.2,18.7,19.7,17.4,17.1)
+
+lactic=data.frame(true_val,est_val)
+lactic
+
+dim(lactic)
+summary(lactic) #평균 실제 젖산값은 6.7, 평균 측정 젖산값은 8.385로 실제 값에 비해서 높게 측정되었다.
+
+medtrue <- as.vector(3)
+medest <- as.vector(3)
+
+medtrue[1] <- median(lactic$true_val[1:6]); medest[1] <- median(lactic$est_val[1:6])
+medtrue[2] <- median(lactic$true_val[7:14]); medest[2] <- median(lactic$est_val[7:14])
+medtrue[3] <- median(lactic$true_val[15:20]); medest[3] <- median(lactic$est_val[15:20])
+plot(medest~medtrue, type="b",main="True value와 Estimation Value 사이의 관계")   # 다소 Concave 한 관계인 것으로 보인다.
+
+plot(lactic$est_val~lactic$true_val,main="relationship of truevalue and estimatedvalue")
+(z <- line(x=lactic$true_val,y=lactic$est_val))
+abline(coef(z))
+residuals(z)
+z.ls <- lm(lactic$est_val ~ lactic$true_val)
+abline(z.ls$coef, lty=2,col="red")
+
+legend(x = 2, y = 18, c("R - Line", "Regression"), 
+       lty=c(1,2),lwd=2,col = c("black","red"),cex=0.7)
+
+# 잔차제곱합
+sum(residuals(z))
+sum(residuals(z)^2)
+
+attach(lactic)
+# 두 자료가 같은 분포에서 온게 맞을까?
+qqplot(true_val,est_val,main="qqplot")
+abline(line(qqplot(true_val,est_val,main="qqplot"))$coef) # 전반적으로 Tukey's robust line estimation 직선위에 잘 존재하는 것으로 보인다.
+
+
+# 분포 예측하기
+library(aplpack)
+stem.leaf.backback(true_val,est_val,rule.line="Sturges") # 두 자료 모두 정규분포보다는 Skewed to the right 되어 있는 것을 어느정도 예측할 수 있다. 
+
+skewness(true_val) # skewed to the right 
+skewness(est_val) # 실제 자료에 비해서 덜 skewed 되어있다 (skewed to the right)
+
+# Letter Value Display
+lvd7=(lsum(true_val,6))
+lvd8=(lsum(est_val,6))
+lvd7
+lvd8
+
+# H-Spread
+lvd7[2,5]-lvd7[2,3]
+lvd8[2,5]-lvd8[2,3] # H Spread의 경우 예측값에서 더 길게 나타나고 있다.
+
+# Kurtosis (E-spread / H-spread - 1.705)
+(lvd7[3,5]-lvd7[3,3])/(lvd7[2,5]-lvd7[2,3])-1.705 # more peaked than normal
+(lvd8[3,5]-lvd8[3,3])/(lvd8[2,5]-lvd8[2,3])-1.705 # less peaked than normal 
+
+
+# 두 데이터를 합치고 해당 데이터들이 동일한 분포를 따르고 있는지 확인하기 
+lactic2=c(true_val,est_val)
+lactic2
+
+qqnorm(lactic2);qqline(lactic2,col="red",lty=2) 
+#점들이 Tukey's robust line estimation위를 따르기 보다는 역s자 형태의 곡선의 형태를 띄고 있는 것을 확인할 수 있다.
+#허명회교수님의 책 113pg에 보면 혼합정규분포에서의 모의생성자료가 역 S자 형태를 띄고 있는데 현재 Plot도 그러한 것으로 보아 실제 데이터와 측정치 데이터가 서로 다른 분포를 따르고 있지 않을까 추측할 수 있다.
+#또한, 꼬리가 짧은 분포일때의 형태와 비슷하게 왼쪽 끝 자료들이 직선을 벗어나있다. 
+
+# 두 데이터는 서로 다른 분포에서 왔다고 추정할 수 있다. 그러나 눈대중으로 판단하는 것은 한계가 있기 때문에 이 판단을 재확인하기 위해서는 Tuckey의 Mean-Difference Plot을 활용해야한다. 
+qqplot(x=true_val,y=est_val,xlim=c(min(true_val,est_val),max(true_val,est_val)),
+       ylim=c(min(true_val,est_val),max(true_val,est_val))
+       ,main="QQ_plot of true value and estimated value")
+abline(0,1,lty=2,col="darkgreen",lwd=2) #초반의 일부 데이터를 제외하면 대부분이 주대각선 위에 존재하고 있다. 
+# 따라서 두 Estimation의 평균은 같다고 보기 힘들다.
+
+qq.x <- qqplot(x=true_val,y=est_val)$x
+qq.y <- qqplot(x=true_val,y=est_val)$y
+
+plot((qq.x+qq.y)/2, qq.y-qq.x, main="Tukey mean difference plot", 
+     ylab="est_val - true_val", xlab="mean")
+abline(0,0)
+# mean difference plot을 통해서 확인하더라도 몇몇자료를 제외하면 대부분의 자료가 x축보다 위에 존재하는 것으로 보인다.
+
+```
+
+qqplot을 통해서 처음 확인하였을 때 자료들이 전부 직선위에 존재하는 것 처럼 보였으나 실제로 자료들을 합쳐서 qqplot을 그릴경우 역s자 형태로 나타나서 동일한 분포에서 나온 데이터가 아닐 수도 있음을 확인할 수 있었고 mean-difference plot을 통해서 이를 재 확인할 수 있었다. 따라서 어떤 자료를 측정하는 경우 계측기가 정확하다면 두 자료는 동일한 분포를 따르는 것이 맞겠지만, 계측기가 정확하지 않기 때문에 두 자료들이 서로 다른 분포를 따르고 있다는 것을 확인할 수 있었다. 시각적으로 예측해보는 것은 항상 정확하지 않기 때문에 지금처럼 검증이 필요하다고 생각한다.
+
+```{r}
+attach(lactic)
+
+cor.test(true_val,est_val) #매우 높은 상관관계가 존재함.
+
+plot(est_val~true_val)
+(z <- line(x=true_val,y=est_val))
+abline(coef(z),lty=2,col="red")
+
+plot(residuals(z) ~ fitted(z), main = "Residual plot by rline")
+abline(0,0) # 잔차들이 우하향하는 듯하게 보인다.
+
+plot(sqrt(est_val)~(true_val))
+(z1 <- line(x=(true_val),y=sqrt(est_val)))
+abline(coef(z1),lty=2,col="red")
+plot(residuals(z1) ~ fitted(z1), main = "Residual plot by rline")
+abline(0,0) #다소 완화되었다 그러나 자료들이 곡선의 경향성을 보여준다는 점에서 변환은 부적절하다. 
+
+detach(lactic)
+```
+
+상관관계가 매우 높게 나타나서, r-line을 활용해 두 자료를 적합시키려고 하였는데 변환을 진행하기전 자료가 더 적합해보인다.
+
+# 3.
+
+취학아동의 정신 장애 상태와 부모의 사회경제적 지위(1=낮음, 6=높음)에 대한 표이다. 분석하여라.
+
+```{r}
+
+ordered(1:6)
+
+soseco=as.data.frame(matrix(c(64,57,57,72,36,21,94,94,105,141,97,71,58,54,65,77,54,54,46,40,60,94,78,71),nrow=4,ncol=6,byrow=T))
+colnames(soseco)=ordered(1:6)
+rownames(soseco)=c("Well","Mild","Moderate","Impaired")
+
+# median polish
+soseco_polished=medpolish(soseco)
+# maxiter를 설정하지 않고 분석한 결과 maxiter=3에서 결과 값이 나오는 것을 확인하였다.
+soseco_polished
+
+
+plot(soseco_polished)
+#x축과 y축위에 데이터가 많이 있는 것으로 보인다. outlier로 보이는 4개의 점을 제외하면 전반적으로 residual들이 안정적이다.
+plot(soseco_polished)
+abline(0,1) #나름 점들이 경향성을 가지고 있는 것으로 보인다.
+
+z7=lm(as.vector(soseco_polished$residuals) ~ 
+     as.vector(outer(soseco_polished$row,soseco_polished$col, "*")/soseco_polished$overall))[1]
+abline(z7,col="red")
+
+# 기울기가 0.5665495이므로 1과는 다르므로 log변환의 필요성이 떨어져 보인다.
+# 직선을 그리기 어렵고 의미있는 패턴이 보이지 않기 때문에 변환이 요구되어보이지는 않는다. 
+
+boxplot(soseco_polished$residuals) # Boxplot그릴경우 Outlier가 확인되어지지는 않는다.
+
+# 행 효과 크기 순으로 재정렬한 잔차표
+round(soseco_polished$residuals[order(soseco_polished$row),],1)
+
+# Check Decomposition
+decomposed=(soseco_polished$overall + outer(soseco_polished$row,soseco_polished$col, "+") + soseco_polished$residuals)
+decomposed
+all(decomposed==soseco) 
+# 가법성 모형이 확인되어지고 있다.
+
+# Comparison Values
+round(outer(soseco_polished$row,soseco_polished$col, "*")/soseco_polished$overall,2)
+# Comparison value 기준으로 0값이 총 4개 확인됨. 그런데 더 많은 값들이 Additivity Plot의 x축과 y축 근처에 존재하는 것으로 보아 몇몇 피팅에서 벗어난 값을 제외하면 대부분 0근처에서 존재하고 있는 것이 확인된다. 
+
+#stem and leaf plot
+stem(soseco_polished$residuals) # stem 0이 가장 높음 (낮은 잔차인 stem -1의 잔차들이 다소 많이 나타나고 있음)
+
+# Row Effect 
+barplot(soseco_polished$row,ylim=c(-15,40), main="정신상태의 효과")
+soseco_polished$row
+# Row Effect에 대해서 먼저 분석을 진행해 보았다. 정신상태가 Mild인 경우 부모님의 사회경제적 지위가 가장 높아졌고, Well인경우 부모님의 사회경제적 지위가 낮은 것으로 보인다. 
+
+# Column Effect
+barplot(soseco_polished$col, ylim=c(-20,40) , main="부모님 사회경제적 지위의 효과")
+soseco_polished$col
+# Column Effect에 대해서 분석을 진행해 보았다. 부모님의 사회경제적 지위가 4인 경우에 정신상태가 나빠질 가능성이 많은 편이다. 부모님의 사회경제적 지위가 6인경우 정신상태가 다른 집단들에 비해서 긍정적으로 나타나는 것이 확인되어진다. 
+
+
+par(mfrow=c(2,2))
+for (i in 1:4) {barplot(soseco_polished$residuals[i,],main=rownames(soseco)[i])}
+# 정신상태가 Well과 Impaired 된 집단을 기준으로 볼 경우 부모님의 사회경제적 지위가 높을수록 정신상태가 나쁜 Case가 많고, 낮을수록 정신상태가 좋은 Case가 많다. 
+
+par(mfrow=c(2,3))
+for (i in 1:6) {barplot(soseco_polished$residuals[,i],main=names(soseco)[i])}
+# 부모님의 사회경제적 지위가 높을 수록 정신상태가 나쁜 경향성을 보이고, 사회 경제적 지위가 낮을 때 정신상태가 좋게 나타나고 있다.
+
+par(mfrow=c(1,1))
+
+# twoway plot
+library("twoway")
+twoway(soseco, method="median")
+plot(twoway(soseco, method="median"))
+
+# mosaic plot
+library(ghibli)
+pal=ghibli_palette("PonyoMedium",n=6)
+pal
+mosaicplot(soseco,color=pal,main="mosaic plot of sosioeconomic data")
+#부모님의 사회 경제적 위치가 높을수록 정신 상태가 안 좋은 사람들의 비율이 올라가는 듯한 경향성이 보이는 듯 하다. 
+
+# coded plot
+resid=soseco_polished$residuals
+standard=as.vector(resid)
+fivenum(standard)
+Hspread=fivenum(standard)[4]-fivenum(standard)[2]
+inner=c(fivenum(standard)[4]+1.5*Hspread,fivenum(standard)[2]-1.5*Hspread)
+outer=c(fivenum(standard)[4]+3*Hspread,fivenum(standard)[2]-3*Hspread)
+
+resid=as.data.frame(resid)
+# 교과서 기준과 동일하게 "M" - Far outside low, "="- below low inner fence(outise), "-" - Below lower hinge but within inner fence
+# "." - Between Hinges , "+"- Above upper hinge, "#" - Above High inner fence (outside), "F" - Far outside high
+resid_coded=ifelse(resid >= outer[1], "F",
+                        ifelse(resid>= inner[1], "#",
+                               ifelse(resid >= fivenum(standard)[4],"+",
+                                      ifelse(resid >=fivenum(standard)[2] ,".",
+                                             ifelse(resid>= inner[2],"-",
+                                                    ifelse(resid >= outer[2],"=","M"))))))
+resid_coded=as.data.frame(resid_coded)
+resid_coded #위에서 확인하였던 경향성이 다시한번 확인된다 (부모의 사회경제적 위치가 올라갈수록 정신질환을 가지는 경우가 높아짐)
+
+```
+
+# 4.
+
+자료는 정상적인 쥐, 알록산(alloxan)에 의해 당뇨병이 유발된 쥐, 당뇨병이 유발된 후 인슐린으로 치료한 쥐에서의 알부민양이다. 세 자료의 분포가 같은 지 분석하여라. 자료를 재표현하여 대칭형으로 만들고 분포가 같은 지 다시 분석하여라. \[DIABETIC.DAT\]
+
+```{r}
+diabetes=read.delim("C:/r/DIABETIC.DAT",header=F)
+names(diabetes)=c("normal","alloxan","insulin")
+
+dim(diabetes)
+summary(diabetes)
+
+# 결측치의 확인 
+colSums(is.na(diabetes)) # alloxan에서 2개 insulin에서 1개
+
+# Stem and leaf를 활용하여 각 집단의 분포를 비교
+attach(diabetes)
+library(aplpack)
+stem.leaf.backback(normal,alloxan,rule.line="Sturges") 
+# normal data와 alloxan data모두 skewed to the right 되어 있는 자료로 stem 1에서 가장 많은 데이터를 보인다.
+stem.leaf.backback(normal,insulin,rule.line="Sturges")
+# normal data의 경우 stem 1*을 중심으로 하고 있으며 stem 2*의 경우 중간에 비어 있는 모습을 확인할 수 있다. (Outlier의 가능성)
+# insulin data의 경우 stem 0*에서 가장 많은 자료가 있고 해당 자료도 skewed to the right 되어 있는 것을 확인할 수 있다.
+stem.leaf.backback(alloxan,insulin,rule.line="Sturges")
+# 첫번째 stem and leaf에서는 alloxan data가 종모양을 이루고 있지 않은 것으로 보였으나 조금더 확대하였더니 어느정도 종모양을 띄고 있는 것이 확인된다.
+
+
+fivenum(normal)
+fivenum(alloxan)
+fivenum(insulin)
+
+# Boxplot
+boxplot(diabetes,main="Comparison of groups")
+boxplot(diabetes)$out #2개의 outlier 확인됨. (아까 Stem and leaf에서 확인 한 부분 재확인)
+# normal data에서 655의 outlier, insulin 투여 쥐에서 465의 outlier 확인
+boxplot(diabetes)$stats 
+
+# Skewness
+skewness(normal) # skewed to the right
+skewness(alloxan) # skewed to the right
+skewness(insulin) # skewed to the right
+
+# Letter Value Display
+source("http://mgimond.github.io/ES218/es218.R")
+lvd9=(lsum(normal,6))
+lvd10=(lsum(alloxan,6))
+lvd11=(lsum(insulin,6))
+lvd9
+lvd10
+lvd11
+
+# H-Spread
+lvd9[2,5]-lvd9[2,3]
+lvd10[2,5]-lvd10[2,3] 
+lvd11[2,5]-lvd11[2,3]
+# alloxan 집단에서 spread가 가장 크게 나타나며, normal 집단이 그다음, insulin 투여 집단의 분포는 좁게 나타나고 있다.
+
+# Kurtosis (E-spread / H-spread - 1.705)
+(lvd9[3,5]-lvd9[3,3])/(lvd9[2,5]-lvd9[2,3])-1.705 # more peaked than normal
+(lvd10[3,5]-lvd10[3,3])/(lvd10[2,5]-lvd10[2,3])-1.705 # less peaked than normal
+(lvd11[3,5]-lvd11[3,3])/(lvd11[2,5]-lvd11[2,3])-1.705 # more peaked than normal
+
+
+# 정규성
+qqnorm(normal, ylab="normal group quantiles",main="normal group");qqline(normal, col='red',lty=2)
+# 점들이 직선을 잘 따르고 있지 않다. 앞에서 언급했던 outlier을 재확인하였으며, 점들이 convex한 곡선을 띄고 있는 것을 확인할 있다. 
+fiv9=fivenum(normal)
+(pseudosigma9 = (fiv9[4]-fiv9[2])/1.34)
+sd(normal) # 약 32정도의 차이
+abline(fiv9[3],pseudosigma9,col="blue",lty=2)
+legend(x = -1.8, y = 600, c("qqline", "robustline"), 
+       lty=2,lwd=2,col = c("red","blue")) # 차이 존재
+
+qqnorm(alloxan, ylab="alloxan group quantiles",main="alloxan group");qqline(alloxan, col='red',lty=2)
+# 점들이 직선을 잘 따르고 있지 않다. 점들이 곡선을 띄고 있는 것을 확인할 있다. 
+fiv10=fivenum(alloxan)
+(pseudosigma10 = (fiv10[4]-fiv10[2])/1.34)
+sd(alloxan,na.rm=T) # 약 7정도의 차이
+abline(fiv10[3],pseudosigma10,col="blue",lty=2)
+legend(x = -1.8, y = 500, c("qqline", "robustline"), 
+       lty=2,lwd=2,col = c("red","blue")) # 차이 존재
+
+qqnorm(insulin, ylab="insulin group quantiles",main="insulin group");qqline(insulin, col='red',lty=2)
+# oulier와 몇몇 2~3개의 점을 제외하면 점들이 직선을 잘 따르고 있는 것으로 보인다. 
+fiv11=fivenum(insulin)
+(pseudosigma11 = (fiv11[4]-fiv11[2])/1.34)
+sd(insulin,na.rm=T) # 약 41정도의 차이
+abline(fiv11[3],pseudosigma11,col="blue",lty=2)
+legend(x = -1.8, y = 450, c("qqline", "robustline"), 
+       lty=2,lwd=2,col = c("red","blue")) # 거의 비슷함.
+
+#전반적으로 자료들이 skewed to the right되어있고 정규분포를 잘 따르지 않는 것으로 보인다. 
+
+# 두 데이터를 합치고 해당 데이터들이 동일한 분포를 따르고 있는지 확인하기 
+diabetes2=c(normal,alloxan,insulin)
+diabetes2
+
+qqnorm(diabetes2);qqline(diabetes2,col="red",lty=2) 
+#자료들이 Convex한 곡선의 형태를 띄고 있다 따라서 변환을 통해서 동일한 분포를 따르고 있는지 재확인해야 한다.
+#큰 값쪽으로 긴 꼬리를 뻗은 기울어진 분포
+
+# 자료의 재표현 - 일반적으로 많이 사용하는 재표현 방식의 사용
+boxplot(log(diabetes))
+boxplot(sqrt(diabetes))
+boxplot(-1/(diabetes))
+boxplot(-1/sqrt(diabetes))
+
+
+# Spread-versus-level Plot
+diabetes_spread=c(lvd9[2,5]-lvd9[2,3],lvd10[2,5]-lvd10[2,3],lvd11[2,5]-lvd11[2,3])
+diabetes_med=c(median(normal),median(alloxan,na.rm=T),median(insulin,na.rm=T))
+
+plot(log(diabetes_med), log(diabetes_spread), main="Spread vs. Level plot")
+
+logspread=log(diabetes_spread)
+logmed=log(diabetes_med)
+(RegrLine <- lm(logspread~logmed))     
+abline(coef(RegrLine))
+1 - coef(RegrLine)[2] #-0.5853975 
+# -0.5에 가까움
+
+boxplot(-(diabetes)^-0.5,main="-0.5 transformation")
+boxplot(-(diabetes)^-0.5,main="-0.5 transformation")$out # 총 4개의 outlier
+
+skewness_transformed1=c(skewness((-(diabetes)^-0.5)[,1]), skewness((-(diabetes)^-0.5)[,2]), skewness((-(diabetes)^-0.5)[,3]))
+skewness_transformed1
+mean(skewness_transformed1) # skewness가 가장적음
+
+boxplot(log(diabetes),main="log transformation")
+boxplot(log(diabetes),main="log transformation")$out # 총 3개의 outlier
+skewness_transformed2=c(skewness(log(diabetes)[,1]), skewness(log(diabetes)[,2]), skewness(log(diabetes)[,3]))
+skewness_transformed2     
+mean(skewness_transformed2)
+                        
+diabetes3=-(c(normal,alloxan,insulin))^-0.5
+qqnorm(diabetes3,main="minus sqrt inverse qqplot");qqline(diabetes3,col="red",lty=2) 
+
+diabetes4=log(c(normal,alloxan,insulin))
+qqnorm(diabetes4,main="log qqplot");qqline(diabetes4,col="red",lty=2) 
+
+diabetes5=sqrt(c(normal,alloxan,insulin))
+qqnorm(diabetes5,main="sqrt qqplot");qqline(diabetes5,col="red",lty=2) 
+
+diabetes6=-(c(normal,alloxan,insulin))^-1
+qqnorm(diabetes6,main="minus inverseqqplot");qqline(diabetes6,col="red",lty=2) 
+
+# 전반적으로 log 나 sqrt변환 이후 자료들이 직선을 더 잘 따르고 있는 것을 확인할 수 있다. 
+# QQplot 하에서 양 극단의 일부 데이터를 제외한 나머지 데이터들은 전부 qqline위에 있다는 점에서 변환이후 데이터들은 동일한 정규분포에서 나타난 것을 확인할 수 있다.
+
+# 가장 정규분포를 잘 따르고 있는 것으로 보이는 log변환을 활용해 Tuckey_Mean_Difference_Plot
+
+nor_log=log(diabetes)[,1];alo_log=log(diabetes)[,2];ins_log=log(diabetes)[,3]
+alo_log=alo_log[!is.na(alo_log)]
+ins_log=ins_log[!is.na(ins_log)]
+
+qqplot(nor_log,alo_log,xlim=c(min(nor_log,alo_log),max(nor_log,alo_log)),
+       ylim=c(min(nor_log,alo_log),max(nor_log,alo_log))
+       ,main="QQ_plot of logged normal group and alloxan group")
+abline(0,1,lty=2,col="darkgreen",lwd=2) # 대부분의 자료들이 주대각선을 따르는 것으로 보인다.
+
+qqplot(nor_log,ins_log,xlim=c(min(nor_log,ins_log),max(nor_log,ins_log)),
+       ylim=c(min(nor_log,ins_log),max(nor_log,ins_log))
+       ,main="QQ_plot of logged normal group and insulin group")
+abline(0,1,lty=2,col="darkgreen",lwd=2) # 대부분의 자료들이 주대각선 밑에 있는 것으로 보인다. 따라서 같은 분포에서 나오지 않았을 가능성이 있다.
+
+qqplot(alo_log,ins_log,xlim=c(min(alo_log,ins_log),max(alo_log,ins_log)),
+       ylim=c(min(alo_log,ins_log),max(alo_log,ins_log))
+       ,main="QQ_plot of logged alloxan group and insulin group")
+abline(0,1,lty=2,col="darkgreen",lwd=2)  # 대부분의 자료들이 주대각선 밑에 있는 것으로 보인다. 따라서 같은 분포에서 나오지 않았을 가능성이 있다.
+
+#정리하면 Normal Group과 Alloxan Group의 경우는 같은 분포에서 나왔을 가능성이 높지만, insulin 투여 그룹은 다른 분포를 따르고 있을 가능성이 높다. 
+
+qq.x1 <- qqplot(nor_log,alo_log)$x
+qq.y1 <- qqplot(nor_log,alo_log)$y
+
+plot((qq.x1+qq.y1)/2, qq.y1-qq.x1, main="Tukey mean difference plot", 
+     ylab="alo_log-nor_log", xlab="mean")
+abline(0,0)
+
+qq.x2 <- qqplot(nor_log,ins_log)$x
+qq.y2 <- qqplot(nor_log,ins_log)$y
+
+plot((qq.x2+qq.y2)/2, qq.y2-qq.x2, main="Tukey mean difference plot", 
+     ylab="ins_log-nor_log", xlab="mean")
+abline(0,0) # 대부분의 자료들이 X축의 밑에 있다.
+
+qq.x3 <- qqplot(alo_log,ins_log)$x
+qq.y3 <- qqplot(alo_log,ins_log)$y
+
+plot((qq.x3+qq.y3)/2, qq.y3-qq.x3, main="Tukey mean difference plot", 
+     ylab="ins_log-alo_log", xlab="mean")
+abline(0,0) # 대부분의 자료들이 X축의 밑에 있다.
+
+# 변환 이후 각 자료는 정규분포를 따르는가?
+qqnorm(nor_log);qqline(nor_log,col="red") # outlier들을 제외하면 정규분포를 잘 따르는 것으로 보인다. (곡선의 흔적이 있으나 완화됨)
+qqnorm(alo_log);qqline(alo_log,col="red") # 한두개의 점을 제외하면 정규분포를 잘 따르는 것으로 보인다.
+qqnorm(ins_log);qqline(ins_log,col="red") # 가장 정규분포를 잘 따른다
+
+# 결론: 변환이후 각 자료들은 정규분포를 따르고 있는 것으로 보이나 그 각각의 평균은 다른 것으로 보이기에 서로 다른 분포를 따르고 있다고 보는 것이 타당하다. 
+
+# 각 집단별 평균차이를 확인하기 위해서 일원분산분석을 진행하고자 한다.
+library(reshape2)
+dia_melt=melt(diabetes)
+dia_melt=dia_melt[!is.na(dia_melt$value),]
+aov4=aov(value~variable,data=dia_melt)
+summary(aov4) #H0: 각 집단간 평균차이는 없다. H1: 각 집단간 평균차이는 있다. 
+# Do not reject null hypothesis
+
+library(doBy)
+summaryBy(value ~ variable, data=dia_melt, FUN = c(mean, sd, min, max))
+
+library(agricolae)
+HSD.test(aov4, "variable", group=TRUE,console=TRUE) # 각집단간 차이가 명확하게 드러나지 않는다
+
+
+dia_melt2=dia_melt
+dia_melt2$value=log(dia_melt$value)
+aov5=aov(value~variable,data=dia_melt2)
+summary(aov5)
+```
+
+# 5.
+
+1974년부터 1979년 까지 영국에서 기관지염, 폐기종, 천식의 폐 질환에 의한 월별 사망자 수이다. 분석하라. \[MONTHLY.DAT\]
+
+```{r}
+lung=as.matrix(read.delim("C:/r/MONTHLY.DAT",header=F,)[,c(2:13)])
+lung
+lung2=as.vector(c(lung[1,],lung[2,],lung[3,],lung[4,],lung[5,],lung[6,]))
+lung_ts=ts(lung2,frequency=12,start = c(1974,1), end=c(1979,12))
+
+summary(lung_ts) #최소값은 1300, 최대값은 3891, 평균은 2002이다.
+
+# 결측치와 outlier의 존재여부를 체크하고자 한다.
+boxplot(lung_ts, main="Lung Disease Deaths")  # Outlier는 없다. Upper Whisker의 길이가 및의 Whisker에 비해서 길게 나타나진다. 
+sum(is.na(lung_ts)) # 결측치 없음.
+
+# Steam and leaf plot을 활용해서 자료의 분포를 예측해보고자 했다.
+stem(lung_ts,1)
+# 쌍봉분포의 경향. 두개의 Cluster가 존재하는 것 처럼 보인다. 
+stem(lung_ts,2)
+#자료들이 Skewed to the right 되어 있는 것으로 보인다. Stem 16에서 가장 높게 나타나고 있으며 대칭적으로 보이지는 않는다. 
+#중간에 빈칸이 있어서 두개의 Outlier가 있을 것으로 예상되었지만 Boxplot을 통해 보았듯이 따로 Outlier는 나타나지 않는 것으로 보인다.
+
+#skewness
+skewness(lung_ts) #Skewed to the right되어 있음.
+skewness(log(lung_ts))
+boxplot(log(lung_ts)) # log 변환을 하면 다소 완화됨
+
+# letter value display
+source("http://mgimond.github.io/ES218/es218.R")
+(lvd12=lsum(lung_ts,9)) # mid 값이 점차 커지는 중
+
+# Kurtosis (E-spread) / (H-spread) - 1.705
+(lvd12[3,5]-lvd12[3,3])/(lvd12[2,5]-lvd12[2,3])-1.705 # less peaked than normal
+
+# H-Spread
+Hspread=fivenum(lung_ts)[4]-fivenum(lung_ts)[2]
+Hspread
+
+# 자료들이 정규성 따르냐?
+qqnorm(lung_ts, ylab="Lung Disease Deaths Quantiles");qqline(lung_ts, col='red',lty=2) #역 S자 모양
+qqnorm(log(lung_ts), ylab="Logged Lung Disease Deaths Quantiles");qqline(log(lung_ts), col='red',lty=2) #역 S자 모양
+# 데이터들이 혼합 분포에서 나오지 않았을까하고 추측되어진다. (단일 정규분포를 따르지 않으므로 정규성은 X)
+
+library(forecast)
+ts.plot(lung_ts, main = "Time-Series Plot: Lung Diseases Deaths") #1976년과 1979년의 봉우리에 두번의 특이값이 확인됨
+ts.plot(diff(lung_ts), main = "Time-Series Plot: Lung Diseases Deaths") #차분데이터에 대해서 시계열자료는 다음과 같다. 
+# 6년동안 6개의 봉우리가 있으므로 매년 이러한 계절성이 존재한다는 것을 확인할 수 있다. 
+
+# Box-Cox Transformation을 통해서 데이터를 변환하였다. (계절변동을 확인하기 위해서, 데이터의 정규성을 개선하기 위해)
+lambda <- forecast::BoxCox.lambda(lung_ts)
+lung_ts_new <- forecast::BoxCox(lung_ts, lambda)
+
+# 데이터가 0인 경우가 없기 때문에 Boxcox transforamtion을 진행해도 문제 없다.
+plot(lung_ts_new, main = "Box-Cox : Lung Diseases Deaths")
+plot(diff(lung_ts_new), main = "Difference & Box-Cox : Lung Diseases Deaths")
+
+# 계절요인 분해시계열
+lung_ts.decompose <- decompose(lung_ts)       # 데이터에서 4가지 요인을 분해
+lung_ts.decompose$seasonal                     # 계절요인으로 분해된 부분이다.
+plot(lung_ts.decompose)
+ts.plot(lung_ts.decompose$seasonal,main="The Plot of Seasoal Decomposition")
+
+# 계절요인 제외시키기
+lung_ts.decompose_new <- lung_ts - lung_ts.decompose$seasonal
+ts.plot(lung_ts.decompose_new, main="Time-Series without Seasonal Effect")
+# 계절성을 제외한 나머지 요인들을 분석할 경우 1976,1979년도의 Random한 요인에 의해서 데이터가 늘어난 것을 확인 할 수 있다.
+# 또한 1974년 1977년 두번의 Random한 요인에 의해서 데이터가 줄어듦
+
+lung_1974=ts(lung_ts[1:12],start=1)
+lung_1975=ts(lung_ts[13:24],start=1)
+lung_1976=ts(lung_ts[25:36],start=1)
+lung_1977=ts(lung_ts[37:48],start=1)  
+lung_1978=ts(lung_ts[49:60],start=1)
+lung_1979=ts(lung_ts[61:72],start=1)
+yr=paste("lung","_",1974:1979,sep="")
+xat=seq(0,12,by=1)
+
+par(mfrow=c(2,3))
+
+for (i in yr) {ts.plot(as.name(i),main=i,ylab="Deaths by lung diseases")
+  axis(side=1,at=xat)}
+#각 년도별 계절성을 비교하기 위해서 이런식으로 그래프를 연도별로 쪼개서 그렸다. 연도별로 그러한 경향성이 비슷하게 드러나고 있는 것으로 보인다.
+
+library("ghibli")
+pal=ghibli_palette("PonyoMedium",n=6)
+as.character(pal)
+par(mfrow=c(1,1))
+
+
+ts.plot(lung_1974,main="Deaths by lung diseases",xlab="Month",ylab="# of Deaths",col=pal[1],lwd=2,ylim=c(1000,4000))
+axis(side=1,at=xat)
+lines(lung_1975,lwd=2,col=pal[2])
+lines(lung_1976,lwd=2,col=pal[3])
+lines(lung_1977,lwd=2,col=pal[4])
+lines(lung_1978,lwd=2,col=pal[5])
+lines(lung_1979,lwd=2,col=pal[6])
+
+legend(x = 10, y = 4000, c(1974:1979), 
+       lty=c(rep(1,6)),lwd=2,col = c(as.character(pal)),cex=0.6)
+
+# 전체데이터와 월별데이터에 평활을 진행하고자 한다. 평활법은 교수님께서 추천하셨던 3RSSH Twice, 4253H Twice에 더해 Hanning이 이루어지기 전 평활법인 3RS3R Twice를 추가하고자 한다.
+
+# 3RSSH Twice
+smooth_3RSSH=function(data){
+  smooth3RSS=smooth(data, kind="3RSS")
+  
+  n=length(data)
+  smooth3RSSH=smooth3RSS
+  
+  
+  for (i in 2:(n-1)) {smooth3RSSH[i] <- smooth3RSS[i-1]/4 + smooth3RSS[i]/2 + smooth3RSS[i+1]/4}
+  smooth3RSSH[1] <- smooth3RSS[1]; smooth3RSSH[n] <- smooth3RSS[n]
+  rough=data-smooth3RSSH
+  roughH=rough
+  
+  smooth3RSS2=smooth(rough,kind="3RSS")
+  
+  for (i in 2:(n-1)) roughH[i] <- smooth3RSS2[i-1]/4 + smooth3RSS2[i]/2 + smooth3RSS2[i+1]/4
+  roughH[1] <- smooth3RSS2[1]; roughH[n] <- smooth3RSS2[n]
+  out=smooth3RSSH+roughH
+  out=as.vector(out)
+  return(out)
+}
+
+library(sleekts)
+pal2=as.vector(ghibli_palette("MononokeMedium")[c(1,3,5,6)])
+ts.plot(lung_ts,main="Raw Data:All",ylab="# of deaths",lty=2,col=pal2[1])
+lines(ts(smooth(lung_ts, kind="3RS3R",twiceit=T),frequency = 12,start=c(1974,1),end=c(1979,12)),col=pal2[2],lwd=2)
+lines(ts(smooth_3RSSH(lung_ts),frequency = 12,start=c(1974,1),end=c(1979,12)),col=pal2[3],lwd=2)
+lines(ts(sleek(lung_ts),frequency = 12,start=c(1974,1),end=c(1979,12)),col=pal2[4],lwd=2)
+
+legend(x =1974, y = 3900, c("Default", "3RS3R Twice", "3RSSH Twice","4253H Twice"), 
+       lty=c(2,1,1,1),lwd=2,col = pal2,cex=0.7)
+
+
+#평활법을 적용하여 확인할 경우 원 자료에 비해 최댓값과 최솟값의 폭이 많이 줄어들었음을 확인할 수 있다. 작은 값에서는 크게 변화가 없지만 값이 큰 자료들의 경우 많이 깎여나갔다.
+#시계열을 확인하는데 있어서 그 계절성을 확인하기 좋은 형태로 평활이 된 것은 사실이지만, 위에서 언급한 1976, 1979년도의 특이값이 사라지게 되었고 그 특이값을 해석하는데 있어서 주의를 기울여야 할 것으로 보인다. 3RS3R Twice 기법의 경우 Hanning이 진행되지 않았기 때문에 다소 각진 부분이 남아있지만, 전반적으로 계절성이 나타나는 형태로 데이터를 변화시켰다. 나머지 Hanning을 사용한 2가지 평활법의 차이를 분석하면 4253H방법에서 큰 값들의 감소폭이 크게 나타나고 있다. 3가지 평활법의 양 끝자료의 경우 실제 존재하는 데이터를 가지고 만든 것이 아니기 때문에 그 추세를 해석하는데 있어서 용이하지만 실제 데이터와 차이가 있으므로 해석에 유의해야 할 것이다.
+# 앞에서 시계열 Decompose를 통해서 그렸던 계절성 그래프의 모양과 4253H Twice의 그래프가 상당히 유사한 것으로 보인다. 1년을 주기로 폐질환 사망자수가 Fluctuate 하고 있는데 겨울철에 전반적으로 증가하고 여름철에 감소하는 경향성을 가지는 것이 확인된다. 각 주기는 거의 대칭적으로 증감을 반복하고 있으며 1976, 1977년도를 제외하면 사망건수는 거의 비슷하게 유지 되는 것을 확인할 수 있다. 따라서 시계열 자료를 해석할 때 1976년도와 1977년도 자료는 유의해서 해석해야 할 것으로 보인다.
+
+# Raw Data
+ts.plot(lung_1974,main="Deaths by lung diseases",xlab="Month",ylab="# of Deaths",col=pal[1],lwd=2,ylim=c(1000,4000))
+axis(side=1,at=xat)
+lines(lung_1975,lwd=2,col=pal[2])
+lines(lung_1976,lwd=2,col=pal[3])
+lines(lung_1977,lwd=2,col=pal[4])
+lines(lung_1978,lwd=2,col=pal[5])
+lines(lung_1979,lwd=2,col=pal[6])
+legend(x = 10, y = 4000, c(1974:1979), 
+       lty=c(rep(1,6)),lwd=2,col = c(as.character(pal)),cex=0.6)
+
+### 3RS3R Twice
+ts.plot(ts(smooth(lung_1974, kind="3RS3R",twiceit=T),start=1, end=12),main="3RS3R TwicC: Deaths by lung diseases",xlab="Month",ylab="# of Deaths",col=pal[1],lwd=2,ylim=c(1000,4000))
+axis(side=1,at=xat)
+lines(ts(smooth(lung_1975, kind="3RS3R",twiceit=T),start=1, end=12),lwd=2,col=pal[2])
+lines(ts(smooth(lung_1976, kind="3RS3R",twiceit=T),start=1, end=12),lwd=2,col=pal[3])
+lines(ts(smooth(lung_1977, kind="3RS3R",twiceit=T),start=1, end=12),lwd=2,col=pal[4])
+lines(ts(smooth(lung_1978, kind="3RS3R",twiceit=T),start=1, end=12),lwd=2,col=pal[5])
+lines(ts(smooth(lung_1979, kind="3RS3R",twiceit=T),start=1, end=12),lwd=2,col=pal[6])
+legend(x = 10, y = 4000, c(1974:1979), 
+       lty=c(rep(1,6)),lwd=2,col = c(as.character(pal)),cex=0.6)
+
+### 3RSSH Twice
+ts.plot(ts(smooth_3RSSH(lung_1974),start=1, end=12),main="3RSSH TwicC: Deaths by lung diseases",xlab="Month",ylab="# of Deaths",col=pal[1],lwd=2,ylim=c(1000,4000))
+axis(side=1,at=xat)
+lines(ts(smooth_3RSSH(lung_1975),start=1, end=12),lwd=2,col=pal[2])
+lines(ts(smooth_3RSSH(lung_1976),start=1, end=12),lwd=2,col=pal[3])
+lines(ts(smooth_3RSSH(lung_1977),start=1, end=12),lwd=2,col=pal[4])
+lines(ts(smooth_3RSSH(lung_1978),start=1, end=12),lwd=2,col=pal[5])
+lines(ts(smooth_3RSSH(lung_1979),start=1, end=12),lwd=2,col=pal[6])
+legend(x = 10, y = 4000, c(1974:1979), 
+       lty=c(rep(1,6)),lwd=2,col = c(as.character(pal)),cex=0.6)
+
+### 4253H Twice
+
+ts.plot(ts(sleek(lung_1974),start=1, end=12),main="4253H TwicC: Deaths by lung diseases",xlab="Month",ylab="# of Deaths",col=pal[1],lwd=2,ylim=c(1000,4000))
+axis(side=1,at=xat)
+lines(ts(sleek(lung_1975),start=1, end=12),lwd=2,col=pal[2])
+lines(ts(sleek(lung_1976),start=1, end=12),lwd=2,col=pal[3])
+lines(ts(sleek(lung_1977),start=1, end=12),lwd=2,col=pal[4])
+lines(ts(sleek(lung_1978),start=1, end=12),lwd=2,col=pal[5])
+lines(ts(sleek(lung_1979),start=1, end=12),lwd=2,col=pal[6])
+legend(x = 10, y = 4000, c(1974:1979), 
+       lty=c(rep(1,6)),lwd=2,col = c(as.character(pal)),cex=0.6)
+# 원자료 --> 3RS3R Twice --> 3RSSH Twice--> 4253H Twice순으로 시계열의 추세가 유사해지고 있는것을 확인할 수 있다.
+# Hanning을 사용하여 3RSSH Twice, 4253H Twice는 평평한 구간 없이 부드럽게 넘어가고 있으며 1976,1979년도 평활법을 통해서 최대값이 줄어들어 다른 년도와 유사한 계절성을 확인할 수 있게 되었다.
+# 다만 4253H Twice 방법보다는 3RSSH Twice 방법이 더 적절한 것으로 보인다. 왜냐하면 11월~12월의 값이 서로 같게 나타나고 있기 때문이다. 
+
+library(forecast)
+aTSA::adf.test(lung_ts, nlag = NULL, output = TRUE) # p-value<=0.01 귀무가설을 기각하여 정상시계열
+fit <- auto.arima(lung_ts)
+plot(forecast(fit, level=c(75, 95), h=12),col='black') 
+# 다음 1년간의 변화를 예측할 경우 이전의 자료들과 비슷한 추세를 가지고 있는 것이 확인되어 진다.
+```
+
+# 6.
+
+헬멧의 충돌 실험에서 충돌 이후 머리의 가속(g)과 시간의 경과(milliseconds)에 대한 자료이다. 자료를 평활하고 특징을 설명하여라. \[HELMETS.DAT\]
+
+```{r}
+helmet=(read.delim("C:/r/HELMETS.DAT",header=F,))
+h1=helmet[c(1,2)]
+names(h1)=c("imptime","accel")
+h2=helmet[c(3,4)]
+names(h2)=c("imptime","accel")
+h3=helmet[c(5,6)]
+names(h3)=c("imptime","accel")
+
+helmet=rbind(h1,h2,h3)
+dim(helmet)
+
+plot(helmet$accel~helmet$imptime,main="scatter plot of impact time and head") # 두 좌표간의 관계를 보면 곡선의 관계를 띄고 있는 것을 확인할 수 있다.
+
+
+# 결측치와 outlier의 존재여부를 체크하고자 한다.
+boxplot(helmet, main="Helmet")  # Outlier는 없다. 충돌 후 시간의 경우 median이 lower hinge쪽으로 기울어 있고, 머리의 가속의 경우 median이 upper hinge쪽으로 기울어 있다. 
+colSums(is.na(helmet)) # 결측치 각각 두개씩
+helmet=helmet[ifelse(!is.na(helmet)[,1]==F|!is.na(helmet)[,2]==F,F,T),]
+head(helmet,5) # 결측치 제거 후 분석 시작
+
+dim(helmet)
+
+attach(helmet)
+summary(imptime) 
+summary(accel) 
+
+# Steam and leaf plot을 활용해서 자료의 분포를 예측해보고자 했다.
+stem(imptime,1) # stem 1을 기준으로 skewed 된 종모양
+stem(accel,0.5) # stem -0을 기준으로 skewed 종모양
+
+#skewness
+skewness(imptime) #Skewed to the right되어 있음.
+skewness(accel) #Skewed to the left되어 있음
+
+
+# letter value display
+source("http://mgimond.github.io/ES218/es218.R")
+(lvd13=lsum(imptime,9)) # mid 값이 점차 커지는 중
+(lvd14=lsum(accel,9))
+
+# Kurtosis (E-spread) / (H-spread) - 1.705
+(lvd13[3,5]-lvd13[3,3])/(lvd13[2,5]-lvd13[2,3])-1.705 # less peaked than normal
+(lvd14[3,5]-lvd14[3,3])/(lvd14[2,5]-lvd14[2,3])-1.705 # more peaked than normal
+
+# H-Spread
+(lvd13[2,5]-lvd13[2,3]) 
+(lvd14[2,5]-lvd14[2,3]) 
+
+# 자료들이 정규성 따르냐?
+qqnorm(imptime, ylab="Impact Time Quantiles");qqline(imptime, col='red',lty=2) # 자료들이 정규분포를 잘 따르고 있는 것으로 보인다. (꼬리부분에서 다소 벗어나 보이나)
+qqnorm(accel, ylab="Head Acceleration Quantiles");qqline(accel, col='red',lty=2) # 자료들이 qqline을 잘 따르기 보다는 역s자 곡선의 형태를 띄고 있는 것으로 보인다.
+
+
+# 시계열 분석이 아니라 산점도 평활법을 적용해 분석을 진행해보고자 한다. 
+plot(helmet$accel~helmet$imptime,main="scatter plot of impact time and head acceleration")
+lines(lowess(accel~imptime,f=2/3), col = "Red")
+lines(lowess(accel~imptime,f=1/2), col = "blue")
+lines(lowess(accel~imptime,f=1/3), col = "darkgreen")
+legend(3, 75, c(paste("f = ", c("2/3", "1/2","1/3"))), lty = 1, col = c("red","blue","darkgreen"), cex=0.7)
+# f=1/3일때 가장 이상적으로 보인다.
+
+# residuals with the default span f = 2/3
+residuals <- helmet$accel - lowess(helmet)$y
+plot(residuals ~ helmet$imptime, main = "Residuals with f = 2/3")
+lines(lowess(helmet$imptime, residuals, f=0.3))
+#여전히 잔차들이 경향성을 가지는 것으로 보인다.
+
+
+# residuals with span f = 1/2
+residuals <- helmet$accel - lowess(helmet,f=0.5)$y
+plot(residuals ~ helmet$imptime, main = "Residuals with f = 1/2")
+lines(lowess(helmet$imptime, residuals, f=0.3))
+#여전히 잔차들이 경향성을 가지는 것으로 보인다.
+
+# residuals with span f = 1/3
+residuals <- helmet$accel - lowess(helmet,f=1/3)$y
+plot(residuals ~ helmet$imptime, main = "Residuals with f = 1/3")
+lines(lowess(helmet$imptime, residuals, f=1))
+# 잔차들의 경향성이 완화되었다.
+
+plot(helmet, main = "loess(cars)")
+
+helmet.lo <- loess(accel ~ imptime, helmet)
+helmet.lo.pred <- predict(helmet.lo, data.frame(imptime=seq(0, 60, length=133)), se=TRUE)
+lines(helmet.lo.pred$fit ~ seq(0, 60, length=133), col = 2)
+```
+
+# 7.
+
+어린 아이들의 나이별 평균 사용 단어 수이다. 분석하여라.
+
+```{r}
+age=c(1.0,1.5,2.0,2.5,3.0,3.5,4.0,4.5,5.0,6.0)
+words=c(3,22,272,446,896,1222,1540,1870,2072,2562)
+
+length(words) #총 10개의 자료
+
+summary(age)
+summary(words)
+
+boxplot(age,main="age")
+boxplot(words,main="words") #outlier는 없다.
+
+medage <- as.vector(3)
+medwords <- as.vector(3)
+medage[1] <- median(age[1:3],na.rm=T); medwords[1] <- median(words[1:3],na.rm=T)
+medage[2] <- median(age[4:7],na.rm=T); medwords[2] <- median(words[4:7],na.rm=T)
+medage[3] <- median(age[8:10],na.rm=T); medwords[3] <- median(words[8:10],na.rm=T)
+plot(medwords ~ medage, type="b") 
+# 선형 관계로 나타나는 것을 확인할 수 있다. 
+
+cor.test(words,age)
+lmfit=lm(words~age)
+lmfit2=lm(words~age+0)
+summary(lmfit) #단순회귀에서는 상관계수/회귀값 모두 두 변수가 상관정도가 높게 나타나고 있다.
+# 나이가 한살 많아질수록 알고 있는 단어의 수는 561.93개로 나타남. 
+
+summary(lmfit2) #모르는 단어가 음수일 수는 없기 때문에 절편을 원점으로 고정하고 회귀분석을 진행할 경우 나이 한살이 많아질 수록 370.96개의 단어를 추가적으로 알 것이다라고 추론 할 수 있다. 
+
+plot(words~age,main="linearity of words ~ age")
+(z5<-line(x=age,y=words))
+abline(coef(z5))
+z5.ls <- lm(words~age)
+abline(z5.ls$coef, lty=2,col="red")
+legend(x = 1, y = 2300, c("R - Line", "Regression"), 
+       lty=c(1,2),lwd=2,col = c("black","red"),cex=0.7)       
+
+
+plot(residuals(z5) ~ fitted(z5), main = "Residual plot by rline") 
+abline(0,0) 
+# 1살에서의 단어의 수를 제외하면 대부분의 데이터들이 0 근처에 있는 것이 확인되어 진다.
+
+boxplot(residuals(z5))
+boxplot(residuals(z5))$out #lower fence 밖의 oulier -169, upper fence 밖의 outlier 312
+
+stem(residuals(z5)) # Outlier 재확인 가능
+
+sum(residuals(z5)^2)
+
+```
+
+# 8.
+
+다음 자료는 권투선수 Mike Tyson과 Frank Bruno의 1989년 World Heavyweight Championship match의 자료이다. 타이슨이 이겼다. connected는 펀치를 정확히 맞힌 것이다. 누가 펀치를 많이 날렸는지? 누가 정확히 맞혔는지? 누가 잽(작은 펀치)을 많이 했는지? 누가 파워펀치를 많이 했는지? 등등을 분석하여 보아라.
+
+```{r}
+tyson=as.data.frame(matrix(c(43,39,28,37,55,13,14,13,15,34,6,9,5,13,8,0,1,1,3,3,37,30,23,24,47,13,13,12,12,31,1,0,0,0,0),nrow=7,byrow=T))
+names(tyson)=1:5
+rownames(tyson)=c("Total punches","Punches connected","Jabs thrown","Jabs conneted","Power punches","Power connected","Knockdowns")
+tyson
+bruno=as.data.frame(matrix(c(55,42,35,18,20,14,8,5,3,7,14,24,16,8,6,2,1,0,0,1,41,18,19,10,14,12,7,5,3,6,0,0,0,0,0),nrow=7,byrow=T))           
+names(bruno)=1:5              
+rownames(bruno)=c("Total punches","Punches connected","Jabs thrown","Jabs conneted","Power punches","Power connected","Knockdowns")                   
+bruno   
+```
+
+```{r}
+library(ghibli)
+pal=ghibli_palette("PonyoMedium",5)
+mosaicplot(tyson,col=pal,main="mosaic plot of tyson")
+mosaicplot(bruno,col=pal,main="mosaic plot of bruno")
+```
+
+-   Punch
+
+```{r}
+# connected는 펀치를 정확히 맞힌 것이다. 
+# 누가 펀치를 많이 했는지         
+totalpunch=rbind(tyson[1,],bruno[1,])
+rownames(totalpunch)=c("tyson","bruno")
+totalpunch
+chisq.test(totalpunch)
+
+# Null hypothesis (H0): the row and the column variables of the contingency table are independent.
+# Alternative hypothesis (H1): row and column variables are dependent
+# 따라서, tyson의 round별 파워펀치 수와 bruno의 round별 파워펀치 수는 차이가 있다.
+
+totalpunch_polished=medpolish(totalpunch)
+totalpunch_polished
+barplot(totalpunch_polished$col) # 1라운드에서 펀치가 가장 많고 4라운드에서 펀치가 적다
+barplot(totalpunch_polished$row) # Bruno가 Tyson에 비해 펀치를 많이 한 것으로 보인다.
+barplot(totalpunch_polished$residuals)
+
+library(reshape2)
+totalpunch2=cbind(c("tyson","bruno"),totalpunch)
+totalpunch2=melt(totalpunch2)
+names(totalpunch2)=c("player","round","value")
+totalpunch2
+
+library(doBy)
+summaryBy(value ~player, data=totalpunch2, FUN = c(mean,sum,min,max)) #평균적으로 bruno가 펀치의 횟수가 많았다.
+summaryBy(value ~round, data=totalpunch2, FUN = c(mean,sum,min,max)) #라운드별로 보았을 때에는 1라운드에서 펀치횟수가 가장 많고 4라운드에서 펀치횟수가 가장 적다. 
+
+library(ggplot2)
+ggplot(totalpunch2,aes(x=as.factor(round),y=value))+
+  geom_bar(stat="identity",position="dodge",fill=rep(pal,2))+
+  facet_wrap(~ player, nrow=1)+
+  geom_text(aes(label=value), vjust=-0.4, size=3.5)+
+  theme_classic()+
+  ggtitle("Bruno & Tyson Total Punch Comparison")+
+  xlab("round")+
+  ylab("value")
+
+ggplot(totalpunch2, aes(round, value, fill=player))+
+  geom_bar(stat='identity', position = 'dodge')+
+  geom_text(aes(label= value),vjust=-0.4, size=3,position = position_dodge(width = 1))+
+  theme_classic()+
+  ggtitle("Bruno & Tyson Total Punch Comparison")+
+  xlab("round")+
+  ylab("value")
+
+aov10=aov(value~player+round,data=totalpunch2)
+summary(aov10)
+library(agricolae)
+HSD.test(aov10, "round", group=T,console=TRUE)
+HSD.test(aov10, "player", group=T,console=TRUE)
+
+library(twoway)
+twoway(totalpunch)
+plot(twoway(totalpunch))
+
+# 누가 정확히 맞혔는지? 
+punch_accu=cbind((tyson[2,]/tyson[1,]),sum(tyson[2,])/sum(tyson[1,]))
+names(punch_accu)=c(1:5,"total")
+rownames(punch_accu)="tyson_connect"
+punch_accu=round(punch_accu*100,2)
+
+punch_accu1=cbind((bruno[2,]/bruno[1,]),sum(bruno[2,])/sum(bruno[1,]))
+names(punch_accu1)=c(1:5,"total")
+rownames(punch_accu1)="bruno_connect"
+punch_accu1=round(punch_accu1*100,2)
+punch_accu1
+
+connect_prob=rbind(punch_accu,punch_accu1)
+connect_prob
+
+# 전반적으로 정확히 맞춘 비율의 경우 Tyson이 Bruno에 비해서 높은 것으로 보인다.
+# Punch가 Connected될 비율은 모든 라운드에서 tyson이 bruno에 비해 높은 것으로 나타났으며 전체 비율의 경우에도 tyson이 bruno에 비해서 높게 나타난 것을 확인할 수 있다. 
+
+connect_prob=cbind(c("tyson_connect","bruno_connect"),connect_prob)
+connect_prob2=melt(connect_prob)
+names(connect_prob2)=c("player","round","value")
+ggplot(connect_prob2, aes(round, value, fill=player))+
+  geom_bar(stat='identity', position = 'dodge')+
+  geom_text(aes(label= paste(sprintf("%2.1f", value),"%",sep="")),vjust=-0.4, size=3,position = position_dodge(width = 1))+
+  theme_classic()+
+  ggtitle("Bruno & Tyson Punch Connect Comparison")+
+  xlab("round")+
+  ylab("value(prop(%)")
+
+# tyson이 bruno에 비해서 punch를 더 정확하게 하였다.
+```
+
+-   Jab
+
+```{r}
+
+
+# 누가 잽(작은 펀치)을 많이 했는지? 
+totaljab=rbind(tyson[3,],bruno[3,])
+rownames(totaljab)=c("tyson","bruno")
+totaljab
+chisq.test(totaljab)
+
+# Null hypothesis (H0): the row and the column variables of the contingency table are independent.
+# Alternative hypothesis (H1): row and column variables are dependent
+# 따라서, tyson의 round별 jab수와 bruno의 round별 jab수는 차이가 있다.
+
+totaljab_polished=medpolish(totaljab)
+totaljab_polished
+barplot(totaljab_polished$col) # 2라운드에서 Jab이 가장 많고 5라운드에서 Jab이 적게 나타난다. (5라운드에서 punch가 많았던 것에 비교하면 약간의 차이를 보인다) 
+barplot(totaljab_polished$row) # Bruno가 Tyson에 비해 Jab을 많이 한 것으로 보인다.
+barplot(totaljab_polished$residuals)
+
+totaljab2=cbind(c("tyson","bruno"),totaljab)
+totaljab2=melt(totaljab2)
+names(totaljab2)=c("player","round","value")
+totaljab2
+
+library(doBy)
+summaryBy(value ~player, data=totaljab2, FUN = c(mean,sum,min,max)) #평균적으로 Bruno가 잽을 많이 했다.
+summaryBy(value ~round, data=totaljab2, FUN = c(mean,sum,min,max)) #라운드별로 보았을 때에는 2라운드에서 Jab이 가장 많고 5라운드에서 Jab이 가장 적다. 
+
+ggplot(totaljab2,aes(x=as.factor(round),y=value))+
+  geom_bar(stat="identity",position="dodge",fill=rep(pal,2))+
+  facet_wrap(~ player, nrow=1)+
+  geom_text(aes(label=value), vjust=-0.4, size=3.5)+
+  theme_classic()+
+  ggtitle("Bruno & Tyson Total Jab Comparison")+
+  xlab("round")+
+  ylab("value")
+
+ggplot(totaljab2, aes(round, value, fill=player))+
+  geom_bar(stat='identity', position = 'dodge')+
+  geom_text(aes(label= value),vjust=-0.4, size=3,position = position_dodge(width = 1))+
+  theme_classic()+
+  ggtitle("Bruno & Tyson Total Jab Comparison")+
+  xlab("round")+
+  ylab("value")
+
+aov11=aov(value~player+round,data=totaljab2)
+summary(aov11)
+HSD.test(aov11, "round", group=T,console=TRUE)
+HSD.test(aov11, "player", group=T,console=TRUE)
+
+library(twoway)
+twoway(totaljab)
+plot(twoway(totaljab))
+
+# 누가 정확히 맞혔는지? 
+jab_accu=cbind((tyson[4,]/tyson[3,]),sum(tyson[4,])/sum(tyson[3,]))
+names(jab_accu)=c(1:5,"total")
+rownames(jab_accu)="tyson_connect"
+jab_accu=round(jab_accu*100,2)
+
+jab_accu1=cbind((bruno[4,]/bruno[3,]),sum(bruno[4,])/sum(bruno[3,]))
+names(jab_accu1)=c(1:5,"total")
+rownames(jab_accu1)="bruno_connect"
+jab_accu1=round(jab_accu1*100,2)
+jab_accu1
+
+jconnect_prob=rbind(jab_accu,jab_accu1)
+jconnect_prob
+
+# 전반적으로 정확히 맞춘 비율의 경우 Tyson이 Bruno에 비해서 높은 것으로 보인다.
+# Punch의 Connected될 비율은 1라운드를 제외하면 tyson이 bruno에 비해 높은 것으로 나타났으며 전체 비율의 경우에도 tyson이 bruno에 비해서 높게 나타난 것을 확인할 수 있다. 
+
+jconnect_prob=cbind(c("tyson_connect","bruno_connect"),jconnect_prob)
+jconnect_prob2=melt(jconnect_prob)
+names(jconnect_prob2)=c("player","round","value")
+ggplot(jconnect_prob2, aes(round, value, fill=player))+
+  geom_bar(stat='identity', position = 'dodge')+
+  geom_text(aes(label= paste(sprintf("%2.1f", value),"%",sep="")),vjust=-0.4, size=3,position = position_dodge(width = 1))+
+  theme_classic()+
+  ggtitle("Bruno & Tyson Jab Punch Connect Comparison")+
+  xlab("round")+
+  ylab("value(prop(%)")
+
+# tyson이 bruno에 비해서 더 정확한 Jab 펀치를 하였다.
+
+```
+
+-   power punch
+
+```{r}
+
+
+# 누가 파워펀치를 많이 했는지         
+totalpower=rbind(tyson[5,],bruno[5,])
+rownames(totalpower)=c("tyson","bruno")
+totalpower
+chisq.test(totalpower)
+
+# Null hypothesis (H0): the row and the column variables of the contingency table are independent.
+# Alternative hypothesis (H1): row and column variables are dependent
+# 따라서, tyson의 round별 파워펀치 수와 bruno의 round별 파워펀치 수는 차이가 있다.
+
+totalpower_polished=medpolish(totalpower)
+totalpower_polished
+barplot(totalpower_polished$col) # 1라운드에서 파워펀치가 가장 많고 점점 줄다가 5라운드에서 다시 늘어남 
+barplot(totalpower_polished$row) # Tyson이 Bruno에 비해 파워펀치를 많이 한 것으로 보인다.
+barplot(totalpower_polished$residuals)
+
+totalpower2=cbind(c("tyson","bruno"),totalpower)
+totalpower2=melt(totalpower2)
+names(totalpower2)=c("player","round","value")
+totalpower2
+
+library(doBy)
+summaryBy(value ~player, data=totalpower2, FUN = c(mean,sum,min,max)) #평균적으로 tyson이 파워펀치가 많았다.
+summaryBy(value ~round, data=totalpower2, FUN = c(mean,sum,min,max)) #라운드별로 보았을 때에는 1라운드에서 파워펀치가 가장 많고 4라운드에서 파워펀치가 가장 적다. 
+
+ggplot(totalpower2,aes(x=as.factor(round),y=value))+
+  geom_bar(stat="identity",position="dodge",fill=rep(pal,2))+
+  facet_wrap(~ player, nrow=1)+
+  geom_text(aes(label=value), vjust=-0.4, size=3.5)+
+  theme_classic()+
+  ggtitle("Bruno & Tyson Total Power Punch Comparison")+
+  xlab("round")+
+  ylab("value")
+
+ggplot(totalpower2, aes(round, value, fill=player))+
+  geom_bar(stat='identity', position = 'dodge')+
+  geom_text(aes(label= value),vjust=-0.4, size=3,position = position_dodge(width = 1))+
+  theme_classic()+
+  ggtitle("Bruno & Tyson Total Power Punch Comparison")+
+  xlab("round")+
+  ylab("value")
+
+aov12=aov(value~player+round,data=totalpower2)
+summary(aov12)
+HSD.test(aov12, "round", group=T,console=TRUE)
+HSD.test(aov12, "player", group=T,console=TRUE)
+
+library(twoway)
+twoway(totalpower)
+plot(twoway(totalpower))
+
+# 누가 정확히 맞혔는지? 
+power_accu=cbind((tyson[6,]/tyson[5,]),sum(tyson[6,])/sum(tyson[5,]))
+names(power_accu)=c(1:5,"total")
+rownames(power_accu)="tyson_connect"
+power_accu=round(power_accu*100,2)
+
+power_accu1=cbind((bruno[6,]/bruno[5,]),sum(bruno[6,])/sum(bruno[5,]))
+names(power_accu1)=c(1:5,"total")
+rownames(power_accu1)="bruno_connect"
+power_accu1=round(power_accu1*100,2)
+power_accu1
+
+pconnect_prob=rbind(power_accu,power_accu1)
+pconnect_prob
+
+# 전반적으로 정확히 맞춘 비율의 경우 Tyson이 Bruno에 비해서 높은 것으로 보인다.
+# Punch의 Connected될 비율은 1라운드를 제외하면 tyson이 bruno에 비해 높은 것으로 나타났으며 전체 비율의 경우에도 tyson이 bruno에 비해서 높게 나타난 것을 확인할 수 있다. 
+
+pconnect_prob=cbind(c("tyson_connect","bruno_connect"),pconnect_prob)
+pconnect_prob2=melt(pconnect_prob)
+names(pconnect_prob2)=c("player","round","value")
+ggplot(pconnect_prob2, aes(round, value, fill=player))+
+  geom_bar(stat='identity', position = 'dodge')+
+  geom_text(aes(label= paste(sprintf("%2.1f", value),"%",sep="")),vjust=-0.4, size=3,position = position_dodge(width = 1))+
+  theme_classic()+
+  ggtitle("Bruno & Tyson Power Punch Connect Comparison")+
+  xlab("round")+
+  ylab("value(prop(%)")
+# tyson이 bruno에 비해서 power punch를 더 정확하게 하였다.
+```
