@@ -68,8 +68,6 @@ website:
         - text: "EDA Assingnment 8"
           href: ./data_analytics/EDA8_Final.rmd
 
-
-
 format:
   html:
     theme: Minty
