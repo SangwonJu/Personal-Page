@@ -2,9 +2,7 @@
 title: "Research Interests"
 ---
 
-![](20220716_170354.png){fig-align="center"}
-
-My reseach interests lie at the intersection of public policy analysis and management information systems. Toward better public-sector decision-making, my interests are
+![](20220716_163613.png)My reseach interests lie at the intersection of public policy analysis and management information systems. Toward better public-sector decision-making, my interests are
 
 -   \(i\) policy analysis and evalutation; specifically societal impact of information systems
 
