@@ -1,2 +1,2 @@
 # Personal-Page
-Repositor for publishing personal page
+Repository for publishing personal page
