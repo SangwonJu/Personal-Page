@@ -1,0 +1,24 @@
+---
+title: "Research Interests"
+---
+
+![](20220716_170354.png){fig-align="center"}
+
+My reseach interests lie at the intersection of public policy analysis and management information systems. Toward better public-sector decision-making, my interests are
+
+-   \(i\) policy analysis and evalutation; specifically societal impact of information systems
+
+-   \(ii\) evidence-based public policy and management (EBPPM)
+
+    -   being evidence-based is being data-driven?
+
+    -   what is the difference between evidence-based approach and contemporary policy analysis ? (such as discourse policy analysis)
+
+    -   how to bridge the gap between researchers and practitioners?\
+        Two-communities Theory (Caplan, 1979; Weiss, 1979; Newman et al., 2016 )
+
+    -   Positivist vs. Constructivist
+
+-   \(iii\) organizational decision-making; specifically human-machine cooperation in organizational behavior.
+
+Methodologically, I'm interested in applied econometrics for quasi-experimental approach, machine-learning as well as other computational methods for both business and public data analytics, and applied psychology survey analysis. Also I have prior experience in policy analysis techniques (such as Cost-Benefit Analysis, Analytic Hierarchy Process etc.)

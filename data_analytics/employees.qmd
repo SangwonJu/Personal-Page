@@ -1,0 +1,306 @@
+---
+title: "Analysis 1: \n Number of local government employees"
+page-layout: full
+---
+
+# 0. Preparation
+
+-   Data retrieved from KOSIS (Korean Statistical Information Service).
+
+-   Agenda1: examining trend of the total local government employee number to find out the impact of "The Transition of Fire Officals to National Position".
+
+-   Agenda2: visualize the number of employees to separate the impact of transition from original fluctuation in number.
+
+## - Package Load
+
+```{r, message=FALSE,results='hide'}
+pacman::p_load("jsonlite",
+               "tidyverse",
+               "forecast",
+               "ggfortify",
+               "forecast",
+               "httr",
+               "sleekts",
+               "lubridate",
+               "stats",
+               "smooth",
+               "ghibli",
+               "plyr",
+               "scales",
+               "formattable",
+               "knitr",
+               "showtext",
+               "kableExtra",
+               "IRdisplay",
+               "glue",
+               "echarts4r",
+               "plotly")
+```
+
+## - Adding fonts for ggplot2
+
+```{r}
+font_add_google(name="Lato")
+showtext_auto()
+```
+
+# 1. Importing data and clensing
+
+## - Importing data
+
+```{r, message=FALSE,results='hide'}
+# auto inporting function
+kosis1 = function (a,b){
+    library("jsonlite")
+    library("dplyr")
+    i1=a
+    i2=b    
+    years=seq(i1+1,i2,1)
+    data= fromJSON(glue::glue("https://kosis.kr/openapi/statisticsData.do?method=getList&apiKey=YjNjZjJmNDI2NWE1N2U3NGRiZWE3ZmI3MmU4YjliNGU=&format=json&jsonVD=Y&userStatsId=jsw0641/101/DT_1YL2101E/2/1/20211111002533&prdSe=Y&startPrdDe={i1}&endPrdDe={i1}"))
+    for(i in years) {
+        assign(paste("employee_",i,sep=""), 
+               fromJSON(glue::glue("https://kosis.kr/openapi/statisticsData.do?method=getList&apiKey=YjNjZjJmNDI2NWE1N2U3NGRiZWE3ZmI3MmU4YjliNGU=&format=json&jsonVD=Y&userStatsId=jsw0641/101/DT_1YL2101E/2/1/20211111002533&prdSe=Y&startPrdDe={i}&endPrdDe={i}")))
+        data %>% 
+            full_join(get(paste("employee_",i,sep=""))) -> data
+        print(paste("employee_",i," added",sep=""))
+    }
+    return(data)
+}
+
+# Importing Data
+employee_data=kosis1(2008,2020)
+```
+
+```{r}
+employee_data %>% 
+    glimpse()
+```
+
+```{r}
+# Selected Provinces 
+employee_data$C1_NM_ENG %>% 
+    unique() -> level
+level
+```
+
+South Korea is made up of 17 first-tier administrative divisions: 6 metropolitan cities (*gwangyeoksi* 광역시/廣域市), 1 special city (*teukbyeolsi* 특별시/特別市), 1 special self-governing city (*teukbyeol-jachisi* 특별자치시/特別自治市), and 9 provinces (*do* 도/道), including one special self-governing province (*teukbyeol jachido* 특별자치도/特別自治道). (cited from [Wikipedia](https://en.wikipedia.org/wiki/Administrative_divisions_of_South_Korea))
+
+## - Clensing data
+
+```{r}
+employee_data$DT=as.numeric(employee_data$DT)
+employee_data=employee_data%>%
+    dplyr::rename(ad_division=C1_NM_ENG) 
+
+
+employee_data %>% 
+    filter(PRD_DE==2018) %>% 
+    select(ad_division,DT) %>% 
+    dplyr::rename(employee_2018="DT") -> employee_2018
+
+employee_data %>% 
+    filter(PRD_DE==2019) %>% 
+    select(ad_division,DT) %>% 
+    dplyr::rename(employee_2019="DT") -> employee_2019
+
+employee_data %>% 
+    filter(PRD_DE==2020) %>% 
+    select(ad_division,DT) %>% 
+    dplyr::rename(employee_2020="DT") -> employee_2020
+```
+
+## - The decrease rate of the number of employees in 2020 compared to 2018
+
+```{r}
+employee_2018 %>% 
+    full_join(employee_2019) %>% 
+    full_join(employee_2020) %>% 
+    dplyr::rename(Local_Divisions="ad_division") -> emp_num
+
+emp_num$Local_Divisions=factor(emp_num$Local_Divisions,levels=rev(level))
+
+knitr::kable(emp_num,format.args = list(big.mark = ","),
+            caption = "The Number of local government employees (2018, 2019, 2020)",
+            col.names = gsub("[_]", " ", names(emp_num))) %>% 
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
+
+```{r}
+emp_num %>% 
+    mutate(Increase_Rate=formattable::percent((employee_2020-employee_2018)/employee_2018)) %>%
+    select(Local_Divisions,Increase_Rate) %>% 
+    kbl(col.names = gsub("[_]", " ", names(.)),
+        caption = "The decrease rate of the number of employees in 2020 compared to 2018") %>% 
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
+
+```{=html}
+<p align="justify">
+Overall, the number of employees in every local divisions decreased by around 6 to 15 percentage points.
+</p>
+```
+# 2. Visualization
+
+## - Increase rate of the number of employees in 2019 compared to 2018
+
+```{r, fig.align='center',fig.width=22,fig.height=20}
+#| column: page
+emp_num %>% 
+    mutate(increase=round(((employee_2019-employee_2018)/employee_2018)*100,2)) %>%
+    select(Local_Divisions,increase) %>% 
+    ggplot(aes(x=Local_Divisions,y=increase)) + 
+    geom_bar(stat = "identity", position = "dodge") +
+    theme_classic() +
+    geom_text(aes(label= paste(sprintf("%2.2f", increase),"%",sep="")), size=3, position = position_dodge(width = 1))+
+  labs(x="17 first-tier administrative divisions",
+       y="Increase Rate(%)")+
+  scale_y_continuous(breaks=seq(0, 15, 1)) + 
+  theme(text=element_text(family="Lato",size=10),
+        plot.title = element_text(size = 5))+
+  coord_flip() -> p 
+
+plotly::ggplotly(p, tooltip="text") %>% 
+    style(textposition = "right") %>% 
+    layout(title = list(text = paste0(
+        'Increase rate of employees in 2019 (compared to 2018)',
+        '<br>',
+        '<sup>',
+        'Source: Ministry of Public Administration and Security (KOSIS)','</sup>'),
+        x = 0.1,
+        font=list(size=15)))
+```
+
+## - Increase rate of the number of employees in 2020 compared to 2018
+
+```{r, fig.align='center',fig.width=22,fig.height=20}
+#| column: page
+emp_num %>% 
+    mutate(increase=round(((employee_2020-employee_2018)/employee_2018)*100,2)) %>%
+    select(Local_Divisions,increase) %>% 
+    arrange(increase) %>% 
+    ggplot(aes(x=Local_Divisions,y=increase)) + 
+    geom_bar(stat = "identity", position = "dodge") +
+    theme_classic() +
+    geom_text(aes(label= paste(sprintf("%2.2f", increase),"%",sep="")), size=3, position = position_dodge(width = 1))+
+  labs(x="17 first-tier administrative divisions",
+       y="Increase Rate(%)")+
+  scale_y_continuous(breaks=seq(0, 15, 1)) + 
+  theme(text=element_text(family="Lato",size=10),
+        plot.title = element_text(size = 5)) +
+  coord_flip() -> p 
+
+plotly::ggplotly(p, tooltip="text") %>% 
+    style(textposition = "left") %>% 
+    layout(title = list(text = paste0(
+        'Decrease rate of employees in 2020 (compared to 2018)',
+        '<br>',
+        '<sup>',
+        'Source: Ministry of Public Administration and Security (KOSIS)','</sup>'),
+        x = 0.1,
+        font=list(size=15)))
+```
+
+```{r, fig.align='center',fig.width=22,fig.height=20}
+#| column: page
+emp_num %>% 
+    mutate(increase=round(((employee_2020-employee_2018)/employee_2018)*100,2)) %>%
+    select(Local_Divisions,increase) %>% 
+    arrange(increase) %>% 
+    ggplot(aes(x=factor(Local_Divisions,levels=rev(.$Local_Divisions)),y=increase)) + 
+    geom_bar(stat = "identity", position = "dodge") +
+    theme_classic() +
+    geom_text(aes(label= paste(sprintf("%2.2f", increase),"%",sep="")), size=3, position = position_dodge(width = 1))+
+  labs(x="17 first-tier administrative divisions",
+       y="Increase Rate(%)")+
+  scale_y_continuous(breaks=seq(0, 15, 1)) + 
+  theme(text=element_text(family="Lato",size=10),
+        plot.title = element_text(size = 5)) +
+  coord_flip() -> p 
+
+plotly::ggplotly(p, tooltip="text") %>% 
+    style(textposition = "left") %>% 
+    layout(title = list(text = paste0(
+        'Decrease rate of employees in 2020 (compared to 2018)',
+        '<br>',
+        '<sup>',
+        'Source: Ministry of Public Administration and Security (KOSIS)','</sup>'),
+        x = 0.1,
+        font=list(size=15)))
+```
+
+## - Trends of the number of local government employees from 2009 to 2020
+
+```{r}
+
+employee_data %>% 
+    filter(ad_division=="Whole country") %>%  
+    arrange(PRD_DE) %>% 
+    transmute(year=(PRD_DE),number=DT) %>%
+    mutate_if(is.character,as.numeric) %>%
+    dplyr::mutate(Diff_growth = number - lag(number), 
+    # Difference in route between years
+     Rate_percent = round((Diff_growth)/lag(number) * 100,2)) %>% 
+    # growth rate in percent
+    filter(year>2008) %>% 
+    mutate(year=factor(year)) -> employee3
+
+ employee3 %>% 
+    kbl(col.names = gsub("[_]", " ", names(.)),
+        caption = "The decrease rate of the number of employees in 2020 compared to 2018",
+        format.args = list(big.mark = ",")) %>% 
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+
+```
+
+```{r, fig.align='center',fig.width=22,fig.height=20}
+#| column: page
+font_add_google(name="Noto Serif")
+employee3  %>% 
+  ggplot(aes(x=as.factor(year))) + 
+  geom_bar(aes(fill="pink",y=Diff_growth),stat = "identity") + 
+  theme_classic()+
+  geom_text(aes(y=Diff_growth+sign(Diff_growth)*-15,label= scales::comma(Diff_growth)), size=5,position = position_dodge(width = 1))+
+  theme(text=element_text(family="Noto Serif",size=12),legend.position = "none")+
+  scale_x_discrete(labels = c(2009:2020))+
+  scale_y_continuous(breaks =seq(-45000,15000,by=5000)) +
+  labs(x="17 first-tier administrative divisions",
+       y="Increase Rate(%)")-> p1
+
+plotly::ggplotly(p1, tooltip="text") %>% 
+    style(textposition = "center") %>% 
+    layout(title = list(text = paste0(
+        'Trends of the number of local government employees from 2009 to 2020',
+        '<br>',
+        '<sup>',
+        'Source: Ministry of Public Administration and Security (KOSIS)','</sup>'),
+        x = 0.01,
+        font=list(size=16)))
+
+```
+
+```{r, fig.align='center',fig.width=15,fig.height=8}
+#| column: page
+employee3  %>% 
+  ggplot(aes(x=as.factor(year))) + 
+  geom_bar(aes(x = as.factor(year), y = Diff_growth), stat = "identity",fill="gray",alpha=0.3)+
+  geom_line(aes(x = as.integer(1:12), y = Rate_percent*3500),color="orange",size=1)+
+  geom_point(aes(x = as.factor(year), y = Rate_percent*3500),color="red",size=2, alpha=0.7) +
+  geom_text(aes(x = as.factor(year),y=Rate_percent*3500,label= paste(sprintf("%2.2f", Rate_percent),"%",sep="")),color="black",hjust=-0.1,vjust=-2.3, size=8,position = position_dodge(width = 2))+
+  theme_classic()+
+  scale_y_continuous(sec.axis = sec_axis(~./3500, name = paste("Increase Rate  (%)","\n"),breaks = seq(-15,10,5)),breaks =comma(seq(-50000,25000,by=5000),format = "d") )+
+  scale_x_discrete(labels = as.factor(c(2009:2020)))+
+  coord_cartesian(ylim=c(-50000,25000))+
+  labs(x="17 first-tier administrative divisions",
+       y="Change in # of employees",
+       title="Trends of the number of local government employees from 2009 to 2020",
+       subtitle="Source: Ministry of Public Administration and Security (KOSIS)") +
+  theme(text=element_text(family="Noto Serif",size=25))
+```
+
+# 3. Conclusion
+
+-   The number of local government employees in 2020 decreased by 9.5% (compared to 2018) and 13.32 % (compared to 2019) by on average .
+
+-   This decrease was transitory, since it was affected by "The Transition of Fire Officials to National Position (2020)".
+
+-   However, there was severe conflict between politicians and local government regarding appropriate number of public employees. Some local governments use this data as an evidence for increasing local government employees. However, if the data are misinterpreted, there is a possibility of drawing a wrong conclusion.
