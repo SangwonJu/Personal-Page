@@ -8,6 +8,9 @@ website:
     center:
         - text: "© 2022 Sangwon Ju"
 
+
+
+
   navbar:
     background: dark
     pinned: true
