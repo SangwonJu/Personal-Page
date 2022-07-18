@@ -529,14 +529,14 @@ gp1<- ggplotly(p6, tooltip="text")%>%
         font=list(size=16)),
         margin = mrg) 
 
-for (i in seq_along(gp$x$data)) {
+for (i in seq_along(gp1$x$data)) {
   # Is the layer the first entry of the group?
   is_first <- grepl("^\\(.*?,1\\)", gp$x$data[[i]]$name)
   # Extract the group identifier and assign it to the name and legendgroup arguments
-  gp$x$data[[i]]$name <- gsub("^\\((.*?),\\d+\\)", "\\1", gp$x$data[[i]]$name)
-  gp$x$data[[i]]$legendgroup <- gp$x$data[[i]]$name
+  gp1$x$data[[i]]$name <- gsub("^\\((.*?),\\d+\\)", "\\1", gp1$x$data[[i]]$name)
+  gp1$x$data[[i]]$legendgroup <- gp1$x$data[[i]]$name
   # Show the legend only for the first layer of the group 
-  if (!is_first) gp$x$data[[i]]$showlegend <- FALSE
+  if (!is_first) gp1$x$data[[i]]$showlegend <- FALSE
 }
 
 gp1
@@ -578,6 +578,6 @@ ggplotly(p7) %>%
 
 -   Female group showed higher unemployment rate during the winter, in contrast, male group showed higher unemployment showed higher unemployment rate during other seasons. However, this cannot be interpreted as women have more opportunities on acquiring job from spring to fall. Since in this analysis the quality of the job wasn't taken into account. Further analysis on quality of job (whether it is high-paying, temporary or ) is needed.
 
--   There was some discrepancies on employment rate for each presidential regimes. But, this figure only cannot be used as evaluating each presidencies. (unemployment rate can be affected by various factors such as international mechanics, climate change etc.)
+-   There were some discrepancies on employment rate for each presidential regimes. But, this figure only cannot be used as evaluating each presidencies. (unemployment rate can be affected by various factors such as international mechanics, climate change etc.)
 
 -   Most important part in this analysis is how specific figures were calculated, how the definition of the 'unemployment' was constructed, and how the data were surveyed and acquired. For example, the database used in this analysis collected data from interviewing 20% of all population. 'Willingness to have a job' is a perception not based on firm or objective standard. Therefore, it is important to interpret unemployment data with discretion in order to avoid treating the data as a definite and absolute truth.
