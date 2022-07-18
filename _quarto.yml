@@ -63,9 +63,9 @@ website:
           href: ./data_analytics/unemployment_index.qmd
       - section: Exploratory Data Analysis (2021 Spring) [in Korean]
         contents:
-        - text: "EDA Assingnment 7"
+        - text: "EDA Assignment 7"
           href: ./data_analytics/EDA7.rmd
-        - text: "EDA Assingnment 8"
+        - text: "EDA Assignment 8"
           href: ./data_analytics/EDA8_Final.rmd
 
 format:
