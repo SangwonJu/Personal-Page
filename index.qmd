@@ -28,7 +28,7 @@ format:
 <p align="justify">
 Hi. I'm a Master's student in <A href = "http://gspa.snu.ac.kr/en" target = "blank" > Graduate School of Public Administration</A> at Seoul National University, Seoul, South Korea. <br>
 <br>
-I'm currently studying public policy and management. Generally, my works seeks to understand interaction between information systems and public policy process, quantify impact of information systems on acquiring public value, and figure out how researchers can contribute to improving organizational decision-making by adequately utilizing infromation systems and evidence-based practices.   
+I'm currently studying public policy and management. Generally, my works seeks to understand interaction between information systems and public policy process, quantify impact of information systems on acquiring public value, and figure out how researchers can contribute to improving organizational decision-making by adequately utilizing information systems and evidence-based practices.   
 </p>
 ```
 ### Education
