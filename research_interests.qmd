@@ -12,9 +12,6 @@ title: "Research Interests"
 
     -   what is the difference between evidence-based approach and contemporary policy analysis ? (such as discourse policy analysis)
 
-    -   how to bridge the gap between researchers and practitioners?\
-        Two-communities Theory (Caplan, 1979; Weiss, 1979; Newman et al., 2016 )
-
     -   Positivist vs. Constructivist
 
 -   \(iii\) organizational decision-making; specifically human-machine cooperation in organizational behavior.
