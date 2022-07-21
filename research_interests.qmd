@@ -2,18 +2,26 @@
 title: "Research Interests"
 ---
 
-![](20220716_163613.png)My reseach interests lie at the intersection of public policy analysis and management information systems. Toward better public-sector decision-making, my interests are
+![](20220716_163613.png)My research interests lie at the intersection of public policy analysis and management information systems. Toward better public-sector decision-making, my interests are
 
--   \(i\) policy analysis and evalutation; specifically societal impact of information systems
+-   **(0) policy analysis and program evaluation**
 
--   \(ii\) evidence-based public policy and management (EBPPM)
+-   **(1) management information systems**
+
+    -   quantifying societal impact of information systems
+
+-   **(2) evidence-based public policy and management (EBPPM)**
 
     -   being evidence-based is being data-driven?
 
-    -   what is the difference between evidence-based approach and contemporary policy analysis ? (such as discourse policy analysis)
+    -   what is the difference between evidence-based approach and contemporary policy analysis? (such as discourse policy analysis)
 
     -   Positivist vs. Constructivist
 
--   \(iii\) organizational decision-making; specifically human-machine cooperation in organizational behavior.
+-   **(3) organization theory and behavior**
+
+    -   Strategic decision-making
+
+    -   human-machine cooperation in organization decision-making.
 
 Methodologically, I'm interested in applied econometrics for quasi-experimental approach, machine-learning as well as other computational methods for both business and public data analytics, and applied psychology survey analysis. Also I have prior experience in policy analysis techniques (such as Cost-Benefit Analysis, Analytic Hierarchy Process etc.)
