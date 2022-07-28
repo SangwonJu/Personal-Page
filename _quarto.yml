@@ -62,6 +62,9 @@ website:
           href: ./data_analytics/employees.qmd
         - text: "Analysis 2: Seasonal disparities in unemployment index"
           href: ./data_analytics/unemployment_index.qmd
+        - text: "Analysis 3: Analysis of the FWA in public sector organizations using data mining techniques"
+          href: ./data_analytics/FWA.ipynb
+
       - section: Exploratory Data Analysis (2021 Spring) [in Korean]
         contents:
         - text: "EDA Assignment 7"
