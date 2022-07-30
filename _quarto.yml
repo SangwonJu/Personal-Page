@@ -12,7 +12,8 @@ website:
 
 
   navbar:
-    background: dark
+    background: primary
+
     pinned: true
     logo: ./logo/policy.png
     page-navigation: true
@@ -53,7 +54,6 @@ website:
     - id: Data_Analytics_Projects
       title: "Data Analytics Projects"
       style: "floating"
-      background: secondary
       collapse-level: 2
       contents:
       - section: Data Analytics for Public Data (2021 Fall)
@@ -74,7 +74,10 @@ website:
 
 format:
   html:
-    theme: Minty
+    theme:
+        light: Zephyr
+        dark: darkly
+
     css: styles.css
     toc: true
 
