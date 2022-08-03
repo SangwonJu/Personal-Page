@@ -1,5 +1,7 @@
 ---
 title: "Analysis 1: \n Number of local government employees"
+author: "서울대학교 행정대학원 주상원"
+date: 'Dec/01/2021'
 page-layout: full
 ---
 
