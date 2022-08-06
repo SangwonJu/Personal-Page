@@ -2,6 +2,9 @@
 title: "Analysis 2: Unemployment index"
 author: "서울대학교 행정대학원 주상원"
 date: 'Dec/15/2021'
+format: 
+    html:
+        code-fold: true
 ---
 
 # 0. Preparation
