@@ -2,6 +2,9 @@
 title: "Analysis 2: Unemployment index"
 author: "서울대학교 행정대학원 주상원"
 date: 'Dec/15/2021'
+format: 
+    html:
+        code-fold: true
 ---
 
 # 0. Preparation
@@ -533,13 +536,14 @@ gp1<- ggplotly(p6, tooltip="text")%>%
 
 for (i in seq_along(gp1$x$data)) {
   # Is the layer the first entry of the group?
-  is_first <- grepl("^\\(.*?,1\\)", gp$x$data[[i]]$name)
+  is_first <- grepl("^\\(.*?,1\\)", gp1$x$data[[i]]$name)
   # Extract the group identifier and assign it to the name and legendgroup arguments
   gp1$x$data[[i]]$name <- gsub("^\\((.*?),\\d+\\)", "\\1", gp1$x$data[[i]]$name)
   gp1$x$data[[i]]$legendgroup <- gp1$x$data[[i]]$name
   # Show the legend only for the first layer of the group 
   if (!is_first) gp1$x$data[[i]]$showlegend <- FALSE
 }
+
 
 gp1
 ```

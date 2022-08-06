@@ -5,6 +5,7 @@ date: '2021 6 3'
 output:
   html_document:
     df_print: paged
+    code-fold: true
   word_document: default
 ---
 
