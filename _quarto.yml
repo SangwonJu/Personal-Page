@@ -25,7 +25,7 @@ website:
         - sidebar:Research
         - sidebar:Data_Analytics_Projects
         - text: "CV (as of July 2022)"
-          file: cv.rmd
+          file: cv.qmd
 
     right:
         - icon: mailbox2
