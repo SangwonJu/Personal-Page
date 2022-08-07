@@ -31,11 +31,6 @@ title: "Research Interests"
 
 -   positivism vs. constructivism in research utilization
 
-<<<<<<< HEAD
-=======
-
->>>>>>> e8251dcc6056f1747a612c4efbcdb2beebb40e5c
-![](20220716_163613.png)
 
 ```{=html}
 <p align="justify">
@@ -45,3 +40,7 @@ title: "Research Interests"
 <b> Methodologically</b>, I'm interested in applied econometrics for quasi-experimental approach, machine-learning as well as other computational methods for both business and public data analytics, and I/O psychology survey analysis. Also I have prior experience in policy analysis techniques (such as Cost-Benefit Analysis, Analytic Hierarchy Process etc.)
 </p>
 ```
+
+
+
+![](20220716_163613.png)
