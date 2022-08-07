@@ -214,7 +214,21 @@
     "href": "index.html",
     "title": "Sangwon Ju (주상원)",
     "section": "",
-    "text": "Hi. I'm a Master's student in  Graduate School of Public Administration at Seoul National University, Seoul, South Korea. \n\nI'm currently studying public policy and management. Generally, my works seeks to understand interaction between information systems and public policy process, quantify impact of information systems on acquiring public value, and figure out how researchers can contribute to improving organizational decision-making by adequately utilizing information systems and evidence-based practices.   \n\n\n\n\nSeoul National University, GSPA | Seoul, KR\nM.P.A in Public Policy | Sep 2021 - Aug 2023\nYonsei University, CSS | Seoul, KR\nB.A in Public Policy and Management\nB.A in Business Administration\nMinor in Applied Statistics | Mar 2015 - Aug 2021\n\n\n\n\n\nKorea Research Institute for Local Administration\nResearch Assistant | May 2022 - Present\nEvidence-Based Research Lab, GSPA, SNU\nResearch Assistant | Sep 2021 - Present"
+    "text": "Hi. I'm a Master's student in  Graduate School of Public Administration at Seoul National University, Seoul, South Korea. \n\nI'm currently studying public policy and management. Generally, my works seeks to understand interaction between information systems and public policy process, quantify impact of information systems on acquiring public value, and figure out how researchers can contribute to improving organizational decision-making by adequately utilizing information systems and evidence-based practices.   \n\n\n\n\n\nSeoul National University, GSPA | Seoul, KR\nM.P.A. in Public Policy | Sep 2021 ~ Aug 2023\nYonsei University, CSS | Seoul, KR\nB.A. in Public Policy and Management\nB.A. in Business Administration\nMinor in Applied Statistics | Mar 2015 ~ Aug 2021\n\n\n\n\n\nKorea Research Institute for Local Administration\nResearch Assistant | May 2022 ~ Present\nEvidence-Based Research Lab, GSPA, SNU\nResearch Assistant | Sep 2021 ~ Present"
+  },
+  {
+    "objectID": "index.html#education",
+    "href": "index.html#education",
+    "title": "Sangwon Ju (주상원)",
+    "section": "Education",
+    "text": "Education\n\nSeoul National University, GSPA | Seoul, KR\nM.P.A. in Public Policy | Sep 2021 ~ Aug 2023\nYonsei University, CSS | Seoul, KR\nB.A. in Public Policy and Management\nB.A. in Business Administration\nMinor in Applied Statistics | Mar 2015 ~ Aug 2021"
+  },
+  {
+    "objectID": "index.html#research-experience",
+    "href": "index.html#research-experience",
+    "title": "Sangwon Ju (주상원)",
+    "section": "Research Experience",
+    "text": "Research Experience\n\nKorea Research Institute for Local Administration\nResearch Assistant | May 2022 ~ Present\nEvidence-Based Research Lab, GSPA, SNU\nResearch Assistant | Sep 2021 ~ Present"
   },
   {
     "objectID": "publication.html",
@@ -243,5 +257,12 @@
     "title": "Research Interests",
     "section": "",
     "text": "(0) policy analysis and program evaluation\n(1) management information systems\n\nquantifying societal impact of information systems\n\n(2) evidence-based public policy and management (EBPPM)\n\nbeing evidence-based is being data-driven?\nwhat is the difference between evidence-based approach and contemporary policy analysis? (such as discourse policy analysis)\nPositivist vs. Constructivist\n\n(3) organization theory and behavior\n\nStrategic decision-making\nhuman-machine cooperation in organization decision-making.\n\n\nMethodologically, I’m interested in applied econometrics for quasi-experimental approach, machine-learning as well as other computational methods for both business and public data analytics, and applied psychology survey analysis. Also I have prior experience in policy analysis techniques (such as Cost-Benefit Analysis, Analytic Hierarchy Process etc.)"
+  },
+  {
+    "objectID": "index.html#about-me",
+    "href": "index.html#about-me",
+    "title": "Sangwon Ju (주상원)",
+    "section": "About Me",
+    "text": "About Me\n\nHi. I'm a Master's student in  Graduate School of Public Administration at Seoul National University, Seoul, South Korea. \n\nI'm currently studying public policy and management. Generally, my works seeks to understand interaction between information systems and public policy process, quantify impact of information systems on acquiring public value, and figure out how researchers can contribute to improving organizational decision-making by adequately utilizing information systems and evidence-based practices."
   }
 ]

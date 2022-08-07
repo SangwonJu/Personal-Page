@@ -15,7 +15,7 @@ website:
     background: light
 
     pinned: true
-    logo: ./logo/policy1.png
+    logo: ./logo/policy.png
     page-navigation: true
     collapse-below: md
 
