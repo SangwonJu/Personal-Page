@@ -1,0 +1,48 @@
+---
+title: "Text-mining on SDG VNRs of ROK, Germany, Finland"
+format: 
+    html:
+        code-fold: true
+author: "Sangwon Ju" 
+jupyter:
+  kernelspec:
+    display_name: Python 3
+    language: python
+    name: python3
+knitr:
+  opts_knit:
+    verbose: true
+date: 2022/08/06
+---
+
+
+```{r}
+library(reticulate)
+data("penguins", package = "palmerpenguins")
+``` 
+```{python}
+import pandas as pd
+import numpy as np
+import matplotlib as mpl
+
+a = np.array([1, 2, 3])
+b = np.array([10, 20, 30])
+print(2 * a + b)
+
+penguins=pd.DataFrame(r.penguins)
+c= penguins.head(5)
+print(c.to_markdown(index=False))
+```
+
+
+```{r}
+x <- 5  # radius of a circle
+```
+
+For a circle with the radius `r x`,
+its area is `r pi * x^2`.
+
+```{r}
+py$a
+py$b
+```

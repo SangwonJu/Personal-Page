@@ -1,0 +1,14 @@
+{
+  "hash": "da5312e3556313b71c07145f02e7c2ad",
+  "result": {
+    "markdown": "---\ntitle: \"Text-mining on SDG VNRs of ROK, Germany, Finland\"\nformat: \n    html:\n        code-fold: true\nauthor: \"Sangwon Ju\" \njupyter:\n  kernelspec:\n    display_name: Python 3\n    language: python\n    name: python3\nknitr:\n  opts_knit:\n    verbose: true\ndate: 2022/08/06\n---\n\n::: {.cell}\n\n```{.r .cell-code}\nlibrary(reticulate)\ndata(\"penguins\", package = \"palmerpenguins\")\n```\n:::\n\n::: {.cell}\n\n```{.python .cell-code}\nimport pandas as pd\nimport numpy as np\nimport matplotlib as mpl\n\na = np.array([1, 2, 3])\nb = np.array([10, 20, 30])\nprint(2 * a + b)\n```\n\n::: {.cell-output .cell-output-stdout}\n```\n[12 24 36]\n```\n:::\n\n```{.python .cell-code}\npenguins=pd.DataFrame(r.penguins)\nc= penguins.head(5)\nprint(c.to_markdown(index=False))\n```\n\n::: {.cell-output .cell-output-stdout}\n```\n| species   | island    |   bill_length_mm |   bill_depth_mm |   flipper_length_mm |   body_mass_g | sex    |   year |\n|:----------|:----------|-----------------:|----------------:|--------------------:|--------------:|:-------|-------:|\n| Adelie    | Torgersen |             39.1 |            18.7 |                 181 |          3750 | male   |   2007 |\n| Adelie    | Torgersen |             39.5 |            17.4 |                 186 |          3800 | female |   2007 |\n| Adelie    | Torgersen |             40.3 |            18   |                 195 |          3250 | female |   2007 |\n| Adelie    | Torgersen |            nan   |           nan   |         -2147483648 |   -2147483648 | nan    |   2007 |\n| Adelie    | Torgersen |             36.7 |            19.3 |                 193 |          3450 | female |   2007 |\n```\n:::\n:::\n\n::: {.cell}\n\n```{.r .cell-code}\nx <- 5  # radius of a circle\n```\n:::\n\n\nFor a circle with the radius 5,\nits area is 78.5398163.\n\n\n::: {.cell}\n\n```{.r .cell-code}\npy$a\n```\n\n::: {.cell-output .cell-output-stdout}\n```\n[1] 1 2 3\n```\n:::\n\n```{.r .cell-code}\npy$b\n```\n\n::: {.cell-output .cell-output-stdout}\n```\n[1] 10 20 30\n```\n:::\n:::",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}
