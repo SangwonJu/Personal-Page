@@ -4,7 +4,7 @@ project:
 website:
   title: "Sangwon Ju's Personal Page"
   page-footer:
-    background: light
+    background: dark
     center:
         - text: "© 2022 Sangwon Ju"
 
@@ -75,7 +75,7 @@ website:
 format:
   html:
     theme:
-        light: Flatly
+        light: Simplex
         dark: darkly
 
     css: styles.css
