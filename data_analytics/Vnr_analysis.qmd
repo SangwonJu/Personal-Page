@@ -176,8 +176,7 @@ korea_ngram <- korea_ngram  %>%
 
 The frequency of specific words and n-grams in each paragraphs.
 
-```{r, fig.align='center',fig.width=10,fig.height=7}
-#| column: page
+```{r, fig.align='center',fig.width=6,fig.height=4}
 (korea_tokenized %>%
     count(words) %>% 
     arrange(desc(n)) %>% 
@@ -185,11 +184,11 @@ The frequency of specific words and n-grams in each paragraphs.
     mutate(word = fct_reorder(words, n, .desc = F)) %>%
     ggplot(aes(n, word)) +
     geom_col(fill="red") +
-    geom_text(aes(label=n),hjust=-0.1,size=5,family="Uchen")+
+    geom_text(aes(label=n),hjust=-0.1,size=7,family="Uchen")+
     labs(y = NULL, title="Korea") +
     theme_bw()+
-    theme(plot.title = element_text(size=20),
-        text=element_text(family="Uchen",size=30)) -> a)
+    theme(plot.title = element_text(size=30),
+        text=element_text(family="Uchen",size=25)) -> a)
 
 (korea_ngram %>%
     count(words) %>% 
@@ -199,7 +198,7 @@ The frequency of specific words and n-grams in each paragraphs.
     ggplot(aes(n, word)) +
     geom_col(fill="red") +
     geom_text(aes(label=n),hjust=-0.1,size=8,family="Uchen")+
-    labs(y = NULL, title="Visualizing the frequency of n-grams") +
+    labs(y = NULL, title="Korea") +
     theme_bw()+
     theme(plot.title = element_text(size=20),
         text=element_text(family="Uchen",size=30)) -> a1)
@@ -208,7 +207,6 @@ The frequency of specific words and n-grams in each paragraphs.
 ## TF-IDF per paragraph
 
 ```{r, fig.align='center',fig.width=10,fig.height=10}
-#| column: page
 korea_tfidf <- korea_tokenized %>%
     mutate(id=glue::glue("{paragraph}-{sentence}")) %>% 
     group_by(paragraph) %>%
@@ -239,7 +237,8 @@ korea_dtm <- korea_dtm.old[rowTotals> 0, ] # Remove all docs without words
 
 The perplexity is the geometric mean of word likelihood. In 5-fold CV, we first estimate the model, usually called training model, for a given number of topics using 4 folds of the data and then use the left one fold of the data to calculate the perplexity. In calculating the perplexity, we set the model in LDA or CTM to be the training model and not to estimate the beta parameters.
 
-```{r warning = FALSE, message = FALSE}
+```{r warning = FALSE, message = FALSE, results='hide', fig.align='center',fig.width=10,fig.height=7}
+#| column: page
 korea_split <- initial_split(korea_tfidf, prop = 0.8)
 
 # Train
@@ -278,7 +277,9 @@ korea_topic_k_df %>%
     geom_line() +
     geom_point() +
     facet_wrap(~metric, scales = "free")+
-    theme_bw()
+    theme_bw() +
+    theme(plot.title = element_text(size=20),
+        text=element_text(family="Uchen",size=40))
 ```
 
 ### Cast LDA (k=4)
@@ -292,20 +293,21 @@ korea_lda <-  LDA(korea_dtm, k = 4,
 korea_tp_4 <- korea_lda %>%
     tidy(matrix = "beta") %>%
     group_by(term) %>%
-    slice_max(beta) %>% 
+    slice_max(beta) 
+
+korea_tp_4 %>% 
     group_by(topic) %>%
     slice_max(beta,n=10) %>%
-    arrange(topic) 
-
-korea_tp_4 %>%
-  mutate(term = reorder_within(term, beta, topic)) %>%
-  ggplot(aes(beta, term, fill = factor(topic))) +
-  geom_col(show.legend = FALSE) +
-  facet_wrap(~ topic, scales = "free",ncol=3) +
-  scale_y_reordered() +
-  theme_bw()+ 
-  theme(plot.title = element_text(size=20),
-        text=element_text(family="Uchen",size=20)) 
+    arrange(topic) %>%
+    mutate(term = reorder_within(term, beta, topic)) %>%
+    ggplot(aes(beta, term, fill = factor(topic))) +
+    geom_col(show.legend = FALSE) +
+    facet_wrap(~ topic, scales = "free",ncol=3) +
+    scale_y_reordered() +
+    theme_bw()+ 
+    theme(plot.title = element_text(size=20),
+          text=element_text(family="Uchen",size=40),
+          axis.text.x = element_text(size = 20)) 
 ```
 
 ### Cast LDA (k=5)
@@ -319,20 +321,21 @@ korea_lda <-  LDA(korea_dtm, k = 5,
 korea_tp_5 <- korea_lda %>%
     tidy(matrix = "beta") %>%
     group_by(term) %>%
-    slice_max(beta)  
+    slice_max(beta) 
 
 korea_tp_5 %>% 
     group_by(topic) %>%
     slice_max(beta,n=10) %>%
-    arrange(topic) %>% 
+    arrange(topic) %>%
     mutate(term = reorder_within(term, beta, topic)) %>%
     ggplot(aes(beta, term, fill = factor(topic))) +
     geom_col(show.legend = FALSE) +
     facet_wrap(~ topic, scales = "free",ncol=3) +
     scale_y_reordered() +
-    theme_bw()+
+    theme_bw()+ 
     theme(plot.title = element_text(size=20),
-          text=element_text(family="Uchen",size=20)) 
+          text=element_text(family="Uchen",size=40),
+          axis.text.x = element_text(size = 20)) 
 ```
 
 ### Cast LDA (k=6)
@@ -347,20 +350,20 @@ korea_tp_6 <- korea_lda %>%
     tidy(matrix = "beta") %>%
     group_by(term) %>%
     slice_max(beta) 
-    
 
-korea_tp_6 %>%
+korea_tp_6 %>% 
     group_by(topic) %>%
     slice_max(beta,n=10) %>%
-    arrange(topic) %>%     
+    arrange(topic) %>%
     mutate(term = reorder_within(term, beta, topic)) %>%
     ggplot(aes(beta, term, fill = factor(topic))) +
     geom_col(show.legend = FALSE) +
     facet_wrap(~ topic, scales = "free",ncol=3) +
     scale_y_reordered() +
-    theme_bw()+
+    theme_bw()+ 
     theme(plot.title = element_text(size=20),
-          text=element_text(family="Uchen",size=20)) 
+          text=element_text(family="Uchen",size=40),
+          axis.text.x = element_text(size = 20)) 
 ```
 
 ### Cast LDA (k=7)
@@ -374,27 +377,28 @@ korea_lda <-  LDA(korea_dtm, k = 7,
 korea_tp_7 <- korea_lda %>%
     tidy(matrix = "beta") %>%
     group_by(term) %>%
-    slice_max(beta)  
+    slice_max(beta) 
 
 korea_tp_7 %>% 
     group_by(topic) %>%
     slice_max(beta,n=10) %>%
-    arrange(topic)%>%
+    arrange(topic) %>%
     mutate(term = reorder_within(term, beta, topic)) %>%
     ggplot(aes(beta, term, fill = factor(topic))) +
     geom_col(show.legend = FALSE) +
-    facet_wrap(~ topic, scales = "free",ncol=4) +
+    facet_wrap(~ topic, scales = "free",ncol=3) +
     scale_y_reordered() +
-    theme_bw()+
+    theme_bw()+ 
     theme(plot.title = element_text(size=20),
-          text=element_text(family="Uchen",size=20)) 
+          text=element_text(family="Uchen",size=40),
+          axis.text.x = element_text(size = 20)) 
 ```
 
 ## Network Graph
 
 ### Pairwise Count
 
-```{r}
+```{r warning = FALSE, message = FALSE}
 korea_coocur <- korea_tfidf  %>%
     ungroup() %>% 
     arrange(desc(n)) %>%
@@ -417,7 +421,6 @@ nodes <- tibble(term=union(links$source,links$target)) %>%
 ### Building networks
 
 ```{r, fig.align='center',fig.width=10,fig.height=7}
-#| column: page
 korea_network <- graph_from_data_frame(d = links, vertices = nodes, directed = F)
 korea_g <- as_tbl_graph(korea_network)
 
@@ -438,9 +441,9 @@ korea_g %>%
     scale_edge_alpha(range = c(0.3,1)) +
     scale_size(range = c(5,20)) + 
     geom_node_point(aes(colour = community, size = degree)) +
-    geom_node_text(aes(label = name), repel = TRUE,family="Uchen") +
+    geom_node_text(aes(label = name, size=degree),size=8, repel = TRUE,family="Uchen") +
     theme_graph(base_family="Uchen") +
-    theme(text=element_text(family="Uchen",size=20)) +
+    theme(text=element_text(family="Uchen", size=40)) +
     guides(size="none")
 ```
 
@@ -456,12 +459,11 @@ korea_g %>%
     geom_edge_link(aes(alpha = weight,width=weight),
                    colour = "black", show.legend = FALSE) +
     scale_edge_width(range = c(0.05,1)) +
-    scale_edge_alpha(range = c(0.05,1)) +
-    scale_size(range = c(1,5)) + 
+    scale_edge_alpha(range = c(0.05,1)) + 
     geom_node_point(aes(colour = community, size = degree)) +
-    geom_node_text(aes(label = name), repel = TRUE,family="Uchen") +
+    geom_node_text(aes(label = name),size=8, repel = TRUE,family="Uchen") +
     theme_graph(base_family="Uchen") +
-    theme(text=element_text(family="Uchen",size=20)) +
+    theme(text=element_text(family="Uchen",size=40)) +
     guides(size="none")+
     facet_nodes(~ community,ncol=3)
 ```
@@ -550,20 +552,19 @@ germany_ngram <- germany_ngram  %>%
 
 The frequency of specific words and n-grams in each paragraphs.
 
-```{r, fig.align='center',fig.width=10,fig.height=7}
-#| column: page
+```{r, fig.align='center',fig.width=6,fig.height=4}
 (germany_tokenized %>%
     count(words) %>% 
     arrange(desc(n)) %>% 
-    top_n(30) %>% 
+    top_n(30) %>%
     mutate(word = fct_reorder(words, n, .desc = F)) %>%
     ggplot(aes(n, word)) +
-    geom_col(fill="darkgreen") +
-    geom_text(aes(label=n),hjust=-0.1,size=5,family="Uchen")+
+    geom_col(fill="#FFCC00") +
+    geom_text(aes(label=n),hjust=-0.1,size=7,family="Uchen")+
     labs(y = NULL, title="Germany") +
     theme_bw()+
-    theme(plot.title = element_text(size=20),
-        text=element_text(family="Uchen",size=30)) -> b)
+    theme(plot.title = element_text(size=30),
+        text=element_text(family="Uchen",size=25)) -> b)
 
 (germany_ngram %>%
     count(words) %>% 
@@ -571,9 +572,9 @@ The frequency of specific words and n-grams in each paragraphs.
     top_n(20) %>%
     mutate(word = fct_reorder(words, n, .desc = F)) %>%
     ggplot(aes(n, word)) +
-    geom_col(fill="darkgreen") +
+    geom_col(fill="#FFCC00") +
     geom_text(aes(label=n),hjust=-0.1,size=8,family="Uchen")+
-    labs(y = NULL, title="Visualizing the frequency of n-grams") +
+    labs(y = NULL, title="Germany") +
     theme_bw()+
     theme(plot.title = element_text(size=20),
         text=element_text(family="Uchen",size=30)) -> b1)
@@ -582,7 +583,6 @@ The frequency of specific words and n-grams in each paragraphs.
 ## TF-IDF per paragraph
 
 ```{r, fig.align='center',fig.width=10,fig.height=10}
-#| column: page
 germany_tfidf <- germany_tokenized %>%
     mutate(id=glue::glue("{paragraph}-{sentence}")) %>% 
     group_by(paragraph) %>%
@@ -615,7 +615,7 @@ germany_dtm <- germany_dtm.old[rowTotals> 0, ] # Remove all docs without words
 
 The perplexity is the geometric mean of word likelihood. In 5-fold CV, we first estimate the model, usually called training model, for a given number of topics using 4 folds of the data and then use the left one fold of the data to calculate the perplexity. In calculating the perplexity, we set the model in LDA or CTM to be the training model and not to estimate the beta parameters.
 
-```{r warning = FALSE, message = FALSE}
+```{r warning = FALSE, message = FALSE, results='hide', fig.align='center',fig.width=10,fig.height=7}
 germany_split <- initial_split(germany_tfidf, prop = 0.8)
 
 # Train
@@ -657,7 +657,9 @@ germany_topic_k_df %>%
     geom_line() +
     geom_point() +
     facet_wrap(~metric, scales = "free")+
-    theme_bw()
+    theme_bw() +
+    theme(plot.title = element_text(size=20),
+        text=element_text(family="Uchen",size=40))
 ```
 
 ### Cast LDA (k=4)
@@ -671,20 +673,21 @@ germany_lda <-  LDA(germany_dtm, k = 4,
 germany_tp_4 <- germany_lda %>%
     tidy(matrix = "beta") %>%
     group_by(term) %>%
-    slice_max(beta) %>% 
+    slice_max(beta) 
+
+germany_tp_4 %>% 
     group_by(topic) %>%
     slice_max(beta,n=10) %>%
-    arrange(topic) 
-
-germany_tp_4 %>%
-  mutate(term = reorder_within(term, beta, topic)) %>%
-  ggplot(aes(beta, term, fill = factor(topic))) +
-  geom_col(show.legend = FALSE) +
-  facet_wrap(~ topic, scales = "free",ncol=3) +
-  scale_y_reordered() +
-  theme_bw()+ 
-  theme(plot.title = element_text(size=20),
-        text=element_text(family="Uchen",size=20)) 
+    arrange(topic) %>%
+    mutate(term = reorder_within(term, beta, topic)) %>%
+    ggplot(aes(beta, term, fill = factor(topic))) +
+    geom_col(show.legend = FALSE) +
+    facet_wrap(~ topic, scales = "free",ncol=3) +
+    scale_y_reordered() +
+    theme_bw()+ 
+    theme(plot.title = element_text(size=20),
+          text=element_text(family="Uchen",size=40),
+          axis.text.x = element_text(size = 20))  
 ```
 
 ### Cast LDA (k=5)
@@ -698,20 +701,21 @@ germany_lda <-  LDA(germany_dtm, k = 5,
 germany_tp_5 <- germany_lda %>%
     tidy(matrix = "beta") %>%
     group_by(term) %>%
-    slice_max(beta)  
+    slice_max(beta) 
 
 germany_tp_5 %>% 
     group_by(topic) %>%
     slice_max(beta,n=10) %>%
-    arrange(topic) %>% 
+    arrange(topic) %>%
     mutate(term = reorder_within(term, beta, topic)) %>%
     ggplot(aes(beta, term, fill = factor(topic))) +
     geom_col(show.legend = FALSE) +
     facet_wrap(~ topic, scales = "free",ncol=3) +
     scale_y_reordered() +
-    theme_bw()+
+    theme_bw()+ 
     theme(plot.title = element_text(size=20),
-          text=element_text(family="Uchen",size=20)) 
+          text=element_text(family="Uchen",size=40),
+          axis.text.x = element_text(size = 20))  
 ```
 
 ### Cast LDA (k=6)
@@ -726,20 +730,20 @@ germany_tp_6 <- germany_lda %>%
     tidy(matrix = "beta") %>%
     group_by(term) %>%
     slice_max(beta) 
-    
 
-germany_tp_6 %>%
+germany_tp_6 %>% 
     group_by(topic) %>%
     slice_max(beta,n=10) %>%
-    arrange(topic) %>%     
+    arrange(topic) %>%
     mutate(term = reorder_within(term, beta, topic)) %>%
     ggplot(aes(beta, term, fill = factor(topic))) +
     geom_col(show.legend = FALSE) +
     facet_wrap(~ topic, scales = "free",ncol=3) +
     scale_y_reordered() +
-    theme_bw()+
+    theme_bw()+ 
     theme(plot.title = element_text(size=20),
-          text=element_text(family="Uchen",size=20)) 
+          text=element_text(family="Uchen",size=40),
+          axis.text.x = element_text(size = 20))  
 ```
 
 ### Cast LDA (k=7)
@@ -753,20 +757,21 @@ germany_lda <-  LDA(germany_dtm, k = 7,
 germany_tp_7 <- germany_lda %>%
     tidy(matrix = "beta") %>%
     group_by(term) %>%
-    slice_max(beta)  
+    slice_max(beta) 
 
 germany_tp_7 %>% 
     group_by(topic) %>%
     slice_max(beta,n=10) %>%
-    arrange(topic)%>%
+    arrange(topic) %>%
     mutate(term = reorder_within(term, beta, topic)) %>%
     ggplot(aes(beta, term, fill = factor(topic))) +
     geom_col(show.legend = FALSE) +
     facet_wrap(~ topic, scales = "free",ncol=4) +
     scale_y_reordered() +
-    theme_bw()+
+    theme_bw()+ 
     theme(plot.title = element_text(size=20),
-          text=element_text(family="Uchen",size=20)) 
+          text=element_text(family="Uchen",size=40),
+          axis.text.x = element_text(size = 20))  
 ```
 
 ## Network Graph
@@ -796,7 +801,6 @@ nodes <- tibble(term=union(links$source,links$target)) %>%
 ### Building networks
 
 ```{r, fig.align='center',fig.width=10,fig.height=7}
-#| column: page
 germany_network <- graph_from_data_frame(d = links, vertices = nodes, directed = F)
 germany_g <- as_tbl_graph(germany_network)
 
@@ -817,9 +821,9 @@ germany_g %>%
     scale_edge_alpha(range = c(0.3,1)) +
     scale_size(range = c(5,20)) + 
     geom_node_point(aes(colour = community, size = degree)) +
-    geom_node_text(aes(label = name), repel = TRUE,family="Uchen") +
+    geom_node_text(aes(label = name, size=degree),size=8, repel = TRUE,family="Uchen") +
     theme_graph(base_family="Uchen") +
-    theme(text=element_text(family="Uchen",size=20)) +
+    theme(text=element_text(family="Uchen", size=40)) +
     guides(size="none")
 ```
 
@@ -835,12 +839,11 @@ germany_g %>%
     geom_edge_link(aes(alpha = weight,width=weight),
                    colour = "black", show.legend = FALSE) +
     scale_edge_width(range = c(0.05,1)) +
-    scale_edge_alpha(range = c(0.05,1)) +
-    scale_size(range = c(1,5)) + 
+    scale_edge_alpha(range = c(0.05,1)) + 
     geom_node_point(aes(colour = community, size = degree)) +
-    geom_node_text(aes(label = name), repel = TRUE,family="Uchen") +
+    geom_node_text(aes(label = name),size=8, repel = TRUE,family="Uchen") +
     theme_graph(base_family="Uchen") +
-    theme(text=element_text(family="Uchen",size=20)) +
+    theme(text=element_text(family="Uchen",size=40)) +
     guides(size="none")+
     facet_nodes(~ community,ncol=3)
 ```
@@ -924,20 +927,19 @@ finland_ngram <- finland_ngram  %>%
 
 The frequency of specific words and n-grams in each paragraphs.
 
-```{r, fig.align='center',fig.width=10,fig.height=7}
-#| column: page
+```{r, fig.align='center',fig.width=6,fig.height=4}
 (finland_tokenized %>%
     count(words) %>% 
     arrange(desc(n)) %>% 
     top_n(30) %>%
     mutate(word = fct_reorder(words, n, .desc = F)) %>%
     ggplot(aes(n, word)) +
-    geom_col(fill="orange") +
-    geom_text(aes(label=n),hjust=-0.1,size=5,family="Uchen")+
+    geom_col(fill="#003580") +
+    geom_text(aes(label=n),hjust=-0.1,size=7,family="Uchen")+
     labs(y = NULL, title="Finland") +
     theme_bw()+
-    theme(plot.title = element_text(size=20),
-        text=element_text(family="Uchen",size=30)) -> c)
+    theme(plot.title = element_text(size=30),
+        text=element_text(family="Uchen",size=25)) -> c)
 
 (finland_ngram %>%
     count(words) %>% 
@@ -945,9 +947,9 @@ The frequency of specific words and n-grams in each paragraphs.
     top_n(20) %>%
     mutate(word = fct_reorder(words, n, .desc = F)) %>%
     ggplot(aes(n, word)) +
-    geom_col(fill="orange") +
+    geom_col(fill="#003580") +
     geom_text(aes(label=n),hjust=-0.1,size=8,family="Uchen")+
-    labs(y = NULL, title="Visualizing the frequency of n-grams") +
+    labs(y = NULL, title="Finland") +
     theme_bw()+
     theme(plot.title = element_text(size=20),
         text=element_text(family="Uchen",size=30)) -> c1)
@@ -956,7 +958,6 @@ The frequency of specific words and n-grams in each paragraphs.
 ## TF-IDF per paragraph
 
 ```{r, fig.align='center',fig.width=10,fig.height=10}
-#| column: page
 finland_tfidf <- finland_tokenized %>%
     mutate(id=glue::glue("{paragraph}-{sentence}")) %>% 
     group_by(paragraph) %>%
@@ -1000,20 +1001,21 @@ finland_lda <-  LDA(finland_dtm, k = 4,
 finland_tp_4 <- finland_lda %>%
     tidy(matrix = "beta") %>%
     group_by(term) %>%
-    slice_max(beta) %>% 
+    slice_max(beta) 
+
+finland_tp_4 %>% 
     group_by(topic) %>%
     slice_max(beta,n=10) %>%
-    arrange(topic) 
-
-finland_tp_4 %>%
-  mutate(term = reorder_within(term, beta, topic)) %>%
-  ggplot(aes(beta, term, fill = factor(topic))) +
-  geom_col(show.legend = FALSE) +
-  facet_wrap(~ topic, scales = "free",ncol=3) +
-  scale_y_reordered() +
-  theme_bw()+ 
-  theme(plot.title = element_text(size=20),
-        text=element_text(family="Uchen",size=20)) 
+    arrange(topic) %>%
+    mutate(term = reorder_within(term, beta, topic)) %>%
+    ggplot(aes(beta, term, fill = factor(topic))) +
+    geom_col(show.legend = FALSE) +
+    facet_wrap(~ topic, scales = "free",ncol=3) +
+    scale_y_reordered() +
+    theme_bw()+ 
+    theme(plot.title = element_text(size=20),
+          text=element_text(family="Uchen",size=40),
+          axis.text.x = element_text(size = 20))  
 ```
 
 ### Cast LDA (k=5)
@@ -1027,20 +1029,21 @@ finland_lda <-  LDA(finland_dtm, k = 5,
 finland_tp_5 <- finland_lda %>%
     tidy(matrix = "beta") %>%
     group_by(term) %>%
-    slice_max(beta)  
+    slice_max(beta) 
 
 finland_tp_5 %>% 
     group_by(topic) %>%
     slice_max(beta,n=10) %>%
-    arrange(topic) %>% 
+    arrange(topic) %>%
     mutate(term = reorder_within(term, beta, topic)) %>%
     ggplot(aes(beta, term, fill = factor(topic))) +
     geom_col(show.legend = FALSE) +
     facet_wrap(~ topic, scales = "free",ncol=3) +
     scale_y_reordered() +
-    theme_bw()+
+    theme_bw()+ 
     theme(plot.title = element_text(size=20),
-          text=element_text(family="Uchen",size=20)) 
+          text=element_text(family="Uchen",size=40),
+          axis.text.x = element_text(size = 20))  
 ```
 
 ### Cast LDA (k=6)
@@ -1055,20 +1058,20 @@ finland_tp_6 <- finland_lda %>%
     tidy(matrix = "beta") %>%
     group_by(term) %>%
     slice_max(beta) 
-    
 
-finland_tp_6 %>%
+finland_tp_6 %>% 
     group_by(topic) %>%
     slice_max(beta,n=10) %>%
-    arrange(topic) %>%     
+    arrange(topic) %>%
     mutate(term = reorder_within(term, beta, topic)) %>%
     ggplot(aes(beta, term, fill = factor(topic))) +
     geom_col(show.legend = FALSE) +
     facet_wrap(~ topic, scales = "free",ncol=3) +
     scale_y_reordered() +
-    theme_bw()+
+    theme_bw()+ 
     theme(plot.title = element_text(size=20),
-          text=element_text(family="Uchen",size=20)) 
+          text=element_text(family="Uchen",size=40),
+          axis.text.x = element_text(size = 20))  
 ```
 
 ### Cast LDA (k=7)
@@ -1082,20 +1085,21 @@ finland_lda <-  LDA(finland_dtm, k = 7,
 finland_tp_7 <- finland_lda %>%
     tidy(matrix = "beta") %>%
     group_by(term) %>%
-    slice_max(beta)  
+    slice_max(beta) 
 
 finland_tp_7 %>% 
     group_by(topic) %>%
     slice_max(beta,n=10) %>%
-    arrange(topic)%>%
+    arrange(topic) %>%
     mutate(term = reorder_within(term, beta, topic)) %>%
     ggplot(aes(beta, term, fill = factor(topic))) +
     geom_col(show.legend = FALSE) +
     facet_wrap(~ topic, scales = "free",ncol=4) +
     scale_y_reordered() +
-    theme_bw()+
+    theme_bw()+ 
     theme(plot.title = element_text(size=20),
-          text=element_text(family="Uchen",size=20)) 
+          text=element_text(family="Uchen",size=40),
+          axis.text.x = element_text(size = 20))  
 ```
 
 ## Network Graph
@@ -1125,7 +1129,7 @@ nodes <- tibble(term=union(links$source,links$target)) %>%
 ### Building networks
 
 ```{r, fig.align='center',fig.width=10,fig.height=7}
-#| column: page
+
 finland_network <- graph_from_data_frame(d = links, vertices = nodes, directed = F)
 finland_g <- as_tbl_graph(finland_network)
 
@@ -1139,16 +1143,16 @@ finland_g %>%
     activate("nodes") %>%
     mutate(degree = centrality_degree(),
              community = as.factor(topic)) %>%
-    ggraph(layout = 'kk',maxiter=200 * vcount(.)) +
+    ggraph(layout = 'kk') +
     geom_edge_link(aes(alpha = weight,width=weight),
                    colour = "black", show.legend = FALSE) +
     scale_edge_width(range = c(0.05,1.5)) +
     scale_edge_alpha(range = c(0.3,1)) +
     scale_size(range = c(5,20)) + 
     geom_node_point(aes(colour = community, size = degree)) +
-    geom_node_text(aes(label = name), repel = TRUE,family="Uchen") +
+    geom_node_text(aes(label = name, size=degree),size=8, repel = TRUE,family="Uchen") +
     theme_graph(base_family="Uchen") +
-    theme(text=element_text(family="Uchen",size=20)) +
+    theme(text=element_text(family="Uchen", size=40)) +
     guides(size="none")
 ```
 
@@ -1164,12 +1168,11 @@ finland_g %>%
     geom_edge_link(aes(alpha = weight,width=weight),
                    colour = "black", show.legend = FALSE) +
     scale_edge_width(range = c(0.05,1)) +
-    scale_edge_alpha(range = c(0.05,1)) +
-    scale_size(range = c(1,5)) + 
+    scale_edge_alpha(range = c(0.05,1)) + 
     geom_node_point(aes(colour = community, size = degree)) +
-    geom_node_text(aes(label = name), repel = TRUE,family="Uchen") +
+    geom_node_text(aes(label = name),size=8, repel = TRUE,family="Uchen") +
     theme_graph(base_family="Uchen") +
-    theme(text=element_text(family="Uchen",size=20)) +
+    theme(text=element_text(family="Uchen",size=40)) +
     guides(size="none")+
     facet_nodes(~ community,ncol=3)
 ```
@@ -1188,7 +1191,6 @@ links=finland_coocur %>%
     rename(source="topic1",target="topic2")
 
 finland_network <- graph_from_data_frame(d = links, directed = F)
-simplify(finland_network)
 finland_g <- as_tbl_graph(simplify(finland_network))
 
 finland_g %>%
@@ -1200,10 +1202,10 @@ finland_g %>%
     scale_edge_alpha(range = c(0.3,1)) +
     scale_size(range = c(5,20)) + 
     geom_node_point(aes(size = degree, color="blue")) +
-    geom_node_text(aes(label = name), repel = TRUE,family="Uchen") +
+    geom_node_text(aes(label = name), repel = TRUE,family="Uchen",size=10, max.overlaps = Inf) +
     theme_graph(base_family="Uchen") +
-    theme(text=element_text(family="Uchen",size=20)) +
-    guides(size="none")
+    theme(text=element_text(family="Uchen",size=40)) +
+    guides(size="none",color="none")
 
 ```
 
@@ -1258,10 +1260,11 @@ total_tokenized %>%
     geom_col(aes(fill=key),show.legend = FALSE) +
     scale_y_reordered() +
     facet_wrap(~key, nrow = 1, scales = "free") +
-    labs(y = NULL, title="Comparing Tf-idf of Three Countries") +
+    labs(y = NULL) +
     theme_bw()+
-    theme(plot.title = element_text(size=20),
-        text=element_text(family="Uchen",size=25)) 
+    theme(plot.title = element_text(size=40),
+          text=element_text(family="Uchen",size=40),
+          axis.text.x = element_text(size = 20))  
 
 ```
 
@@ -1290,7 +1293,7 @@ compare_three %>%
     ggplot(aes(x = proportion, y = Korea, color = abs(Korea - proportion))) +
     geom_abline(color = "darkgreen", lty = 2, size=1.5) +
     geom_jitter(alpha = 0.1, size = 1.5, width = 0.3, height = 0.3) +
-    geom_text(aes(label = words), check_overlap = TRUE, vjust = 1.5, family="Uchen") +
+    geom_text(aes(label = words), check_overlap = TRUE, vjust = 1.5, family="Uchen",size=10) +
     scale_x_log10(labels = percent_format()) +
     scale_y_log10(labels = percent_format()) +
     scale_color_gradient(limits = c(0.001, 0.01), 
@@ -1299,14 +1302,14 @@ compare_three %>%
     theme(legend.position="none") +
     labs(y = "Korea", x = NULL, title="Comparing the word frequencies of Three Countries") +
     theme_bw() +
-    theme(plot.title = element_text(size=20),
+    theme(plot.title = element_text(size=40),
           text=element_text(family="Uchen",size=25))+
     guides(color="none")
 ```
 
 ## Correlation of words
 
-```{r}
+```{r, warning = FALSE, message = FALSE}
 cor_germany=cor.test(data = compare_three[compare_three$key == "Germany",],
          ~ proportion + Korea) %>% tidy() %>% mutate(country="Germany",.before = estimate)
 cor_finland=cor.test(data = compare_three[compare_three$key == "Finland",],
