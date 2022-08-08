@@ -1,0 +1,1320 @@
+---
+title: "Textmining on SDG VNRs of ROK, Germany, Finland"
+format: 
+    html:
+        code-fold: true
+author: "Sangwon Ju, SNU GSPA" 
+knitr:
+  opts_knit:
+    verbose: true
+date: 2022/08/06
+---
+
+1.  기술통계 분석
+
+-   TF-IDF (Term Frequency - Inverse Document Frequency): 단어 빈도 - 역 문서 빈도 총 문서 수 대비 적게 등장한 단어가 중요한 단어 특정 문서 안에서 많이 등장한다고 해도 중요도가 올라가지는 않음
+
+-   TF: 특정 문서 D에서 특정 단어 T의 등장 횟수
+
+-   DF: 특정 단어 T가 등장한 문서의 수
+
+-   IDF: DF에 반비례 하는 수. ln(총문서수/(DF))
+
+-   TF-IDF: TF \* IDF 희귀하면서도 특정 텍스트에서 자주 사용된 단어 (TF)는 그 텍스트에서 중요함
+
+2.  단어간 혹은 기사간 상관관계
+
+-   동시 출현(Co-Occurrence) 단어 분석 문장 혹은 기사에 함께 사용된 단어는 어떤 단어일지 분석하는 것. 단어의 "맥락"을 파악하기 위하여 어떤 단어들이 함께 쓰였는지를 알아야 함. 의미를 가진 단어(명사, 동사, 형용사)등을 추출하여 어떤 단어들이 함께 빈번하게 쓰였는지 분석해보는게 필요함.
+
+3.  연관 규칙 분석 (Association Rules)
+
+-   장바구니 분석 Apriori Algorithm(Agrawal et al., 1993): 어떤 단어가 다른 단어들과의 연관규칙을 가지는지를 추출 하는 방식
+
+4.  **토픽 모델링**
+
+-   토픽 모델링은 문서와 단어로 구성된 행렬(DTM)을 기반으로 문서에 잠재되어 (Latent)있다고 가정된 토픽의 등장확률을 추정하는 일련의 통계적 텍스트 처리기법을 일컫는다. (Blei, 2014; Blei and Lafferty, 2007;Blei, Ng and Jordan, 2003) DTM을 활용하여 주제-확률 분포, 단어-확률 분포를 구한뒤 잠재 주제를 찾는 LDA나 Singular Value Decomposition을 통해 차원 축소를 하는 방법이 있다.
+
+-   **LDA(Latent Dirichlet Allocation):**
+
+    **이 문서에서는 어떤 주제들이 오가고 있을까?**
+
+    PLSA를 조건부 확률로 확장시킨 기법으로 잠재 주제의 확률적 분포에 대한 PLSA의 한계점을 보완한 모델이다. LDA모델은 무작위로 섞여있는 대량의 문서에서 단어들의 패턴을 추론하여 각 토픽의 특성을 도출하는데 용이하며, 텍스트 데이터의 의미구조를 파악하기에 적합한 방법 중 하나이다. 한 문서는 여러가지 토픽으로 이루어지고, 토픽은 여러 단어를 혼합하여 구성된다.
+
+-   1개의 토픽은 여러 단어(서로 다른 확률을 가진)로 구성.
+
+-   1개의 단어는 여러 토픽에서 서로 다른 확률을 가짐.
+
+-   delta는 문장이 각 토픽에 등장할 확률, beta는 단어가 각 토픽에 등장할 확률
+
+# Loading Package
+
+```{r warning = FALSE, message = FALSE}
+pacman::p_load("reticulate","tidyverse","tidymodels",
+               "tidytext","lda","readr","igraph","forcats",
+               "sna","ergm","network","stringr","magrittr","showtext",
+               "tokenizers","janeaustenr","forcats","RColorBrewer",
+               "viridis","stopwords","purrr","widyr","textmineR","stm",
+               "ggraph","tidygraph","ggfortify","ggthemes","cowplot","fs",
+               "knitr","kableExtra","ggrepel","grid","gridExtra","topicmodels",
+               "scales")
+
+# Font Setting
+font_add_google(name="Uchen") #fonts.google.com에서 고르시면 됨
+showtext_auto()
+```
+
+# Setting Working Directory
+
+```{r}
+data_folder = "c:/Users/jsw06/OneDrive - SNU/r/vnr"
+ger_path = fs::path(data_folder, "germany.txt")
+fin_path = fs::path(data_folder, "finland.txt")
+kor_path = fs::path(data_folder, "korea.txt")
+```
+
+표제어 추출을 통해 어근을 추출하고 토크나이징을 통해서 토픽 추출 용이하게 만들기.
+
+```{r warning = FALSE, message = FALSE}
+sentence_word1=function(x){
+  x=as.character(x)
+  a=tibble(words=tokenize_sentences(x) %>%
+             unlist() %>% tibble(words=.),
+    sentence=1:nrow(words))
+  return(a)}
+
+sentence_word2=function(x){
+  x=as.character(x)
+  a=tibble(words=textstem::lemmatize_strings(x) %>% 
+               tokenize_words(stopwords =  as.vector(stop_words$word),
+                                strip_numeric = T) %>%  
+               unlist())
+  return(a)}
+
+sentence_word3=function(x){
+  x=as.character(x)
+  a=tibble(words=textstem::lemmatize_strings(x) %>% 
+               tokenize_ngrams(.,n = 2, n_min = 2,
+               stopwords = as.vector(stop_words$word)) %>%
+               unlist())
+  return(a)}
+```
+
+# Preprocess: Korea VNR
+
+```{r}
+korea <-  readLines(kor_path) %>%
+  str_flatten(collapse = " ") %>%
+  str_replace_all(pattern="//", " // ") %>%
+  str_split(pattern="//") %>%
+  unlist() %>%
+  str_squish() %>%
+  tibble(paragraph=as_factor(1:length(.)),
+         text=.) 
+```
+
+## Tokenizing words
+
+Break the text into individual tokens (a process called tokenization) and transform it to a tidy data structure.
+
+```{r}
+korea_tokenized <- korea %>% 
+   mutate(words=map(text, sentence_word1)) %>%
+   select(-text) %>%
+   unnest(words) %>% 
+   transmute(paragraph,sentence,words) %>%
+   mutate(words=map(words, sentence_word2)) %>%
+   unnest(words) 
+```
+
+## n-grams
+
+An n-gram (sometimes written "ngram") is a term in linguistics for a contiguous sequence of\
+n items from a given sequence of text or speech. The item can be phonemes, syllables, letters, or words depending on the application, but when most people talk about n-grams, they mean a group of\
+n words.
+
+```{r}
+korea_ngram  <-  korea %>% 
+   mutate(words=map(text, sentence_word1)) %>%
+   select(-text) %>%
+   unnest(words) %>% 
+   transmute(paragraph,sentence,words) %>%
+   mutate(words=map(words, sentence_word3)) %>%
+   unnest(words) 
+```
+
+## Remove inadequate words for analysis
+
+```{r}
+korea_tokenized <- korea_tokenized  %>% 
+    filter(!str_detect(words,pattern="[0-9]")) %>%  
+    filter(!str_detect(words,pattern="\\d+[a-z]*")) %>% 
+    filter(!str_detect(words,pattern="[a-z]*\\d+")) %>% 
+    filter(!str_detect(words,pattern="kor[a-z]*")) %>%
+    filter(!str_detect(words,pattern="rok[a-z]*")) %>% 
+    filter(!str_detect(words,pattern="government\\w*")) %>%
+    filter(!str_detect(words,pattern="key")) %>%
+    filter(!str_detect(words,pattern="sdg*")) %>% 
+    filter(!str_detect(words,pattern="sustain")) %>% 
+    filter(!str_detect(words,pattern="develop\\w*")) %>%
+    filter(!str_detect(words,pattern="progra*")) %>%
+    filter(!str_detect(words,pattern="agend*"))
+
+korea_ngram <- korea_ngram  %>% 
+    filter(!str_detect(words,pattern="[0-9]")) %>%  
+    filter(!str_detect(words,pattern="\\d+[a-z]*")) %>% 
+    filter(!str_detect(words,pattern="[a-z]*\\d+")) %>% 
+    filter(!str_detect(words,pattern="kor[a-z]*")) %>%
+    filter(!str_detect(words,pattern="rok[a-z]*")) %>% 
+    filter(!str_detect(words,pattern="government\\w*")) %>%
+    filter(!str_detect(words,pattern="key")) %>%
+    filter(!str_detect(words,pattern="sdg*")) %>%
+    filter(!str_detect(words,pattern="progra*")) %>%
+    filter(!str_detect(words,pattern="agend*"))
+```
+
+## Frequency table
+
+The frequency of specific words and n-grams in each paragraphs.
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+(korea_tokenized %>%
+    count(words) %>% 
+    arrange(desc(n)) %>% 
+    top_n(30) %>%
+    mutate(word = fct_reorder(words, n, .desc = F)) %>%
+    ggplot(aes(n, word)) +
+    geom_col(fill="red") +
+    geom_text(aes(label=n),hjust=-0.1,size=5,family="Uchen")+
+    labs(y = NULL, title="Korea") +
+    theme_bw()+
+    theme(plot.title = element_text(size=20),
+        text=element_text(family="Uchen",size=30)) -> a)
+
+(korea_ngram %>%
+    count(words) %>% 
+    arrange(desc(n)) %>% 
+    top_n(20) %>%
+    mutate(word = fct_reorder(words, n, .desc = F)) %>%
+    ggplot(aes(n, word)) +
+    geom_col(fill="red") +
+    geom_text(aes(label=n),hjust=-0.1,size=8,family="Uchen")+
+    labs(y = NULL, title="Visualizing the frequency of n-grams") +
+    theme_bw()+
+    theme(plot.title = element_text(size=20),
+        text=element_text(family="Uchen",size=30)) -> a1)
+```
+
+## TF-IDF per paragraph
+
+```{r, fig.align='center',fig.width=10,fig.height=10}
+#| column: page
+korea_tfidf <- korea_tokenized %>%
+    mutate(id=glue::glue("{paragraph}-{sentence}")) %>% 
+    group_by(paragraph) %>%
+    count(paragraph,words) %>% 
+    bind_tf_idf(words, paragraph, n) %>% 
+    arrange(desc(tf_idf)) %>% 
+    relocate(words,.before=paragraph) 
+      
+korea_tfidf %>% 
+    filter(n>=2)%>% 
+    head(20) %>% 
+    kbl() %>% 
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
+
+## Topic modeling
+
+```{r}
+set.seed(2022)
+korea_tfidf  %>%
+  cast_dtm(paragraph, words, n) -> korea_dtm.old
+
+rowTotals <- apply(korea_dtm.old, 1, sum) # Find the sum of words in each Document
+korea_dtm <- korea_dtm.old[rowTotals> 0, ] # Remove all docs without words
+```
+
+### Using perplexity for hold out set
+
+The perplexity is the geometric mean of word likelihood. In 5-fold CV, we first estimate the model, usually called training model, for a given number of topics using 4 folds of the data and then use the left one fold of the data to calculate the perplexity. In calculating the perplexity, we set the model in LDA or CTM to be the training model and not to estimate the beta parameters.
+
+```{r warning = FALSE, message = FALSE}
+korea_split <- initial_split(korea_tfidf, prop = 0.8)
+
+# Train
+korea_split_train <- training(korea_split)
+korea_split_train  %>%
+    cast_dtm(paragraph, words, n) -> korea_train_dtm.old
+rowTotals <- apply(korea_train_dtm.old, 1, sum) # Find the sum of words in each Document
+korea_train_dtm <- korea_train_dtm.old[rowTotals> 0, ] # Remove all docs without words
+
+# Test
+korea_split_test <- testing(korea_split)
+korea_split_test  %>%
+    cast_dtm(paragraph, words, n) -> korea_valid_dtm.old
+rowTotals <- apply(korea_valid_dtm.old, 1, sum) # Find the sum of words in each Document
+korea_valid_dtm <- korea_valid_dtm.old[rowTotals> 0, ] # Remove all docs without words
+
+loglik_v     <- vector("numeric", 20)
+perplexity_v <- vector("numeric", 20)
+
+for (i in 2:20) {
+    cat("... ", i, "\n")
+    tmp_mod  <- LDA(korea_train_dtm, k=i, method="Gibbs", control=list(alpha=0.5, iter=1000, seed=2020, thin=3))
+    loglik_v[i] <- logLik(tmp_mod)
+    perplexity_v[i] <- perplexity(tmp_mod, newdata = korea_valid_dtm)
+}
+
+korea_topic_k_df <- tibble(
+    topic_k = 1:20,
+    loglik = loglik_v,
+    perplexity = perplexity_v)
+
+korea_topic_k_df %>%
+    filter(topic_k != 1) %>%
+    gather(metric, value, -topic_k) %>%
+    ggplot(aes(x=topic_k, y=value)) +
+    geom_line() +
+    geom_point() +
+    facet_wrap(~metric, scales = "free")+
+    theme_bw()
+```
+
+### Cast LDA (k=4)
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+korea_lda <-  LDA(korea_dtm, k = 4,
+              method="Gibbs",
+              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
+
+korea_tp_4 <- korea_lda %>%
+    tidy(matrix = "beta") %>%
+    group_by(term) %>%
+    slice_max(beta) %>% 
+    group_by(topic) %>%
+    slice_max(beta,n=10) %>%
+    arrange(topic) 
+
+korea_tp_4 %>%
+  mutate(term = reorder_within(term, beta, topic)) %>%
+  ggplot(aes(beta, term, fill = factor(topic))) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~ topic, scales = "free",ncol=3) +
+  scale_y_reordered() +
+  theme_bw()+ 
+  theme(plot.title = element_text(size=20),
+        text=element_text(family="Uchen",size=20)) 
+```
+
+### Cast LDA (k=5)
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+korea_lda <-  LDA(korea_dtm, k = 5,
+              method="Gibbs",
+              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
+
+korea_tp_5 <- korea_lda %>%
+    tidy(matrix = "beta") %>%
+    group_by(term) %>%
+    slice_max(beta)  
+
+korea_tp_5 %>% 
+    group_by(topic) %>%
+    slice_max(beta,n=10) %>%
+    arrange(topic) %>% 
+    mutate(term = reorder_within(term, beta, topic)) %>%
+    ggplot(aes(beta, term, fill = factor(topic))) +
+    geom_col(show.legend = FALSE) +
+    facet_wrap(~ topic, scales = "free",ncol=3) +
+    scale_y_reordered() +
+    theme_bw()+
+    theme(plot.title = element_text(size=20),
+          text=element_text(family="Uchen",size=20)) 
+```
+
+### Cast LDA (k=6)
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+korea_lda <-  LDA(korea_dtm, k = 6,
+              method="Gibbs",
+              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
+
+korea_tp_6 <- korea_lda %>%
+    tidy(matrix = "beta") %>%
+    group_by(term) %>%
+    slice_max(beta) 
+    
+
+korea_tp_6 %>%
+    group_by(topic) %>%
+    slice_max(beta,n=10) %>%
+    arrange(topic) %>%     
+    mutate(term = reorder_within(term, beta, topic)) %>%
+    ggplot(aes(beta, term, fill = factor(topic))) +
+    geom_col(show.legend = FALSE) +
+    facet_wrap(~ topic, scales = "free",ncol=3) +
+    scale_y_reordered() +
+    theme_bw()+
+    theme(plot.title = element_text(size=20),
+          text=element_text(family="Uchen",size=20)) 
+```
+
+### Cast LDA (k=7)
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+korea_lda <-  LDA(korea_dtm, k = 7,
+              method="Gibbs",
+              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
+
+korea_tp_7 <- korea_lda %>%
+    tidy(matrix = "beta") %>%
+    group_by(term) %>%
+    slice_max(beta)  
+
+korea_tp_7 %>% 
+    group_by(topic) %>%
+    slice_max(beta,n=10) %>%
+    arrange(topic)%>%
+    mutate(term = reorder_within(term, beta, topic)) %>%
+    ggplot(aes(beta, term, fill = factor(topic))) +
+    geom_col(show.legend = FALSE) +
+    facet_wrap(~ topic, scales = "free",ncol=4) +
+    scale_y_reordered() +
+    theme_bw()+
+    theme(plot.title = element_text(size=20),
+          text=element_text(family="Uchen",size=20)) 
+```
+
+## Network Graph
+
+### Pairwise Count
+
+```{r}
+korea_coocur <- korea_tfidf  %>%
+    ungroup() %>% 
+    arrange(desc(n)) %>%
+    rename(term=words) %>%
+    pairwise_count(term, paragraph, sort = TRUE,upper = F) 
+```
+
+### Building links and nodes
+
+```{r}
+links <- korea_coocur %>%
+    top_n(100) %>%
+    rename(source="item1",target="item2",weight="n")
+
+nodes <- tibble(term=union(links$source,links$target)) %>%
+    left_join(y=korea_tp_6,by="term") %>%
+    select(nodes="term",topic)
+```
+
+### Building networks
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+korea_network <- graph_from_data_frame(d = links, vertices = nodes, directed = F)
+korea_g <- as_tbl_graph(korea_network)
+
+```
+
+### Network Graph
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+korea_g %>%
+    activate("nodes") %>%
+    mutate(degree = centrality_degree(),
+             community = as.factor(topic)) %>%
+    ggraph(layout = 'kk') +
+    geom_edge_link(aes(alpha = weight,width=weight),
+                   colour = "black", show.legend = FALSE) +
+    scale_edge_width(range = c(0.05,1.5)) +
+    scale_edge_alpha(range = c(0.3,1)) +
+    scale_size(range = c(5,20)) + 
+    geom_node_point(aes(colour = community, size = degree)) +
+    geom_node_text(aes(label = name), repel = TRUE,family="Uchen") +
+    theme_graph(base_family="Uchen") +
+    theme(text=element_text(family="Uchen",size=20)) +
+    guides(size="none")
+```
+
+### Network Graph per topic
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+korea_g %>%
+    activate("nodes") %>%
+    mutate(degree = centrality_degree(),
+             community = as.factor(topic)) %>%
+    ggraph(layout = 'kk') +
+    geom_edge_link(aes(alpha = weight,width=weight),
+                   colour = "black", show.legend = FALSE) +
+    scale_edge_width(range = c(0.05,1)) +
+    scale_edge_alpha(range = c(0.05,1)) +
+    scale_size(range = c(1,5)) + 
+    geom_node_point(aes(colour = community, size = degree)) +
+    geom_node_text(aes(label = name), repel = TRUE,family="Uchen") +
+    theme_graph(base_family="Uchen") +
+    theme(text=element_text(family="Uchen",size=20)) +
+    guides(size="none")+
+    facet_nodes(~ community,ncol=3)
+```
+
+# Preprocess: Germany VNR
+
+```{r}
+germany<-readLines(ger_path) %>%
+  str_flatten(collapse = " ") %>%
+  str_replace_all(pattern="//", " // ") %>%
+  str_split(pattern="//") %>%
+  unlist() %>%
+  str_squish() %>%
+  tibble(paragraph=as_factor(1:length(.)),
+         text=.) 
+```
+
+## Tokenizing words
+
+break the text into individual tokens (a process called tokenization) and transform it to a tidy data structure.
+
+```{r}
+germany_tokenized <- germany %>% 
+   mutate(words=map(text, sentence_word1)) %>%
+   select(-text) %>%
+   unnest(words) %>% 
+   transmute(paragraph,sentence,words) %>%
+   mutate(words=map(words, sentence_word2)) %>%
+   unnest(words) 
+```
+
+## n-grams
+
+An n-gram (sometimes written "ngram") is a term in linguistics for a contiguous sequence of\
+n items from a given sequence of text or speech. The item can be phonemes, syllables, letters, or words depending on the application, but when most people talk about n-grams, they mean a group of\
+n words.
+
+```{r}
+germany_ngram  <-  germany %>% 
+   mutate(words=map(text, sentence_word1)) %>%
+   select(-text) %>%
+   unnest(words) %>% 
+   transmute(paragraph,sentence,words) %>%
+   mutate(words=map(words, sentence_word3)) %>%
+   unnest(words) 
+```
+
+## Remove inadequate words for analysis
+
+```{r}
+germany_tokenized <- germany_tokenized  %>% 
+    filter(!str_detect(words,pattern="[0-9]")) %>%  
+    filter(!str_detect(words,pattern="germa[a-z]*")) %>%
+    filter(!str_detect(words,pattern="eur[a-z]*")) %>% 
+    filter(!str_detect(words,pattern="government\\w*")) %>%
+    filter(!str_detect(words,pattern="key")) %>%
+    filter(!str_detect(words,pattern="sdg*")) %>% 
+    filter(!str_detect(words,pattern="sustain\\w*")) %>% 
+    filter(!str_detect(words,pattern="develop\\w*")) %>% 
+    filter(!str_detect(words,pattern="eu*")) %>%
+    filter(!str_detect(words,pattern="milli*")) %>%
+    filter(!str_detect(words,pattern="progra*")) %>%
+    filter(!str_detect(words,pattern="inwh*")) %>%
+    filter(!str_detect(words,pattern="agend*")) %>% 
+    filter(!str_detect(words,pattern="billi*"))
+
+
+germany_ngram <- germany_ngram  %>% 
+    filter(!str_detect(words,pattern="[0-9]")) %>%  
+    filter(!str_detect(words,pattern="germa[a-z]*")) %>%
+    filter(!str_detect(words,pattern="eur[a-z]*")) %>% 
+    filter(!str_detect(words,pattern="government\\w*")) %>%
+    filter(!str_detect(words,pattern="key")) %>%
+    filter(!str_detect(words,pattern="sdg*")) %>% 
+    filter(!str_detect(words,pattern="sustain\\w*")) %>% 
+    filter(!str_detect(words,pattern="develop\\w*")) %>% 
+    filter(!str_detect(words,pattern="eu*")) %>%
+    filter(!str_detect(words,pattern="milli*")) %>%
+    filter(!str_detect(words,pattern="progra*")) %>%
+    filter(!str_detect(words,pattern="inwh*")) %>%
+    filter(!str_detect(words,pattern="agend*"))%>% 
+    filter(!str_detect(words,pattern="billi*"))
+```
+
+## Frequency table
+
+The frequency of specific words and n-grams in each paragraphs.
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+(germany_tokenized %>%
+    count(words) %>% 
+    arrange(desc(n)) %>% 
+    top_n(30) %>% 
+    mutate(word = fct_reorder(words, n, .desc = F)) %>%
+    ggplot(aes(n, word)) +
+    geom_col(fill="darkgreen") +
+    geom_text(aes(label=n),hjust=-0.1,size=5,family="Uchen")+
+    labs(y = NULL, title="Germany") +
+    theme_bw()+
+    theme(plot.title = element_text(size=20),
+        text=element_text(family="Uchen",size=30)) -> b)
+
+(germany_ngram %>%
+    count(words) %>% 
+    arrange(desc(n)) %>% 
+    top_n(20) %>%
+    mutate(word = fct_reorder(words, n, .desc = F)) %>%
+    ggplot(aes(n, word)) +
+    geom_col(fill="darkgreen") +
+    geom_text(aes(label=n),hjust=-0.1,size=8,family="Uchen")+
+    labs(y = NULL, title="Visualizing the frequency of n-grams") +
+    theme_bw()+
+    theme(plot.title = element_text(size=20),
+        text=element_text(family="Uchen",size=30)) -> b1)
+```
+
+## TF-IDF per paragraph
+
+```{r, fig.align='center',fig.width=10,fig.height=10}
+#| column: page
+germany_tfidf <- germany_tokenized %>%
+    mutate(id=glue::glue("{paragraph}-{sentence}")) %>% 
+    group_by(paragraph) %>%
+    count(paragraph,words) %>% 
+    bind_tf_idf(words, paragraph, n) %>% 
+    arrange(desc(tf_idf)) %>% 
+    relocate(words,.before=paragraph) 
+      
+germany_tfidf %>% 
+    filter(n>=2)%>% 
+    head(20) %>% 
+    kbl() %>% 
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
+
+## Topic modeling
+
+```{r}
+set.seed(2022)
+
+germany_tfidf  %>%
+  cast_dtm(paragraph, words, n) -> germany_dtm.old
+
+rowTotals <- apply(germany_dtm.old, 1, sum) # Find the sum of words in each Document
+germany_dtm <- germany_dtm.old[rowTotals> 0, ] # Remove all docs without words
+
+```
+
+### Using perplexity for hold out set
+
+The perplexity is the geometric mean of word likelihood. In 5-fold CV, we first estimate the model, usually called training model, for a given number of topics using 4 folds of the data and then use the left one fold of the data to calculate the perplexity. In calculating the perplexity, we set the model in LDA or CTM to be the training model and not to estimate the beta parameters.
+
+```{r warning = FALSE, message = FALSE}
+germany_split <- initial_split(germany_tfidf, prop = 0.8)
+
+# Train
+germany_split_train <- training(germany_split)
+germany_split_train  %>%
+    cast_dtm(paragraph, words, n) -> germany_train_dtm.old
+
+rowTotals <- apply(germany_train_dtm.old, 1, sum) # Find the sum of words in each Document
+germany_train_dtm <- germany_train_dtm.old[rowTotals> 0, ] # Remove all docs without words
+
+# Test
+germany_split_test <- testing(germany_split)
+germany_split_test  %>%
+    cast_dtm(paragraph, words, n) -> germany_test_dtm.old
+
+rowTotals <- apply(germany_test_dtm.old, 1, sum) # Find the sum of words in each Document
+germany_test_dtm <- germany_test_dtm.old[rowTotals> 0, ] # Remove all docs without words
+
+loglik_v     <- vector("numeric", 20)
+perplexity_v <- vector("numeric", 20)
+
+
+for (i in 2:20) {
+    cat("... ", i, "\n")
+    tmp_mod  <- LDA(germany_train_dtm, k=i, method="Gibbs", control=list(alpha=0.5, iter=1000, seed=2020, thin=3))
+    loglik_v[i] <- logLik(tmp_mod)
+    perplexity_v[i] <- perplexity(tmp_mod, newdata = germany_test_dtm)
+}
+
+germany_topic_k_df <- tibble(
+    topic_k = 1:20,
+    loglik = loglik_v,
+    perplexity = perplexity_v)
+
+germany_topic_k_df %>%
+    filter(topic_k != 1) %>%
+    gather(metric, value, -topic_k) %>%
+    ggplot(aes(x=topic_k, y=value)) +
+    geom_line() +
+    geom_point() +
+    facet_wrap(~metric, scales = "free")+
+    theme_bw()
+```
+
+### Cast LDA (k=4)
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+germany_lda <-  LDA(germany_dtm, k = 4,
+              method="Gibbs",
+              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
+
+germany_tp_4 <- germany_lda %>%
+    tidy(matrix = "beta") %>%
+    group_by(term) %>%
+    slice_max(beta) %>% 
+    group_by(topic) %>%
+    slice_max(beta,n=10) %>%
+    arrange(topic) 
+
+germany_tp_4 %>%
+  mutate(term = reorder_within(term, beta, topic)) %>%
+  ggplot(aes(beta, term, fill = factor(topic))) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~ topic, scales = "free",ncol=3) +
+  scale_y_reordered() +
+  theme_bw()+ 
+  theme(plot.title = element_text(size=20),
+        text=element_text(family="Uchen",size=20)) 
+```
+
+### Cast LDA (k=5)
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+germany_lda <-  LDA(germany_dtm, k = 5,
+              method="Gibbs",
+              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
+
+germany_tp_5 <- germany_lda %>%
+    tidy(matrix = "beta") %>%
+    group_by(term) %>%
+    slice_max(beta)  
+
+germany_tp_5 %>% 
+    group_by(topic) %>%
+    slice_max(beta,n=10) %>%
+    arrange(topic) %>% 
+    mutate(term = reorder_within(term, beta, topic)) %>%
+    ggplot(aes(beta, term, fill = factor(topic))) +
+    geom_col(show.legend = FALSE) +
+    facet_wrap(~ topic, scales = "free",ncol=3) +
+    scale_y_reordered() +
+    theme_bw()+
+    theme(plot.title = element_text(size=20),
+          text=element_text(family="Uchen",size=20)) 
+```
+
+### Cast LDA (k=6)
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+germany_lda <-  LDA(germany_dtm, k = 6,
+              method="Gibbs",
+              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
+
+germany_tp_6 <- germany_lda %>%
+    tidy(matrix = "beta") %>%
+    group_by(term) %>%
+    slice_max(beta) 
+    
+
+germany_tp_6 %>%
+    group_by(topic) %>%
+    slice_max(beta,n=10) %>%
+    arrange(topic) %>%     
+    mutate(term = reorder_within(term, beta, topic)) %>%
+    ggplot(aes(beta, term, fill = factor(topic))) +
+    geom_col(show.legend = FALSE) +
+    facet_wrap(~ topic, scales = "free",ncol=3) +
+    scale_y_reordered() +
+    theme_bw()+
+    theme(plot.title = element_text(size=20),
+          text=element_text(family="Uchen",size=20)) 
+```
+
+### Cast LDA (k=7)
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+germany_lda <-  LDA(germany_dtm, k = 7,
+              method="Gibbs",
+              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
+
+germany_tp_7 <- germany_lda %>%
+    tidy(matrix = "beta") %>%
+    group_by(term) %>%
+    slice_max(beta)  
+
+germany_tp_7 %>% 
+    group_by(topic) %>%
+    slice_max(beta,n=10) %>%
+    arrange(topic)%>%
+    mutate(term = reorder_within(term, beta, topic)) %>%
+    ggplot(aes(beta, term, fill = factor(topic))) +
+    geom_col(show.legend = FALSE) +
+    facet_wrap(~ topic, scales = "free",ncol=4) +
+    scale_y_reordered() +
+    theme_bw()+
+    theme(plot.title = element_text(size=20),
+          text=element_text(family="Uchen",size=20)) 
+```
+
+## Network Graph
+
+### Pairwise Count
+
+```{r}
+germany_coocur <- germany_tfidf  %>%
+    ungroup() %>% 
+    arrange(desc(n)) %>%
+    rename(term=words) %>%
+    pairwise_count(term, paragraph, sort = TRUE,upper = F) 
+```
+
+### Building links and nodes
+
+```{r}
+links <- germany_coocur %>%
+    top_n(100) %>%
+    rename(source="item1",target="item2",weight="n") 
+
+nodes <- tibble(term=union(links$source,links$target)) %>%
+    left_join(y=germany_tp_7,by="term") %>%
+    select(nodes="term",topic)
+```
+
+### Building networks
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+germany_network <- graph_from_data_frame(d = links, vertices = nodes, directed = F)
+germany_g <- as_tbl_graph(germany_network)
+
+```
+
+### Network Graph
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+germany_g %>%
+    activate("nodes") %>%
+    mutate(degree = centrality_degree(),
+             community = as.factor(topic)) %>%
+    ggraph(layout = 'kk') +
+    geom_edge_link(aes(alpha = weight,width=weight),
+                   colour = "black", show.legend = FALSE) +
+    scale_edge_width(range = c(0.05,1.5)) +
+    scale_edge_alpha(range = c(0.3,1)) +
+    scale_size(range = c(5,20)) + 
+    geom_node_point(aes(colour = community, size = degree)) +
+    geom_node_text(aes(label = name), repel = TRUE,family="Uchen") +
+    theme_graph(base_family="Uchen") +
+    theme(text=element_text(family="Uchen",size=20)) +
+    guides(size="none")
+```
+
+### Network Graph per topic
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+germany_g %>%
+    activate("nodes") %>%
+    mutate(degree = centrality_degree(),
+             community = as.factor(topic)) %>%
+    ggraph(layout = 'kk') +
+    geom_edge_link(aes(alpha = weight,width=weight),
+                   colour = "black", show.legend = FALSE) +
+    scale_edge_width(range = c(0.05,1)) +
+    scale_edge_alpha(range = c(0.05,1)) +
+    scale_size(range = c(1,5)) + 
+    geom_node_point(aes(colour = community, size = degree)) +
+    geom_node_text(aes(label = name), repel = TRUE,family="Uchen") +
+    theme_graph(base_family="Uchen") +
+    theme(text=element_text(family="Uchen",size=20)) +
+    guides(size="none")+
+    facet_nodes(~ community,ncol=3)
+```
+
+# Preprocess: Finland VNR
+
+```{r}
+finland <-  readLines(fin_path) %>%
+  str_flatten(collapse = " ") %>%
+  str_replace_all(pattern="//", " // ") %>%
+  str_split(pattern="//") %>%
+  unlist() %>%
+  str_squish() %>%
+  tibble(paragraph=as_factor(1:length(.)),
+         text=.) 
+```
+
+## Tokenizing words
+
+break the text into individual tokens (a process called tokenization) and transform it to a tidy data structure.
+
+```{r}
+finland_tokenized <- finland %>% 
+   mutate(words=map(text, sentence_word1)) %>%
+   select(-text) %>%
+   unnest(words) %>% 
+   transmute(paragraph,sentence,words) %>%
+   mutate(words=map(words, sentence_word2)) %>%
+   unnest(words) 
+```
+
+## n-grams
+
+An n-gram (sometimes written "ngram") is a term in linguistics for a contiguous sequence of\
+n items from a given sequence of text or speech. The item can be phonemes, syllables, letters, or words depending on the application, but when most people talk about n-grams, they mean a group of\
+n words.
+
+```{r}
+finland_ngram  <-  finland %>% 
+   mutate(words=map(text, sentence_word1)) %>%
+   select(-text) %>%
+   unnest(words) %>% 
+   transmute(paragraph,sentence,words) %>%
+   mutate(words=map(words, sentence_word3)) %>%
+   unnest(words) 
+```
+
+## Remove inadequate words for analysis
+
+```{r}
+finland_tokenized <-finland_tokenized  %>%
+    filter(!str_detect(words,pattern="[0-9]")) %>%  
+    filter(!str_detect(words,pattern="finl[a-z]*")) %>%
+    filter(!str_detect(words,pattern="finn[a-z]*")) %>% 
+    filter(!str_detect(words,pattern="government\\w*")) %>%
+    filter(!str_detect(words,pattern="eur*")) %>%
+    filter(!str_detect(words,pattern="sdg*")) %>% 
+    filter(!str_detect(words,pattern="million")) %>% 
+    filter(!str_detect(words,pattern="line")) %>% 
+    filter(!str_detect(words,pattern="sustain\\w*")) %>% 
+    filter(!str_detect(words,pattern="develop\\w*")) %>%
+    filter(!str_detect(words,pattern="progra*")) %>%
+    filter(!str_detect(words,pattern="agend*"))
+
+finland_ngram <- finland_ngram  %>% 
+    filter(!str_detect(words,pattern="[0-9]")) %>%  
+    filter(!str_detect(words,pattern="finl[a-z]*")) %>%
+    filter(!str_detect(words,pattern="finn[a-z]*")) %>% 
+    filter(!str_detect(words,pattern="government\\w*")) %>% 
+    filter(!str_detect(words,pattern="eur*")) %>%
+    filter(!str_detect(words,pattern="sdg*")) %>% 
+    filter(!str_detect(words,pattern="million")) %>% 
+    filter(!str_detect(words,pattern="line")) %>% 
+    filter(!str_detect(words,pattern="sustain\\w*")) %>% 
+    filter(!str_detect(words,pattern="develop\\w*"))%>%
+    filter(!str_detect(words,pattern="progra*")) %>%
+    filter(!str_detect(words,pattern="agend*"))
+```
+
+## Frequency table
+
+The frequency of specific words and n-grams in each paragraphs.
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+(finland_tokenized %>%
+    count(words) %>% 
+    arrange(desc(n)) %>% 
+    top_n(30) %>%
+    mutate(word = fct_reorder(words, n, .desc = F)) %>%
+    ggplot(aes(n, word)) +
+    geom_col(fill="orange") +
+    geom_text(aes(label=n),hjust=-0.1,size=5,family="Uchen")+
+    labs(y = NULL, title="Finland") +
+    theme_bw()+
+    theme(plot.title = element_text(size=20),
+        text=element_text(family="Uchen",size=30)) -> c)
+
+(finland_ngram %>%
+    count(words) %>% 
+    arrange(desc(n)) %>% 
+    top_n(20) %>%
+    mutate(word = fct_reorder(words, n, .desc = F)) %>%
+    ggplot(aes(n, word)) +
+    geom_col(fill="orange") +
+    geom_text(aes(label=n),hjust=-0.1,size=8,family="Uchen")+
+    labs(y = NULL, title="Visualizing the frequency of n-grams") +
+    theme_bw()+
+    theme(plot.title = element_text(size=20),
+        text=element_text(family="Uchen",size=30)) -> c1)
+```
+
+## TF-IDF per paragraph
+
+```{r, fig.align='center',fig.width=10,fig.height=10}
+#| column: page
+finland_tfidf <- finland_tokenized %>%
+    mutate(id=glue::glue("{paragraph}-{sentence}")) %>% 
+    group_by(paragraph) %>%
+    count(paragraph,words) %>% 
+    bind_tf_idf(words, paragraph, n) %>% 
+    arrange(desc(tf_idf)) %>% 
+    relocate(words,.before=paragraph) 
+      
+finland_tfidf %>% 
+    filter(n>=2)%>% 
+    head(20) %>% 
+    kbl() %>% 
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
+
+## Topic modeling
+
+```{r}
+set.seed(2022)
+
+finland_tfidf  %>%
+  cast_dtm(paragraph, words, n) -> finland_dtm.old
+
+rowTotals <- apply(finland_dtm.old, 1, sum) # Find the sum of words in each Document
+finland_dtm <- finland_dtm.old[rowTotals> 0, ] # Remove all docs without words
+
+```
+
+### Using perplexity for hold out set
+
+The perplexity is the geometric mean of word likelihood. In 5-fold CV, we first estimate the model, usually called training model, for a given number of topics using 4 folds of the data and then use the left one fold of the data to calculate the perplexity. In calculating the perplexity, we set the model in LDA or CTM to be the training model and not to estimate the beta parameters.
+
+### Cast LDA (k=4)
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+finland_lda <-  LDA(finland_dtm, k = 4,
+              method="Gibbs",
+              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
+
+finland_tp_4 <- finland_lda %>%
+    tidy(matrix = "beta") %>%
+    group_by(term) %>%
+    slice_max(beta) %>% 
+    group_by(topic) %>%
+    slice_max(beta,n=10) %>%
+    arrange(topic) 
+
+finland_tp_4 %>%
+  mutate(term = reorder_within(term, beta, topic)) %>%
+  ggplot(aes(beta, term, fill = factor(topic))) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~ topic, scales = "free",ncol=3) +
+  scale_y_reordered() +
+  theme_bw()+ 
+  theme(plot.title = element_text(size=20),
+        text=element_text(family="Uchen",size=20)) 
+```
+
+### Cast LDA (k=5)
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+finland_lda <-  LDA(finland_dtm, k = 5,
+              method="Gibbs",
+              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
+
+finland_tp_5 <- finland_lda %>%
+    tidy(matrix = "beta") %>%
+    group_by(term) %>%
+    slice_max(beta)  
+
+finland_tp_5 %>% 
+    group_by(topic) %>%
+    slice_max(beta,n=10) %>%
+    arrange(topic) %>% 
+    mutate(term = reorder_within(term, beta, topic)) %>%
+    ggplot(aes(beta, term, fill = factor(topic))) +
+    geom_col(show.legend = FALSE) +
+    facet_wrap(~ topic, scales = "free",ncol=3) +
+    scale_y_reordered() +
+    theme_bw()+
+    theme(plot.title = element_text(size=20),
+          text=element_text(family="Uchen",size=20)) 
+```
+
+### Cast LDA (k=6)
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+finland_lda <-  LDA(finland_dtm, k = 6,
+              method="Gibbs",
+              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
+
+finland_tp_6 <- finland_lda %>%
+    tidy(matrix = "beta") %>%
+    group_by(term) %>%
+    slice_max(beta) 
+    
+
+finland_tp_6 %>%
+    group_by(topic) %>%
+    slice_max(beta,n=10) %>%
+    arrange(topic) %>%     
+    mutate(term = reorder_within(term, beta, topic)) %>%
+    ggplot(aes(beta, term, fill = factor(topic))) +
+    geom_col(show.legend = FALSE) +
+    facet_wrap(~ topic, scales = "free",ncol=3) +
+    scale_y_reordered() +
+    theme_bw()+
+    theme(plot.title = element_text(size=20),
+          text=element_text(family="Uchen",size=20)) 
+```
+
+### Cast LDA (k=7)
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+finland_lda <-  LDA(finland_dtm, k = 7,
+              method="Gibbs",
+              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
+
+finland_tp_7 <- finland_lda %>%
+    tidy(matrix = "beta") %>%
+    group_by(term) %>%
+    slice_max(beta)  
+
+finland_tp_7 %>% 
+    group_by(topic) %>%
+    slice_max(beta,n=10) %>%
+    arrange(topic)%>%
+    mutate(term = reorder_within(term, beta, topic)) %>%
+    ggplot(aes(beta, term, fill = factor(topic))) +
+    geom_col(show.legend = FALSE) +
+    facet_wrap(~ topic, scales = "free",ncol=4) +
+    scale_y_reordered() +
+    theme_bw()+
+    theme(plot.title = element_text(size=20),
+          text=element_text(family="Uchen",size=20)) 
+```
+
+## Network Graph
+
+### Pairwise Count
+
+```{r}
+finland_coocur <- finland_tfidf  %>%
+    ungroup() %>% 
+    arrange(desc(n)) %>%
+    rename(term=words) %>%
+    pairwise_count(term, paragraph, sort = TRUE,upper = F) 
+```
+
+### Building links and nodes
+
+```{r}
+links <- finland_coocur %>%
+    top_n(100) %>%
+    rename(source="item1",target="item2",weight="n") 
+
+nodes <- tibble(term=union(links$source,links$target)) %>%
+    left_join(y=finland_tp_7,by="term") %>%
+    select(nodes="term",topic)
+```
+
+### Building networks
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+finland_network <- graph_from_data_frame(d = links, vertices = nodes, directed = F)
+finland_g <- as_tbl_graph(finland_network)
+
+```
+
+### Network Graph
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+finland_g %>%
+    activate("nodes") %>%
+    mutate(degree = centrality_degree(),
+             community = as.factor(topic)) %>%
+    ggraph(layout = 'kk',maxiter=200 * vcount(.)) +
+    geom_edge_link(aes(alpha = weight,width=weight),
+                   colour = "black", show.legend = FALSE) +
+    scale_edge_width(range = c(0.05,1.5)) +
+    scale_edge_alpha(range = c(0.3,1)) +
+    scale_size(range = c(5,20)) + 
+    geom_node_point(aes(colour = community, size = degree)) +
+    geom_node_text(aes(label = name), repel = TRUE,family="Uchen") +
+    theme_graph(base_family="Uchen") +
+    theme(text=element_text(family="Uchen",size=20)) +
+    guides(size="none")
+```
+
+### Network Graph per topic
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+finland_g %>%
+    activate("nodes") %>%
+    mutate(degree = centrality_degree(),
+             community = as.factor(topic)) %>%
+    ggraph(layout = 'kk') +
+    geom_edge_link(aes(alpha = weight,width=weight),
+                   colour = "black", show.legend = FALSE) +
+    scale_edge_width(range = c(0.05,1)) +
+    scale_edge_alpha(range = c(0.05,1)) +
+    scale_size(range = c(1,5)) + 
+    geom_node_point(aes(colour = community, size = degree)) +
+    geom_node_text(aes(label = name), repel = TRUE,family="Uchen") +
+    theme_graph(base_family="Uchen") +
+    theme(text=element_text(family="Uchen",size=20)) +
+    guides(size="none")+
+    facet_nodes(~ community,ncol=3)
+```
+
+### simplify?
+
+```{r}
+links=finland_coocur %>%
+    top_n(100) %>%
+    rename(source="item1",target="item2",weight="n") %>%
+    left_join(finland_tp_7 %>% select(-beta,term) %>% 
+                  transmute(source=term,topic1=topic),by="source") %>% 
+    left_join(finland_tp_7 %>% select(-beta,term) %>% 
+                  transmute(target=term,topic2=topic),by="target") %>% 
+    select(topic1,topic2,weight) %>% 
+    rename(source="topic1",target="topic2")
+
+finland_network <- graph_from_data_frame(d = links, directed = F)
+simplify(finland_network)
+finland_g <- as_tbl_graph(simplify(finland_network))
+
+finland_g %>%
+    activate("nodes") %>%
+    mutate(degree = centrality_degree()) %>%
+    ggraph(layout = 'kk') +
+    geom_edge_link(aes(alpha = weight), show.legend = FALSE) +
+    scale_edge_width(range = c(0.05,1.5)) +
+    scale_edge_alpha(range = c(0.3,1)) +
+    scale_size(range = c(5,20)) + 
+    geom_node_point(aes(size = degree, color="blue")) +
+    geom_node_text(aes(label = name), repel = TRUE,family="Uchen") +
+    theme_graph(base_family="Uchen") +
+    theme(text=element_text(family="Uchen",size=20)) +
+    guides(size="none")
+
+```
+
+# Comparing three countries
+
+## Comparing Word Frequencies of Three Countries
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+
+grid.arrange(a,b,c, nrow=1,
+             top=textGrob("Comparing Word Frequencies of Three Countries",
+                          gp = gpar(col = "black", 
+                                    fontsize = 25,
+                                    fontfamily="Uchen")))
+
+```
+
+## Comparing bigrams of Three Countries
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: screen-inset-shaded
+grid.arrange(a1,b1,c1, nrow=1,
+             top=textGrob("Comparing Bigrams of Three Countries",
+                          gp = gpar(col = "black", 
+                                    fontsize = 25,
+                                    fontfamily="Uchen")))
+```
+
+## Comparing Tf-idf of Three Countries
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+
+korea_tokenized %>% 
+    mutate(key="Korea") %>% 
+    full_join(germany_tokenized %>% 
+                mutate(key="Germany")) %>% 
+    full_join(finland_tokenized %>% 
+                mutate(key="Finland")) %>% 
+    mutate(key=as_factor(key)) -> total_tokenized
+
+total_tokenized %>% 
+    group_by(key) %>%
+    count(key,words) %>% 
+    bind_tf_idf(words, key, n) %>% 
+    group_by(key) %>% 
+    top_n(tf_idf, n=30) %>%
+    arrange(desc(tf_idf)) %>% 
+    mutate(words = reorder_within(words, tf_idf, key)) %>%
+    ggplot(aes(x=tf_idf, y=words)) +
+    geom_col(aes(fill=key),show.legend = FALSE) +
+    scale_y_reordered() +
+    facet_wrap(~key, nrow = 1, scales = "free") +
+    labs(y = NULL, title="Comparing Tf-idf of Three Countries") +
+    theme_bw()+
+    theme(plot.title = element_text(size=20),
+        text=element_text(family="Uchen",size=25)) 
+
+```
+
+## Comparing the word frequencies
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+compare_three <- total_tokenized %>% 
+    count(key, words) %>% 
+    group_by(key) %>%
+    mutate(proportion = n / sum(n)) %>%
+    select(-n) %>% 
+    pivot_wider(names_from = key, values_from = proportion) %>%
+    pivot_longer(3:4,
+               names_to = "key", values_to = "proportion")
+    
+```
+
+Words that are far from the line are words that are found more in one set of texts than another.
+
+```{r, fig.align='center',fig.width=10,fig.height=7, warning = FALSE, message = FALSE}
+#| column: page
+
+# expect a warning about rows with missing values being removed
+set.seed(2022)
+compare_three %>%
+    ggplot(aes(x = proportion, y = Korea, color = abs(Korea - proportion))) +
+    geom_abline(color = "darkgreen", lty = 2, size=1.5) +
+    geom_jitter(alpha = 0.1, size = 1.5, width = 0.3, height = 0.3) +
+    geom_text(aes(label = words), check_overlap = TRUE, vjust = 1.5, family="Uchen") +
+    scale_x_log10(labels = percent_format()) +
+    scale_y_log10(labels = percent_format()) +
+    scale_color_gradient(limits = c(0.001, 0.01), 
+                         low = "darkslategray4", high =  "black") +
+    facet_wrap(~key, ncol = 2) +
+    theme(legend.position="none") +
+    labs(y = "Korea", x = NULL, title="Comparing the word frequencies of Three Countries") +
+    theme_bw() +
+    theme(plot.title = element_text(size=20),
+          text=element_text(family="Uchen",size=25))+
+    guides(color="none")
+```
+
+## Correlation of words
+
+```{r}
+cor_germany=cor.test(data = compare_three[compare_three$key == "Germany",],
+         ~ proportion + Korea) %>% tidy() %>% mutate(country="Germany",.before = estimate)
+cor_finland=cor.test(data = compare_three[compare_three$key == "Finland",],
+         ~ proportion + Korea) %>% tidy() %>% mutate(country="Finland",.before = estimate)
+cor_germany %>% 
+    full_join(cor_finland) %>% 
+    mutate(across(where(is.numeric), round, 3))%>% 
+    kbl() %>% 
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+
+```

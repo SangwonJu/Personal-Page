@@ -56,6 +56,8 @@ website:
       style: "floating"
       collapse-level: 2
       contents:
+      - text: "Analysis of Sustainable Development Goals: Text-mining on Voluntary National Reviews"
+        href: ./data_analytics/VNR_analysis.qmd
       - section: Data Analytics for Public Data (2021 Fall)
         contents:
         - text: "Analysis 1: Number of local government employees"
