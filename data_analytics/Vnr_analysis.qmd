@@ -66,7 +66,7 @@ showtext_auto()
 # Setting Working Directory
 
 ```{r}
-data_folder = "c:/Users/jsw06/OneDrive - SNU/r/vnr"
+data_folder = "e:/OneDrive - SNU/r/vnr"
 ger_path = fs::path(data_folder, "germany.txt")
 fin_path = fs::path(data_folder, "finland.txt")
 kor_path = fs::path(data_folder, "korea.txt")

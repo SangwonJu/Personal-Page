@@ -210,62 +210,6 @@
     "text": "- Predicting next year’s unemployment rate using ARIMA algorithm.\n\n\nCode\n# ARIMA\naTSA::adf.test(unemp_total, nlag = NULL, output = TRUE) \n\n\nAugmented Dickey-Fuller Test \nalternative: stationary \n \nType 1: no drift no trend \n     lag    ADF p.value\n[1,]   0 -0.772   0.402\n[2,]   1 -0.805   0.390\n[3,]   2 -0.667   0.440\n[4,]   3 -0.649   0.446\n[5,]   4 -0.676   0.437\nType 2: with drift no trend \n     lag   ADF p.value\n[1,]   0 -4.78    0.01\n[2,]   1 -5.77    0.01\n[3,]   2 -5.65    0.01\n[4,]   3 -4.89    0.01\n[5,]   4 -5.19    0.01\nType 3: with drift and trend \n     lag   ADF p.value\n[1,]   0 -4.86    0.01\n[2,]   1 -5.95    0.01\n[3,]   2 -5.85    0.01\n[4,]   3 -5.16    0.01\n[5,]   4 -5.64    0.01\n---- \nNote: in fact, p.value = 0.01 means p.value <= 0.01 \n\n\nCode\n# p-value<=0.01 Reject null-hypothesis. (Stationary)\n\n\n\n\nCode\nfit=auto.arima(unemp_total,trace=T)\n\n\n\n ARIMA(2,1,2)(1,1,1)[12]                    : 36.50482\n ARIMA(0,1,0)(0,1,0)[12]                    : 68.4576\n ARIMA(1,1,0)(1,1,0)[12]                    : 37.8781\n ARIMA(0,1,1)(0,1,1)[12]                    : 39.43664\n ARIMA(2,1,2)(0,1,1)[12]                    : 42.49405\n ARIMA(2,1,2)(1,1,0)[12]                    : 36.07573\n ARIMA(2,1,2)(0,1,0)[12]                    : 60.73393\n ARIMA(2,1,2)(2,1,0)[12]                    : 36.37945\n ARIMA(2,1,2)(2,1,1)[12]                    : 38.59869\n ARIMA(1,1,2)(1,1,0)[12]                    : 35.92575\n ARIMA(1,1,2)(0,1,0)[12]                    : 58.66389\n ARIMA(1,1,2)(2,1,0)[12]                    : 36.1904\n ARIMA(1,1,2)(1,1,1)[12]                    : 36.2949\n ARIMA(1,1,2)(0,1,1)[12]                    : 41.57701\n ARIMA(1,1,2)(2,1,1)[12]                    : 38.35171\n ARIMA(0,1,2)(1,1,0)[12]                    : 34.33111\n ARIMA(0,1,2)(0,1,0)[12]                    : 56.7069\n ARIMA(0,1,2)(2,1,0)[12]                    : 34.64578\n ARIMA(0,1,2)(1,1,1)[12]                    : 34.77616\n ARIMA(0,1,2)(0,1,1)[12]                    : 39.77648\n ARIMA(0,1,2)(2,1,1)[12]                    : 36.78503\n ARIMA(0,1,1)(1,1,0)[12]                    : 33.73023\n ARIMA(0,1,1)(0,1,0)[12]                    : 55.59995\n ARIMA(0,1,1)(2,1,0)[12]                    : 33.42099\n ARIMA(0,1,1)(2,1,1)[12]                    : 35.52775\n ARIMA(0,1,1)(1,1,1)[12]                    : 33.70222\n ARIMA(0,1,0)(2,1,0)[12]                    : 49.02686\n ARIMA(1,1,1)(2,1,0)[12]                    : 34.1495\n ARIMA(1,1,0)(2,1,0)[12]                    : 36.97406\n\n Best model: ARIMA(0,1,1)(2,1,0)[12]                    \n\n\n\n\nCode\nforecast::forecast(fit, level=c(75, 95), h=12) %>% \n    autoplot() + \n    theme_classic()+\n    theme(text=element_text(family=\"Noto Serif\",size=12)) -> p7\n\nggplotly(p7) %>% \n    layout(title = list(text = paste0(\n        'Prediction of unemployment rate of economically active population (for next 12 months)',\n        '<br>',\n        '<sup>',\n        'Korean Population and Housing Census (retrieved from KOSIS) (Jan, 2010 ~ June, 2022)','</sup>'),\n        x = 0,\n        font=list(size=16)))"
   },
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Sangwon Ju (주상원)",
-    "section": "",
-    "text": "Hi. I'm a  Master's student  in    Graduate School of Public Administration at Seoul National University, Seoul, Republic of Korea. \n\nI'm currently studying public policy and management. Generally, my works seeks to  quantify impact of information systems on acquiring public value, understand interaction between information systems and public policy process, and figure out how researchers can contribute to improving organizational decision-making by adequately utilizing information systems and evidence-based practices.   \n\n\n\n\n\nM.P.A. in Public Policy\nSeoul National University, GSPA, Seoul, Republic of Korea | Sep 2021 ~ Aug 2023\n\nB.A. in Public Policy and Management\nB.A. in Business Administration\nMinor in Applied Statistics\nYonsei University, CSS, Seoul, Republic of Korea | Mar 2015 ~ Aug 2021\n\n\n\n\n\n\nResearch Assistant 　\nKorea Research Institute for Local Administration | May 2022 ~ Present\n\nResearch Assistant 　\nEvidence-Based Research Lab, GSPA, SNU | Sep 2021 ~ Present"
-  },
-  {
-    "objectID": "index.html#education",
-    "href": "index.html#education",
-    "title": "Sangwon Ju (주상원)",
-    "section": "Education",
-    "text": "Education\n\nM.P.A. in Public Policy\nSeoul National University, GSPA, Seoul, Republic of Korea | Sep 2021 ~ Aug 2023\nB.A. in Public Policy and Management\nB.A. in Business Administration\nMinor in Applied Statistics\nYonsei University, CSS, Seoul, Republic of Korea | Mar 2015 ~ Aug 2021"
-  },
-  {
-    "objectID": "index.html#research-experience",
-    "href": "index.html#research-experience",
-    "title": "Sangwon Ju (주상원)",
-    "section": "Research Experience",
-    "text": "Research Experience\n\nResearch Assistant 　\nKorea Research Institute for Local Administration | May 2022 ~ Present\nResearch Assistant 　\nEvidence-Based Research Lab, GSPA, SNU | Sep 2021 ~ Present\n:::"
-  },
-  {
-    "objectID": "publication.html",
-    "href": "publication.html",
-    "title": "Publications / Working Papers",
-    "section": "",
-    "text": "To be updated"
-  },
-  {
-    "objectID": "publication.html#working-papers",
-    "href": "publication.html#working-papers",
-    "title": "Publications / Working Papers",
-    "section": "Working Papers",
-    "text": "Working Papers\n\nSocietal Impacts of Information Systems\n\nJu, S.W. (2023), How does public information systems affect improving internet accessibility of students? (Literature Review)\n\nEvidence-Based Policy and Management\n\nJu, S.W. & Lee, J., Kim, B.J. (2022), Evidence-Based Policy in Asian Countries: Applying Model of Evidence-Based Practice Implementation for Maturation Stage Analysis [in Korean]. (Analysis / Writing Finished, Target Journal: Korean Journal of Public Administration)\n\nOrganizational Decision-making\n\nJu, S.W. (2023), Blame Avoidance and Research Utilization: Evidence From Korean Public Enterprises (Literature Review)"
-  },
-  {
-    "objectID": "publication.html#academic-presentations",
-    "href": "publication.html#academic-presentations",
-    "title": "Publications / Working Papers",
-    "section": "Academic Presentations",
-    "text": "Academic Presentations\n\nJu, S. & Lee, J. (2022), Evidence-Based Policy in Asian Countries: Applying Model of Evidence-Based Practice Implementation for Maturation Stage Analysis [in Korean, Poster Session], 2022 Korean Public Administration Summer Conference and Annual KAPA International Conference, Yeosu, Korea, June 2022."
-  },
-  {
-    "objectID": "research_interests.html",
-    "href": "research_interests.html",
-    "title": "Research Interests",
-    "section": "",
-    "text": "1. Management information systems\n\npublic value in IT\nquantifying societal impact of information systems\n\n2. Policy analysis and program evaluation\n\nexperimental and quasi-experimental policy evaluation\n\n3. Organization theory and behavior\n\nstrategic decision-making\nhuman-machine cooperation in organizational decision-making\n\n4. Evidence-based public policy and management (EBPPM)\n\nbeing evidence-based is being data-driven?\nwhat is the difference between evidence-based approach and contemporary policy analysis? (such as discourse policy analysis)\npositivism vs. constructivism in research utilization\n\n\n\n\n\n Methodologically, I'm interested in applied econometrics for quasi-experimental approach, machine-learning as well as other computational methods for both business and public data analytics, and I/O psychology survey analysis. Also I have prior experience in policy analysis techniques (such as Cost-Benefit Analysis, Analytic Hierarchy Process etc.)"
-  },
-  {
-    "objectID": "index.html#about-me",
-    "href": "index.html#about-me",
-    "title": "Sangwon Ju (주상원)",
-    "section": "About Me",
-    "text": "About Me\n\nHi. I'm a Master's student in  Graduate School of Public Administration at Seoul National University, Seoul, South Korea. \n\nI'm currently studying public policy and management. Generally, my works seeks to understand interaction between information systems and public policy process, quantify impact of information systems on acquiring public value, and figure out how researchers can contribute to improving organizational decision-making by adequately utilizing information systems and evidence-based practices."
-  },
-  {
     "objectID": "data_analytics/Vnr_analysis.html",
     "href": "data_analytics/Vnr_analysis.html",
     "title": "Textmining on SDG VNRs of ROK, Germany, Finland",
@@ -453,5 +397,40 @@
     "title": "Textmining on SDG VNRs of ROK, Germany, Finland",
     "section": "Correlation of words",
     "text": "Correlation of words\n\n\nCode\ncor_germany=cor.test(data = compare_three[compare_three$key == \"Germany\",],\n         ~ proportion + Korea) %>% tidy() %>% mutate(country=\"Germany\",.before = estimate)\ncor_finland=cor.test(data = compare_three[compare_three$key == \"Finland\",],\n         ~ proportion + Korea) %>% tidy() %>% mutate(country=\"Finland\",.before = estimate)\ncor_germany %>% \n    full_join(cor_finland) %>% \n    mutate(across(where(is.numeric), round, 3))%>% \n    kbl() %>% \n    kable_styling(bootstrap_options = c(\"striped\", \"hover\", \"condensed\", \"responsive\"))\n\n\n\n\n \n  \n    country \n    estimate \n    statistic \n    p.value \n    parameter \n    conf.low \n    conf.high \n    method \n    alternative \n  \n \n\n  \n    Germany \n    0.552 \n    11.462 \n    0 \n    299 \n    0.469 \n    0.626 \n    Pearson's product-moment correlation \n    two.sided \n  \n  \n    Finland \n    0.688 \n    28.668 \n    0 \n    912 \n    0.653 \n    0.721 \n    Pearson's product-moment correlation \n    two.sided"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Sangwon Ju (주상원)",
+    "section": "",
+    "text": "Hi. I'm a  Master's student  in    Graduate School of Public Administration at Seoul National University, Seoul, Republic of Korea. \n\nI'm currently studying public policy and management. Generally, my works seeks to  quantify impact of information systems on acquiring public value, understand interaction between information systems and public policy process, and figure out how researchers can contribute to improving organizational decision-making by adequately utilizing information systems and evidence-based practices.   \n\n\n\n\n\nM.P.A. in Public Policy\nSeoul National University, GSPA, Seoul, Republic of Korea | Sep 2021 ~ Aug 2023\n\nB.A. in Public Policy and Management\nB.A. in Business Administration\nMinor in Applied Statistics\nYonsei University, CSS, Seoul, Republic of Korea | Mar 2015 ~ Aug 2021\n\n\n\n\n\n\nResearch Assistant 　\nKorea Research Institute for Local Administration | May 2022 ~ Present\n\nResearch Assistant 　\nEvidence-Based Research Lab, GSPA, SNU | Sep 2021 ~ Present"
+  },
+  {
+    "objectID": "publication.html",
+    "href": "publication.html",
+    "title": "Publications / Working Papers",
+    "section": "",
+    "text": "To be updated"
+  },
+  {
+    "objectID": "publication.html#working-papers",
+    "href": "publication.html#working-papers",
+    "title": "Publications / Working Papers",
+    "section": "Working Papers",
+    "text": "Working Papers\n\nSocietal Impacts of Information Systems\n\nJu, S.W. (2023), How does public information systems affect improving internet accessibility of students? (Literature Review)\n\nEvidence-Based Policy and Management\n\nJu, S.W. & Lee, J., Kim, B.J. (2022), Evidence-Based Policy in Asian Countries: Applying Model of Evidence-Based Practice Implementation for Maturation Stage Analysis [in Korean]. (Analysis / Writing Finished, Target Journal: Korean Journal of Public Administration)\n\nOrganizational Decision-making\n\nJu, S.W. (2023), Blame Avoidance and Research Utilization: Evidence From Korean Public Enterprises (Literature Review)"
+  },
+  {
+    "objectID": "publication.html#academic-presentations",
+    "href": "publication.html#academic-presentations",
+    "title": "Publications / Working Papers",
+    "section": "Academic Presentations",
+    "text": "Academic Presentations\n\nJu, S. & Lee, J. (2022), Evidence-Based Policy in Asian Countries: Applying Model of Evidence-Based Practice Implementation for Maturation Stage Analysis [in Korean, Poster Session], 2022 Korean Public Administration Summer Conference and Annual KAPA International Conference, Yeosu, Korea, June 2022."
+  },
+  {
+    "objectID": "research_interests.html",
+    "href": "research_interests.html",
+    "title": "Research Interests",
+    "section": "",
+    "text": "1. Management information systems\n\npublic value in IT\nquantifying societal impact of information systems\n\n2. Policy analysis and program evaluation\n\nexperimental and quasi-experimental policy evaluation\n\n3. Organization theory and behavior\n\nstrategic decision-making\nhuman-machine cooperation in organizational decision-making\n\n4. Evidence-based public policy and management (EBPPM)\n\nbeing evidence-based is being data-driven?\nwhat is the difference between evidence-based approach and contemporary policy analysis? (such as discourse policy analysis)\npositivism vs. constructivism in research utilization\n\n\n\n\n\n Methodologically, I'm interested in applied econometrics for quasi-experimental approach, machine-learning as well as other computational methods for both business and public data analytics, and I/O psychology survey analysis. Also I have prior experience in policy analysis techniques (such as Cost-Benefit Analysis, Analytic Hierarchy Process etc.)"
   }
 ]
