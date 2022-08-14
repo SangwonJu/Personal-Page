@@ -48,7 +48,7 @@ date: 2022/08/06
 
 # Loading Package
 
-```{r warning = FALSE, message = FALSE}
+```{r warning = FALSE, message = FALSE, result="hide"}
 pacman::p_load("reticulate","tidyverse","tidymodels",
                "tidytext","lda","readr","igraph","forcats",
                "sna","ergm","network","stringr","magrittr","showtext",
@@ -56,10 +56,10 @@ pacman::p_load("reticulate","tidyverse","tidymodels",
                "viridis","stopwords","purrr","widyr","textmineR","stm",
                "ggraph","tidygraph","ggfortify","ggthemes","cowplot","fs",
                "knitr","kableExtra","ggrepel","grid","gridExtra","topicmodels",
-               "scales")
+               "scales","ggpattern","magick","corrplot")
 
 # Font Setting
-font_add_google(name="Uchen") #fonts.google.com에서 고르시면 됨
+font_add_google(name="IBM Plex Sans KR") #fonts.google.com에서 고르시면 됨
 showtext_auto()
 ```
 
@@ -70,6 +70,9 @@ data_folder = "e:/OneDrive - SNU/r/vnr"
 ger_path = fs::path(data_folder, "germany.txt")
 fin_path = fs::path(data_folder, "finland.txt")
 kor_path = fs::path(data_folder, "korea.txt")
+jp_path = fs::path(data_folder, "japan.txt")
+uk_path = fs::path(data_folder, "uk.txt")
+astl_path = fs::path(data_folder, "austrailia.txt")
 ```
 
 표제어 추출을 통해 어근을 추출하고 토크나이징을 통해서 토픽 추출 용이하게 만들기.
@@ -99,17 +102,19 @@ sentence_word3=function(x){
   return(a)}
 ```
 
-# Preprocess: Korea VNR
-
+# Korea VNR
+## Preprocess
 ```{r}
 korea <-  readLines(kor_path) %>%
-  str_flatten(collapse = " ") %>%
-  str_replace_all(pattern="//", " // ") %>%
-  str_split(pattern="//") %>%
-  unlist() %>%
-  str_squish() %>%
-  tibble(paragraph=as_factor(1:length(.)),
-         text=.) 
+    str_flatten(collapse = " ") %>%
+    str_replace_all(pattern="//", " // ") %>%
+    str_split(pattern="//") %>%
+    unlist() %>%
+    str_squish() %>%
+    str_remove_all("ABC*\\w*") %>%
+    tibble(text=.) %>% 
+    filter(trimws(text) != "") %>% 
+    mutate(paragraph=1:n(),.before=text)
 ```
 
 ## Tokenizing words
@@ -119,7 +124,7 @@ Break the text into individual tokens (a process called tokenization) and transf
 ```{r}
 korea_tokenized <- korea %>% 
    mutate(words=map(text, sentence_word1)) %>%
-   select(-text) %>%
+   dplyr::select(-text) %>%
    unnest(words) %>% 
    transmute(paragraph,sentence,words) %>%
    mutate(words=map(words, sentence_word2)) %>%
@@ -135,7 +140,7 @@ n words.
 ```{r}
 korea_ngram  <-  korea %>% 
    mutate(words=map(text, sentence_word1)) %>%
-   select(-text) %>%
+   dplyr::select(-text) %>%
    unnest(words) %>% 
    transmute(paragraph,sentence,words) %>%
    mutate(words=map(words, sentence_word3)) %>%
@@ -151,13 +156,16 @@ korea_tokenized <- korea_tokenized  %>%
     filter(!str_detect(words,pattern="[a-z]*\\d+")) %>% 
     filter(!str_detect(words,pattern="kor[a-z]*")) %>%
     filter(!str_detect(words,pattern="rok[a-z]*")) %>% 
-    filter(!str_detect(words,pattern="government\\w*")) %>%
     filter(!str_detect(words,pattern="key")) %>%
     filter(!str_detect(words,pattern="sdg*")) %>% 
-    filter(!str_detect(words,pattern="sustain")) %>% 
-    filter(!str_detect(words,pattern="develop\\w*")) %>%
     filter(!str_detect(words,pattern="progra*")) %>%
-    filter(!str_detect(words,pattern="agend*"))
+    filter(!str_detect(words,pattern="agend*")) %>% 
+    filter(!str_detect(words,pattern="billi*")) %>% 
+    filter(!str_detect(words,pattern="milli*")) %>% 
+    filter(!str_detect(words,pattern="datum*")) %>% 
+    filter(!str_detect(words,pattern="support*")) %>%
+    filter(!str_detect(words,pattern="progra*"))
+    
 
 korea_ngram <- korea_ngram  %>% 
     filter(!str_detect(words,pattern="[0-9]")) %>%  
@@ -165,11 +173,16 @@ korea_ngram <- korea_ngram  %>%
     filter(!str_detect(words,pattern="[a-z]*\\d+")) %>% 
     filter(!str_detect(words,pattern="kor[a-z]*")) %>%
     filter(!str_detect(words,pattern="rok[a-z]*")) %>% 
-    filter(!str_detect(words,pattern="government\\w*")) %>%
     filter(!str_detect(words,pattern="key")) %>%
-    filter(!str_detect(words,pattern="sdg*")) %>%
+    filter(!str_detect(words,pattern="sdg*")) %>% 
     filter(!str_detect(words,pattern="progra*")) %>%
-    filter(!str_detect(words,pattern="agend*"))
+    filter(!str_detect(words,pattern="agend*")) %>% 
+    filter(!str_detect(words,pattern="billi*")) %>% 
+    filter(!str_detect(words,pattern="milli*")) %>% 
+     filter(!str_detect(words,pattern="datum*")) %>% 
+    filter(!str_detect(words,pattern="support*")) %>%
+    filter(!str_detect(words,pattern="progra*")) 
+
 ```
 
 ## Frequency table
@@ -182,26 +195,40 @@ The frequency of specific words and n-grams in each paragraphs.
     arrange(desc(n)) %>% 
     top_n(30) %>%
     mutate(word = fct_reorder(words, n, .desc = F)) %>%
-    ggplot(aes(n, word)) +
-    geom_col(fill="red") +
-    geom_text(aes(label=n),hjust=-0.1,size=7,family="Uchen")+
-    labs(y = NULL, title="Korea") +
+    ggplot(aes(x=n, y=word)) +
+    geom_col_pattern(
+    colour = "white",
+    pattern = 'gradient',
+    pattern_fill2 = '#CD313A',
+    pattern_fill = '#0047A0',
+    pattern_orientation='horizontal',
+    pattern_alpha=1)+
+    scale_fill_hue() +
+    geom_text(aes(label=n),hjust=-0.1,size=7,family="IBM Plex Sans KR")+
+    labs(y = NULL, title="대한민국") +
     theme_bw()+
-    theme(plot.title = element_text(size=30),
-        text=element_text(family="Uchen",size=25)) -> a)
+    theme(plot.title = element_text(size=40),
+        text=element_text(family="IBM Plex Sans KR",size=25)) -> a)
 
 (korea_ngram %>%
     count(words) %>% 
     arrange(desc(n)) %>% 
     top_n(20) %>%
     mutate(word = fct_reorder(words, n, .desc = F)) %>%
-    ggplot(aes(n, word)) +
-    geom_col(fill="red") +
-    geom_text(aes(label=n),hjust=-0.1,size=8,family="Uchen")+
-    labs(y = NULL, title="Korea") +
+    ggplot(aes(x=n, y=word)) +
+    geom_col_pattern(
+    colour = "white",
+    pattern = 'gradient',
+    pattern_fill2 = '#CD313A',
+    pattern_fill = '#0047A0',
+    pattern_orientation='horizontal',
+    pattern_alpha=1)+
+    scale_fill_hue() +
+    geom_text(aes(label=n),hjust=-0.1,size=7,family="IBM Plex Sans KR")+
+    labs(y = NULL, title="대한민국") +
     theme_bw()+
-    theme(plot.title = element_text(size=20),
-        text=element_text(family="Uchen",size=30)) -> a1)
+    theme(plot.title =  element_text(size=40),
+        text=element_text(family="IBM Plex Sans KR",size=25)) -> a1) 
 ```
 
 ## TF-IDF per paragraph
@@ -279,7 +306,7 @@ korea_topic_k_df %>%
     facet_wrap(~metric, scales = "free")+
     theme_bw() +
     theme(plot.title = element_text(size=20),
-        text=element_text(family="Uchen",size=40))
+        text=element_text(family="IBM Plex Sans KR",size=40))
 ```
 
 ### Cast LDA (k=4)
@@ -306,7 +333,7 @@ korea_tp_4 %>%
     scale_y_reordered() +
     theme_bw()+ 
     theme(plot.title = element_text(size=20),
-          text=element_text(family="Uchen",size=40),
+          text=element_text(family="IBM Plex Sans KR",size=40),
           axis.text.x = element_text(size = 20)) 
 ```
 
@@ -334,7 +361,7 @@ korea_tp_5 %>%
     scale_y_reordered() +
     theme_bw()+ 
     theme(plot.title = element_text(size=20),
-          text=element_text(family="Uchen",size=40),
+          text=element_text(family="IBM Plex Sans KR",size=40),
           axis.text.x = element_text(size = 20)) 
 ```
 
@@ -362,7 +389,7 @@ korea_tp_6 %>%
     scale_y_reordered() +
     theme_bw()+ 
     theme(plot.title = element_text(size=20),
-          text=element_text(family="Uchen",size=40),
+          text=element_text(family="IBM Plex Sans KR",size=40),
           axis.text.x = element_text(size = 20)) 
 ```
 
@@ -390,7 +417,7 @@ korea_tp_7 %>%
     scale_y_reordered() +
     theme_bw()+ 
     theme(plot.title = element_text(size=20),
-          text=element_text(family="Uchen",size=40),
+          text=element_text(family="IBM Plex Sans KR",size=40),
           axis.text.x = element_text(size = 20)) 
 ```
 
@@ -415,7 +442,7 @@ links <- korea_coocur %>%
 
 nodes <- tibble(term=union(links$source,links$target)) %>%
     left_join(y=korea_tp_6,by="term") %>%
-    select(nodes="term",topic)
+    dplyr::select(nodes="term",topic)
 ```
 
 ### Building networks
@@ -441,9 +468,9 @@ korea_g %>%
     scale_edge_alpha(range = c(0.3,1)) +
     scale_size(range = c(5,20)) + 
     geom_node_point(aes(colour = community, size = degree)) +
-    geom_node_text(aes(label = name, size=degree),size=8, repel = TRUE,family="Uchen") +
-    theme_graph(base_family="Uchen") +
-    theme(text=element_text(family="Uchen", size=40)) +
+    geom_node_text(aes(label = name, size=degree),size=8, repel = TRUE,family="IBM Plex Sans KR") +
+    theme_graph(base_family="IBM Plex Sans KR") +
+    theme(text=element_text(family="IBM Plex Sans KR", size=40)) +
     guides(size="none")
 ```
 
@@ -461,24 +488,26 @@ korea_g %>%
     scale_edge_width(range = c(0.05,1)) +
     scale_edge_alpha(range = c(0.05,1)) + 
     geom_node_point(aes(colour = community, size = degree)) +
-    geom_node_text(aes(label = name),size=8, repel = TRUE,family="Uchen") +
-    theme_graph(base_family="Uchen") +
-    theme(text=element_text(family="Uchen",size=40)) +
+    geom_node_text(aes(label = name),size=8, repel = TRUE,family="IBM Plex Sans KR") +
+    theme_graph(base_family="IBM Plex Sans KR") +
+    theme(text=element_text(family="IBM Plex Sans KR",size=40)) +
     guides(size="none")+
     facet_nodes(~ community,ncol=3)
 ```
 
-# Preprocess: Germany VNR
-
+# Germany VNR
+## Preprocess
 ```{r}
 germany<-readLines(ger_path) %>%
-  str_flatten(collapse = " ") %>%
-  str_replace_all(pattern="//", " // ") %>%
-  str_split(pattern="//") %>%
-  unlist() %>%
-  str_squish() %>%
-  tibble(paragraph=as_factor(1:length(.)),
-         text=.) 
+    str_flatten(collapse = " ") %>%
+    str_replace_all(pattern="//", " // ") %>%
+    str_split(pattern="//") %>%
+    unlist() %>%
+    str_squish() %>%
+    str_remove_all("ABC*\\w*") %>%
+    tibble(text=.) %>% 
+    filter(trimws(text) != "") %>% 
+    mutate(paragraph=1:n(),.before=text)
 ```
 
 ## Tokenizing words
@@ -488,7 +517,7 @@ break the text into individual tokens (a process called tokenization) and transf
 ```{r}
 germany_tokenized <- germany %>% 
    mutate(words=map(text, sentence_word1)) %>%
-   select(-text) %>%
+   dplyr::select(-text) %>%
    unnest(words) %>% 
    transmute(paragraph,sentence,words) %>%
    mutate(words=map(words, sentence_word2)) %>%
@@ -504,7 +533,7 @@ n words.
 ```{r}
 germany_ngram  <-  germany %>% 
    mutate(words=map(text, sentence_word1)) %>%
-   select(-text) %>%
+   dplyr::select(-text) %>%
    unnest(words) %>% 
    transmute(paragraph,sentence,words) %>%
    mutate(words=map(words, sentence_word3)) %>%
@@ -518,34 +547,35 @@ germany_tokenized <- germany_tokenized  %>%
     filter(!str_detect(words,pattern="[0-9]")) %>%  
     filter(!str_detect(words,pattern="germa[a-z]*")) %>%
     filter(!str_detect(words,pattern="eur[a-z]*")) %>% 
-    filter(!str_detect(words,pattern="government\\w*")) %>%
     filter(!str_detect(words,pattern="key")) %>%
     filter(!str_detect(words,pattern="sdg*")) %>% 
-    filter(!str_detect(words,pattern="sustain\\w*")) %>% 
-    filter(!str_detect(words,pattern="develop\\w*")) %>% 
     filter(!str_detect(words,pattern="eu*")) %>%
+    filter(!str_detect(words,pattern="billi*")) %>% 
     filter(!str_detect(words,pattern="milli*")) %>%
     filter(!str_detect(words,pattern="progra*")) %>%
     filter(!str_detect(words,pattern="inwh*")) %>%
     filter(!str_detect(words,pattern="agend*")) %>% 
-    filter(!str_detect(words,pattern="billi*"))
+    filter(!str_detect(words,pattern="billi*")) %>% 
+     filter(!str_detect(words,pattern="datum*")) %>% 
+    filter(!str_detect(words,pattern="support*")) %>%
+    filter(!str_detect(words,pattern="progra*"))
 
 
 germany_ngram <- germany_ngram  %>% 
     filter(!str_detect(words,pattern="[0-9]")) %>%  
     filter(!str_detect(words,pattern="germa[a-z]*")) %>%
     filter(!str_detect(words,pattern="eur[a-z]*")) %>% 
-    filter(!str_detect(words,pattern="government\\w*")) %>%
     filter(!str_detect(words,pattern="key")) %>%
     filter(!str_detect(words,pattern="sdg*")) %>% 
-    filter(!str_detect(words,pattern="sustain\\w*")) %>% 
-    filter(!str_detect(words,pattern="develop\\w*")) %>% 
     filter(!str_detect(words,pattern="eu*")) %>%
     filter(!str_detect(words,pattern="milli*")) %>%
     filter(!str_detect(words,pattern="progra*")) %>%
     filter(!str_detect(words,pattern="inwh*")) %>%
-    filter(!str_detect(words,pattern="agend*"))%>% 
-    filter(!str_detect(words,pattern="billi*"))
+    filter(!str_detect(words,pattern="agend*")) %>% 
+    filter(!str_detect(words,pattern="billi*")) %>% 
+     filter(!str_detect(words,pattern="datum*")) %>% 
+    filter(!str_detect(words,pattern="support*")) %>%
+    filter(!str_detect(words,pattern="progra*"))
 ```
 
 ## Frequency table
@@ -558,26 +588,40 @@ The frequency of specific words and n-grams in each paragraphs.
     arrange(desc(n)) %>% 
     top_n(30) %>%
     mutate(word = fct_reorder(words, n, .desc = F)) %>%
-    ggplot(aes(n, word)) +
-    geom_col(fill="#FFCC00") +
-    geom_text(aes(label=n),hjust=-0.1,size=7,family="Uchen")+
-    labs(y = NULL, title="Germany") +
+    ggplot(aes(x=n, y=word)) +
+    geom_col_pattern(
+    colour = "white",
+    pattern = 'gradient',
+    pattern_fill2 = '#FF0000',
+    pattern_fill = '#FFCC00',
+    pattern_orientation='horizontal',
+    pattern_alpha=1)+
+    scale_fill_hue() +
+    geom_text(aes(label=n),hjust=-0.1,size=7,family="IBM Plex Sans KR")+
+    labs(y = NULL, title="독일") +
     theme_bw()+
-    theme(plot.title = element_text(size=30),
-        text=element_text(family="Uchen",size=25)) -> b)
+    theme(plot.title = element_text(size=40),
+        text=element_text(family="IBM Plex Sans KR",size=25)) -> b)
 
 (germany_ngram %>%
     count(words) %>% 
     arrange(desc(n)) %>% 
     top_n(20) %>%
     mutate(word = fct_reorder(words, n, .desc = F)) %>%
-    ggplot(aes(n, word)) +
-    geom_col(fill="#FFCC00") +
-    geom_text(aes(label=n),hjust=-0.1,size=8,family="Uchen")+
-    labs(y = NULL, title="Germany") +
+    ggplot(aes(x=n, y=word)) +
+    geom_col_pattern(
+    colour = "white",
+    pattern = 'gradient',
+    pattern_fill2 = '#FF0000',
+    pattern_fill = '#FFCC00',
+    pattern_orientation='horizontal',
+    pattern_alpha=1)+
+    scale_fill_hue() +
+    geom_text(aes(label=n),hjust=-0.1,size=7,family="IBM Plex Sans KR")+
+    labs(y = NULL, title="독일") +
     theme_bw()+
-    theme(plot.title = element_text(size=20),
-        text=element_text(family="Uchen",size=30)) -> b1)
+    theme(plot.title =  element_text(size=40),
+        text=element_text(family="IBM Plex Sans KR",size=25)) -> b1) 
 ```
 
 ## TF-IDF per paragraph
@@ -659,7 +703,7 @@ germany_topic_k_df %>%
     facet_wrap(~metric, scales = "free")+
     theme_bw() +
     theme(plot.title = element_text(size=20),
-        text=element_text(family="Uchen",size=40))
+        text=element_text(family="IBM Plex Sans KR",size=40))
 ```
 
 ### Cast LDA (k=4)
@@ -686,7 +730,7 @@ germany_tp_4 %>%
     scale_y_reordered() +
     theme_bw()+ 
     theme(plot.title = element_text(size=20),
-          text=element_text(family="Uchen",size=40),
+          text=element_text(family="IBM Plex Sans KR",size=40),
           axis.text.x = element_text(size = 20))  
 ```
 
@@ -714,7 +758,7 @@ germany_tp_5 %>%
     scale_y_reordered() +
     theme_bw()+ 
     theme(plot.title = element_text(size=20),
-          text=element_text(family="Uchen",size=40),
+          text=element_text(family="IBM Plex Sans KR",size=40),
           axis.text.x = element_text(size = 20))  
 ```
 
@@ -742,7 +786,7 @@ germany_tp_6 %>%
     scale_y_reordered() +
     theme_bw()+ 
     theme(plot.title = element_text(size=20),
-          text=element_text(family="Uchen",size=40),
+          text=element_text(family="IBM Plex Sans KR",size=40),
           axis.text.x = element_text(size = 20))  
 ```
 
@@ -770,7 +814,7 @@ germany_tp_7 %>%
     scale_y_reordered() +
     theme_bw()+ 
     theme(plot.title = element_text(size=20),
-          text=element_text(family="Uchen",size=40),
+          text=element_text(family="IBM Plex Sans KR",size=40),
           axis.text.x = element_text(size = 20))  
 ```
 
@@ -795,7 +839,7 @@ links <- germany_coocur %>%
 
 nodes <- tibble(term=union(links$source,links$target)) %>%
     left_join(y=germany_tp_7,by="term") %>%
-    select(nodes="term",topic)
+    dplyr::select(nodes="term",topic)
 ```
 
 ### Building networks
@@ -821,9 +865,9 @@ germany_g %>%
     scale_edge_alpha(range = c(0.3,1)) +
     scale_size(range = c(5,20)) + 
     geom_node_point(aes(colour = community, size = degree)) +
-    geom_node_text(aes(label = name, size=degree),size=8, repel = TRUE,family="Uchen") +
-    theme_graph(base_family="Uchen") +
-    theme(text=element_text(family="Uchen", size=40)) +
+    geom_node_text(aes(label = name, size=degree),size=8, repel = TRUE,family="IBM Plex Sans KR") +
+    theme_graph(base_family="IBM Plex Sans KR") +
+    theme(text=element_text(family="IBM Plex Sans KR", size=40)) +
     guides(size="none")
 ```
 
@@ -841,24 +885,27 @@ germany_g %>%
     scale_edge_width(range = c(0.05,1)) +
     scale_edge_alpha(range = c(0.05,1)) + 
     geom_node_point(aes(colour = community, size = degree)) +
-    geom_node_text(aes(label = name),size=8, repel = TRUE,family="Uchen") +
-    theme_graph(base_family="Uchen") +
-    theme(text=element_text(family="Uchen",size=40)) +
+    geom_node_text(aes(label = name),size=8, repel = TRUE,family="IBM Plex Sans KR") +
+    theme_graph(base_family="IBM Plex Sans KR") +
+    theme(text=element_text(family="IBM Plex Sans KR",size=40)) +
     guides(size="none")+
     facet_nodes(~ community,ncol=3)
 ```
 
-# Preprocess: Finland VNR
+# Finland VNR
+## Preprocess
 
 ```{r}
 finland <-  readLines(fin_path) %>%
-  str_flatten(collapse = " ") %>%
-  str_replace_all(pattern="//", " // ") %>%
-  str_split(pattern="//") %>%
-  unlist() %>%
-  str_squish() %>%
-  tibble(paragraph=as_factor(1:length(.)),
-         text=.) 
+    str_flatten(collapse = " ") %>%
+    str_replace_all(pattern="//", " // ") %>%
+    str_split(pattern="//") %>%
+    unlist() %>%
+    str_squish() %>%
+    str_remove_all("ABC*\\w*") %>%
+    tibble(text=.) %>% 
+    filter(trimws(text) != "") %>% 
+    mutate(paragraph=1:n(),.before=text)
 ```
 
 ## Tokenizing words
@@ -868,7 +915,7 @@ break the text into individual tokens (a process called tokenization) and transf
 ```{r}
 finland_tokenized <- finland %>% 
    mutate(words=map(text, sentence_word1)) %>%
-   select(-text) %>%
+   dplyr::select(-text) %>%
    unnest(words) %>% 
    transmute(paragraph,sentence,words) %>%
    mutate(words=map(words, sentence_word2)) %>%
@@ -884,7 +931,7 @@ n words.
 ```{r}
 finland_ngram  <-  finland %>% 
    mutate(words=map(text, sentence_word1)) %>%
-   select(-text) %>%
+   dplyr::select(-text) %>%
    unnest(words) %>% 
    transmute(paragraph,sentence,words) %>%
    mutate(words=map(words, sentence_word3)) %>%
@@ -898,29 +945,33 @@ finland_tokenized <-finland_tokenized  %>%
     filter(!str_detect(words,pattern="[0-9]")) %>%  
     filter(!str_detect(words,pattern="finl[a-z]*")) %>%
     filter(!str_detect(words,pattern="finn[a-z]*")) %>% 
-    filter(!str_detect(words,pattern="government\\w*")) %>%
     filter(!str_detect(words,pattern="eur*")) %>%
     filter(!str_detect(words,pattern="sdg*")) %>% 
     filter(!str_detect(words,pattern="million")) %>% 
+    filter(!str_detect(words,pattern="billion")) %>% 
     filter(!str_detect(words,pattern="line")) %>% 
-    filter(!str_detect(words,pattern="sustain\\w*")) %>% 
-    filter(!str_detect(words,pattern="develop\\w*")) %>%
     filter(!str_detect(words,pattern="progra*")) %>%
-    filter(!str_detect(words,pattern="agend*"))
+    filter(!str_detect(words,pattern="agend*")) %>% 
+    filter(!str_detect(words,pattern="datum*")) %>% 
+    filter(!str_detect(words,pattern="support*")) %>% 
+     filter(!str_detect(words,pattern="datum*"))  %>%
+    filter(!str_detect(words,pattern="progra*"))
 
 finland_ngram <- finland_ngram  %>% 
     filter(!str_detect(words,pattern="[0-9]")) %>%  
     filter(!str_detect(words,pattern="finl[a-z]*")) %>%
     filter(!str_detect(words,pattern="finn[a-z]*")) %>% 
-    filter(!str_detect(words,pattern="government\\w*")) %>% 
     filter(!str_detect(words,pattern="eur*")) %>%
     filter(!str_detect(words,pattern="sdg*")) %>% 
     filter(!str_detect(words,pattern="million")) %>% 
+    filter(!str_detect(words,pattern="billion")) %>% 
     filter(!str_detect(words,pattern="line")) %>% 
-    filter(!str_detect(words,pattern="sustain\\w*")) %>% 
-    filter(!str_detect(words,pattern="develop\\w*"))%>%
     filter(!str_detect(words,pattern="progra*")) %>%
-    filter(!str_detect(words,pattern="agend*"))
+    filter(!str_detect(words,pattern="agend*")) %>% 
+     filter(!str_detect(words,pattern="datum*")) %>% 
+    filter(!str_detect(words,pattern="support*")) %>%
+    filter(!str_detect(words,pattern="progra*"))
+
 ```
 
 ## Frequency table
@@ -933,26 +984,40 @@ The frequency of specific words and n-grams in each paragraphs.
     arrange(desc(n)) %>% 
     top_n(30) %>%
     mutate(word = fct_reorder(words, n, .desc = F)) %>%
-    ggplot(aes(n, word)) +
-    geom_col(fill="#003580") +
-    geom_text(aes(label=n),hjust=-0.1,size=7,family="Uchen")+
-    labs(y = NULL, title="Finland") +
+    ggplot(aes(x=n, y=word)) +
+    geom_col_pattern(
+    colour = "white",
+    pattern = 'gradient',
+    pattern_fill2 = '#003580',
+    pattern_fill = '#FFFFFF',
+    pattern_orientation='horizontal',
+    pattern_alpha=1)+
+    scale_fill_hue() +
+    geom_text(aes(label=n),hjust=-0.1,size=7,family="IBM Plex Sans KR")+
+    labs(y = NULL, title="핀란드") +
     theme_bw()+
-    theme(plot.title = element_text(size=30),
-        text=element_text(family="Uchen",size=25)) -> c)
+    theme(plot.title = element_text(size=40),
+        text=element_text(family="IBM Plex Sans KR",size=25)) -> c)
 
-(finland_ngram %>%
+(germany_ngram %>%
     count(words) %>% 
     arrange(desc(n)) %>% 
     top_n(20) %>%
     mutate(word = fct_reorder(words, n, .desc = F)) %>%
-    ggplot(aes(n, word)) +
-    geom_col(fill="#003580") +
-    geom_text(aes(label=n),hjust=-0.1,size=8,family="Uchen")+
-    labs(y = NULL, title="Finland") +
+    ggplot(aes(x=n, y=word)) +
+    geom_col_pattern(
+    colour = "white",
+    pattern = 'gradient',
+    pattern_fill2 = '#003580',
+    pattern_fill = '#FFFFFF',
+    pattern_orientation='horizontal',
+    pattern_alpha=1)+
+    scale_fill_hue() +
+    geom_text(aes(label=n),hjust=-0.1,size=7,family="IBM Plex Sans KR")+
+    labs(y = NULL, title="핀란드") +
     theme_bw()+
-    theme(plot.title = element_text(size=20),
-        text=element_text(family="Uchen",size=30)) -> c1)
+    theme(plot.title =  element_text(size=40),
+        text=element_text(family="IBM Plex Sans KR",size=25)) -> c1) 
 ```
 
 ## TF-IDF per paragraph
@@ -1014,7 +1079,7 @@ finland_tp_4 %>%
     scale_y_reordered() +
     theme_bw()+ 
     theme(plot.title = element_text(size=20),
-          text=element_text(family="Uchen",size=40),
+          text=element_text(family="IBM Plex Sans KR",size=40),
           axis.text.x = element_text(size = 20))  
 ```
 
@@ -1042,7 +1107,7 @@ finland_tp_5 %>%
     scale_y_reordered() +
     theme_bw()+ 
     theme(plot.title = element_text(size=20),
-          text=element_text(family="Uchen",size=40),
+          text=element_text(family="IBM Plex Sans KR",size=40),
           axis.text.x = element_text(size = 20))  
 ```
 
@@ -1070,7 +1135,7 @@ finland_tp_6 %>%
     scale_y_reordered() +
     theme_bw()+ 
     theme(plot.title = element_text(size=20),
-          text=element_text(family="Uchen",size=40),
+          text=element_text(family="IBM Plex Sans KR",size=40),
           axis.text.x = element_text(size = 20))  
 ```
 
@@ -1098,7 +1163,7 @@ finland_tp_7 %>%
     scale_y_reordered() +
     theme_bw()+ 
     theme(plot.title = element_text(size=20),
-          text=element_text(family="Uchen",size=40),
+          text=element_text(family="IBM Plex Sans KR",size=40),
           axis.text.x = element_text(size = 20))  
 ```
 
@@ -1123,7 +1188,7 @@ links <- finland_coocur %>%
 
 nodes <- tibble(term=union(links$source,links$target)) %>%
     left_join(y=finland_tp_7,by="term") %>%
-    select(nodes="term",topic)
+    dplyr::select(nodes="term",topic)
 ```
 
 ### Building networks
@@ -1150,9 +1215,9 @@ finland_g %>%
     scale_edge_alpha(range = c(0.3,1)) +
     scale_size(range = c(5,20)) + 
     geom_node_point(aes(colour = community, size = degree)) +
-    geom_node_text(aes(label = name, size=degree),size=8, repel = TRUE,family="Uchen") +
-    theme_graph(base_family="Uchen") +
-    theme(text=element_text(family="Uchen", size=40)) +
+    geom_node_text(aes(label = name, size=degree),size=8, repel = TRUE,family="IBM Plex Sans KR") +
+    theme_graph(base_family="IBM Plex Sans KR") +
+    theme(text=element_text(family="IBM Plex Sans KR", size=40)) +
     guides(size="none")
 ```
 
@@ -1170,9 +1235,1215 @@ finland_g %>%
     scale_edge_width(range = c(0.05,1)) +
     scale_edge_alpha(range = c(0.05,1)) + 
     geom_node_point(aes(colour = community, size = degree)) +
-    geom_node_text(aes(label = name),size=8, repel = TRUE,family="Uchen") +
-    theme_graph(base_family="Uchen") +
-    theme(text=element_text(family="Uchen",size=40)) +
+    geom_node_text(aes(label = name),size=8, repel = TRUE,family="IBM Plex Sans KR") +
+    theme_graph(base_family="IBM Plex Sans KR") +
+    theme(text=element_text(family="IBM Plex Sans KR",size=40)) +
+    guides(size="none")+
+    facet_nodes(~ community,ncol=3)
+```
+
+
+# Japan VNR
+## Preprocess
+```{r}
+japan<-readLines(jp_path) %>%
+    str_flatten(collapse = " ") %>%
+    str_replace_all(pattern="//", " // ") %>%
+    str_split(pattern="//") %>%
+    unlist() %>%
+    str_squish() %>%
+    str_remove_all("ABC*\\w*") %>%
+    tibble(text=.) %>% 
+    filter(trimws(text) != "") %>% 
+    mutate(paragraph=1:n(),.before=text)
+```
+
+## Tokenizing words
+
+break the text into individual tokens (a process called tokenization) and transform it to a tidy data structure.
+
+```{r}
+japan_tokenized <- japan %>% 
+   mutate(words=map(text, sentence_word1)) %>%
+   dplyr::select(-text) %>%
+   unnest(words) %>% 
+   transmute(paragraph,sentence,words) %>%
+   mutate(words=map(words, sentence_word2)) %>%
+   unnest(words) 
+```
+
+## n-grams
+
+An n-gram (sometimes written "ngram") is a term in linguistics for a contiguous sequence of\
+n items from a given sequence of text or speech. The item can be phonemes, syllables, letters, or words depending on the application, but when most people talk about n-grams, they mean a group of\
+n words.
+
+```{r}
+japan_ngram  <-  japan %>% 
+   mutate(words=map(text, sentence_word1)) %>%
+   dplyr::select(-text) %>%
+   unnest(words) %>% 
+   transmute(paragraph,sentence,words) %>%
+   mutate(words=map(words, sentence_word3)) %>%
+   unnest(words) 
+```
+
+## Remove inadequate words for analysis
+
+```{r}
+japan_tokenized <- japan_tokenized  %>% 
+    filter(!str_detect(words,pattern="[0-9]")) %>%  
+    filter(!str_detect(words,pattern="jap*[a-z]*")) %>%
+    filter(!str_detect(words,pattern="asia[a-z]*")) %>% 
+    filter(!str_detect(words,pattern="key")) %>%
+    filter(!str_detect(words,pattern="sdg*")) %>% 
+    filter(!str_detect(words,pattern="billi*")) %>% 
+    filter(!str_detect(words,pattern="milli*")) %>%
+    filter(!str_detect(words,pattern="progra*")) %>%
+    filter(!str_detect(words,pattern="inwh*")) %>%
+    filter(!str_detect(words,pattern="agend*")) %>% 
+    filter(!str_detect(words,pattern="billi*")) %>% 
+     filter(!str_detect(words,pattern="datum*")) %>% 
+    filter(!str_detect(words,pattern="support*")) %>%
+    filter(!str_detect(words,pattern="progra*"))
+
+
+japan_ngram <- japan_ngram  %>% 
+    filter(!str_detect(words,pattern="[0-9]")) %>%  
+    filter(!str_detect(words,pattern="jap*[a-z]*")) %>%
+    filter(!str_detect(words,pattern="asia[a-z]*")) %>% 
+    filter(!str_detect(words,pattern="key")) %>%
+    filter(!str_detect(words,pattern="sdg*")) %>% 
+    filter(!str_detect(words,pattern="billi*")) %>% 
+    filter(!str_detect(words,pattern="milli*")) %>%
+    filter(!str_detect(words,pattern="progra*")) %>%
+    filter(!str_detect(words,pattern="inwh*")) %>%
+    filter(!str_detect(words,pattern="agend*")) %>% 
+    filter(!str_detect(words,pattern="billi*")) %>% 
+     filter(!str_detect(words,pattern="datum*")) %>% 
+    filter(!str_detect(words,pattern="support*")) %>%
+    filter(!str_detect(words,pattern="progra*"))
+```
+
+## Frequency table
+
+The frequency of specific words and n-grams in each paragraphs.
+
+```{r, fig.align='center',fig.width=6,fig.height=4}
+(japan_tokenized %>%
+    count(words) %>% 
+    arrange(desc(n)) %>% 
+    top_n(30) %>%
+    mutate(word = fct_reorder(words, n, .desc = F)) %>%
+    ggplot(aes(x=n, y=word)) +
+    geom_col_pattern(
+    colour = "white",
+    pattern = 'gradient',
+    pattern_fill2 = '#BC002D',
+    pattern_fill = '#FFFFFF',
+    pattern_orientation='horizontal',
+    pattern_alpha=1)+
+    scale_fill_hue() +
+    geom_text(aes(label=n),hjust=-0.1,size=7,family="IBM Plex Sans KR")+
+    labs(y = NULL, title="일본") +
+    theme_bw()+
+    theme(plot.title = element_text(size=40),
+        text=element_text(family="IBM Plex Sans KR",size=25)) -> d)
+
+(japan_ngram %>%
+    count(words) %>% 
+    arrange(desc(n)) %>% 
+    top_n(20) %>%
+    mutate(word = fct_reorder(words, n, .desc = F)) %>%
+    ggplot(aes(x=n, y=word)) +
+    geom_col_pattern(
+    colour = "white",
+    pattern = 'gradient',
+    pattern_fill2 = '#BC002D',
+    pattern_fill = '#FFFFFF',
+    pattern_orientation='horizontal',
+    pattern_alpha=1)+
+    scale_fill_hue() +
+    geom_text(aes(label=n),hjust=-0.1,size=7,family="IBM Plex Sans KR")+
+    labs(y = NULL, title="일본") +
+    theme_bw()+
+    theme(plot.title =  element_text(size=40),
+        text=element_text(family="IBM Plex Sans KR",size=25)) -> d1) 
+```
+
+## TF-IDF per paragraph
+
+```{r, fig.align='center',fig.width=10,fig.height=10}
+japan_tfidf <- japan_tokenized %>%
+    mutate(id=glue::glue("{paragraph}-{sentence}")) %>% 
+    group_by(paragraph) %>%
+    count(paragraph,words) %>% 
+    bind_tf_idf(words, paragraph, n) %>% 
+    arrange(desc(tf_idf)) %>% 
+    relocate(words,.before=paragraph) 
+      
+japan_tfidf %>% 
+    filter(n>=2)%>% 
+    head(20) %>% 
+    kbl() %>% 
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
+
+## Topic modeling
+
+```{r}
+set.seed(2022)
+
+japan_tfidf  %>%
+  cast_dtm(paragraph, words, n) -> japan_dtm.old
+
+rowTotals <- apply(japan_dtm.old, 1, sum) # Find the sum of words in each Document
+japan_dtm <- japan_dtm.old[rowTotals> 0, ] # Remove all docs without words
+
+```
+
+### Using perplexity for hold out set
+
+The perplexity is the geometric mean of word likelihood. In 5-fold CV, we first estimate the model, usually called training model, for a given number of topics using 4 folds of the data and then use the left one fold of the data to calculate the perplexity. In calculating the perplexity, we set the model in LDA or CTM to be the training model and not to estimate the beta parameters.
+
+```{r warning = FALSE, message = FALSE, results='hide', fig.align='center',fig.width=10,fig.height=7}
+japan_split <- initial_split(japan_tfidf, prop = 0.8)
+
+# Train
+japan_split_train <- training(japan_split)
+japan_split_train  %>%
+    cast_dtm(paragraph, words, n) -> japan_train_dtm.old
+
+rowTotals <- apply(japan_train_dtm.old, 1, sum) # Find the sum of words in each Document
+japan_train_dtm <- japan_train_dtm.old[rowTotals> 0, ] # Remove all docs without words
+
+# Test
+japan_split_test <- testing(japan_split)
+japan_split_test  %>%
+    cast_dtm(paragraph, words, n) -> japan_test_dtm.old
+
+rowTotals <- apply(japan_test_dtm.old, 1, sum) # Find the sum of words in each Document
+japan_test_dtm <- japan_test_dtm.old[rowTotals> 0, ] # Remove all docs without words
+
+loglik_v     <- vector("numeric", 20)
+perplexity_v <- vector("numeric", 20)
+
+
+for (i in 2:20) {
+    cat("... ", i, "\n")
+    tmp_mod  <- LDA(japan_train_dtm, k=i, method="Gibbs", control=list(alpha=0.5, iter=1000, seed=2020, thin=3))
+    loglik_v[i] <- logLik(tmp_mod)
+    perplexity_v[i] <- perplexity(tmp_mod, newdata = japan_test_dtm)
+}
+
+japan_topic_k_df <- tibble(
+    topic_k = 1:20,
+    loglik = loglik_v,
+    perplexity = perplexity_v)
+
+japan_topic_k_df %>%
+    filter(topic_k != 1) %>%
+    gather(metric, value, -topic_k) %>%
+    ggplot(aes(x=topic_k, y=value)) +
+    geom_line() +
+    geom_point() +
+    facet_wrap(~metric, scales = "free")+
+    theme_bw() +
+    theme(plot.title = element_text(size=20),
+        text=element_text(family="IBM Plex Sans KR",size=40))
+```
+
+### Cast LDA (k=4)
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+japan_lda <-  LDA(japan_dtm, k = 4,
+              method="Gibbs",
+              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
+
+japan_tp_4 <- japan_lda %>%
+    tidy(matrix = "beta") %>%
+    group_by(term) %>%
+    slice_max(beta) 
+
+japan_tp_4 %>% 
+    group_by(topic) %>%
+    slice_max(beta,n=10) %>%
+    arrange(topic) %>%
+    mutate(term = reorder_within(term, beta, topic)) %>%
+    ggplot(aes(beta, term, fill = factor(topic))) +
+    geom_col(show.legend = FALSE) +
+    facet_wrap(~ topic, scales = "free",ncol=3) +
+    scale_y_reordered() +
+    theme_bw()+ 
+    theme(plot.title = element_text(size=20),
+          text=element_text(family="IBM Plex Sans KR",size=40),
+          axis.text.x = element_text(size = 20))  
+```
+
+### Cast LDA (k=5)
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+japan_lda <-  LDA(japan_dtm, k = 5,
+              method="Gibbs",
+              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
+
+japan_tp_5 <- japan_lda %>%
+    tidy(matrix = "beta") %>%
+    group_by(term) %>%
+    slice_max(beta) 
+
+japan_tp_5 %>% 
+    group_by(topic) %>%
+    slice_max(beta,n=10) %>%
+    arrange(topic) %>%
+    mutate(term = reorder_within(term, beta, topic)) %>%
+    ggplot(aes(beta, term, fill = factor(topic))) +
+    geom_col(show.legend = FALSE) +
+    facet_wrap(~ topic, scales = "free",ncol=3) +
+    scale_y_reordered() +
+    theme_bw()+ 
+    theme(plot.title = element_text(size=20),
+          text=element_text(family="IBM Plex Sans KR",size=40),
+          axis.text.x = element_text(size = 20))  
+```
+
+### Cast LDA (k=6)
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+japan_lda <-  LDA(japan_dtm, k = 6,
+              method="Gibbs",
+              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
+
+japan_tp_6 <- japan_lda %>%
+    tidy(matrix = "beta") %>%
+    group_by(term) %>%
+    slice_max(beta) 
+
+japan_tp_6 %>% 
+    group_by(topic) %>%
+    slice_max(beta,n=10) %>%
+    arrange(topic) %>%
+    mutate(term = reorder_within(term, beta, topic)) %>%
+    ggplot(aes(beta, term, fill = factor(topic))) +
+    geom_col(show.legend = FALSE) +
+    facet_wrap(~ topic, scales = "free",ncol=3) +
+    scale_y_reordered() +
+    theme_bw()+ 
+    theme(plot.title = element_text(size=20),
+          text=element_text(family="IBM Plex Sans KR",size=40),
+          axis.text.x = element_text(size = 20))  
+```
+
+### Cast LDA (k=7)
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+japan_lda <-  LDA(japan_dtm, k = 7,
+              method="Gibbs",
+              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
+
+japan_tp_7 <- japan_lda %>%
+    tidy(matrix = "beta") %>%
+    group_by(term) %>%
+    slice_max(beta) 
+
+japan_tp_7 %>% 
+    group_by(topic) %>%
+    slice_max(beta,n=10) %>%
+    arrange(topic) %>%
+    mutate(term = reorder_within(term, beta, topic)) %>%
+    ggplot(aes(beta, term, fill = factor(topic))) +
+    geom_col(show.legend = FALSE) +
+    facet_wrap(~ topic, scales = "free",ncol=4) +
+    scale_y_reordered() +
+    theme_bw()+ 
+    theme(plot.title = element_text(size=20),
+          text=element_text(family="IBM Plex Sans KR",size=40),
+          axis.text.x = element_text(size = 20))  
+```
+
+## Network Graph
+
+### Pairwise Count
+
+```{r}
+japan_coocur <- japan_tfidf  %>%
+    ungroup() %>% 
+    arrange(desc(n)) %>%
+    rename(term=words) %>%
+    pairwise_count(term, paragraph, sort = TRUE,upper = F) 
+```
+
+### Building links and nodes
+
+```{r}
+links <- japan_coocur %>%
+    top_n(100) %>%
+    rename(source="item1",target="item2",weight="n") 
+
+nodes <- tibble(term=union(links$source,links$target)) %>%
+    left_join(y=japan_tp_5,by="term") %>%
+    dplyr::select(nodes="term",topic)
+```
+
+### Building networks
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+japan_network <- graph_from_data_frame(d = links, vertices = nodes, directed = F)
+japan_g <- as_tbl_graph(japan_network)
+
+```
+
+### Network Graph
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+japan_g %>%
+    activate("nodes") %>%
+    mutate(degree = centrality_degree(),
+             community = as.factor(topic)) %>%
+    ggraph(layout = 'kk') +
+    geom_edge_link(aes(alpha = weight,width=weight),
+                   colour = "black", show.legend = FALSE) +
+    scale_edge_width(range = c(0.05,1.5)) +
+    scale_edge_alpha(range = c(0.3,1)) +
+    scale_size(range = c(5,20)) + 
+    geom_node_point(aes(colour = community, size = degree)) +
+    geom_node_text(aes(label = name, size=degree),size=8, repel = TRUE,family="IBM Plex Sans KR") +
+    theme_graph(base_family="IBM Plex Sans KR") +
+    theme(text=element_text(family="IBM Plex Sans KR", size=40)) +
+    guides(size="none")
+```
+
+### Network Graph per topic
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+japan_g %>%
+    activate("nodes") %>%
+    mutate(degree = centrality_degree(),
+             community = as.factor(topic)) %>%
+    ggraph(layout = 'kk') +
+    geom_edge_link(aes(alpha = weight,width=weight),
+                   colour = "black", show.legend = FALSE) +
+    scale_edge_width(range = c(0.05,1)) +
+    scale_edge_alpha(range = c(0.05,1)) + 
+    geom_node_point(aes(colour = community, size = degree)) +
+    geom_node_text(aes(label = name),size=8, repel = TRUE,family="IBM Plex Sans KR") +
+    theme_graph(base_family="IBM Plex Sans KR") +
+    theme(text=element_text(family="IBM Plex Sans KR",size=40)) +
+    guides(size="none")+
+    facet_nodes(~ community,ncol=3)
+```
+
+# UK VNR
+## Preprocess
+```{r}
+uk <-readLines(uk_path) %>%
+    str_flatten(collapse = " ") %>%
+    str_replace_all(pattern="//", " // ") %>%
+    str_split(pattern="//") %>%
+    unlist() %>%
+    str_squish() %>%
+    str_remove_all("ABC*\\w*") %>%
+    tibble(text=.) %>% 
+    filter(trimws(text) != "") %>% 
+    mutate(paragraph=1:n(),.before=text)
+```
+
+## Tokenizing words
+
+break the text into individual tokens (a process called tokenization) and transform it to a tidy data structure.
+
+```{r}
+uk_tokenized <- uk %>% 
+   mutate(words=map(text, sentence_word1)) %>%
+   dplyr::select(-text) %>%
+   unnest(words) %>% 
+   transmute(paragraph,sentence,words) %>%
+   mutate(words=map(words, sentence_word2)) %>%
+   unnest(words) 
+```
+
+## n-grams
+
+An n-gram (sometimes written "ngram") is a term in linguistics for a contiguous sequence of\
+n items from a given sequence of text or speech. The item can be phonemes, syllables, letters, or words depending on the application, but when most people talk about n-grams, they mean a group of\
+n words.
+
+```{r}
+uk_ngram  <-  uk %>% 
+   mutate(words=map(text, sentence_word1)) %>%
+   dplyr::select(-text) %>%
+   unnest(words) %>% 
+   transmute(paragraph,sentence,words) %>%
+   mutate(words=map(words, sentence_word3)) %>%
+   unnest(words) 
+```
+
+## Remove inadequate words for analysis
+
+```{r}
+uk_tokenized <- uk_tokenized  %>% 
+    filter(!str_detect(words,pattern="[0-9]")) %>%  
+    filter(!str_detect(words,pattern="uk[a-z]*")) %>%
+    filter(!str_detect(words,pattern="eur[a-z]*")) %>% 
+    filter(!str_detect(words,pattern="key")) %>%
+    filter(!str_detect(words,pattern="sdg*")) %>% 
+    filter(!str_detect(words,pattern="eu*")) %>%
+    filter(!str_detect(words,pattern="billi*")) %>% 
+    filter(!str_detect(words,pattern="milli*")) %>%
+    filter(!str_detect(words,pattern="progra*")) %>%
+    filter(!str_detect(words,pattern="inwh*")) %>%
+    filter(!str_detect(words,pattern="agend*")) %>% 
+    filter(!str_detect(words,pattern="wale*")) %>% 
+    filter(!str_detect(words,pattern="scot*")) %>% 
+    filter(!str_detect(words,pattern="eng*")) %>% 
+    filter(!str_detect(words,pattern="irel*")) %>% 
+    filter(!str_detect(words,pattern="datum*")) %>% 
+    filter(!str_detect(words,pattern="support*")) %>% 
+    filter(!str_detect(words,pattern="wt*")) %>% 
+    filter(!str_detect(words,pattern="rbmps*")) %>% 
+    filter(!str_detect(words,pattern="inn*")) %>%
+    filter(!str_detect(words,pattern="whilst*")) %>% 
+    filter(!str_detect(words,pattern="npt*")) %>%
+    filter(!str_detect(words,pattern="britain*")) 
+
+uk_ngram <- uk_ngram  %>% 
+    filter(!str_detect(words,pattern="[0-9]")) %>%  
+    filter(!str_detect(words,pattern="uk[a-z]*")) %>%
+    filter(!str_detect(words,pattern="eur[a-z]*")) %>% 
+    filter(!str_detect(words,pattern="key")) %>%
+    filter(!str_detect(words,pattern="sdg*")) %>% 
+    filter(!str_detect(words,pattern="eu*")) %>%
+    filter(!str_detect(words,pattern="billi*")) %>% 
+    filter(!str_detect(words,pattern="milli*")) %>%
+    filter(!str_detect(words,pattern="progra*")) %>%
+    filter(!str_detect(words,pattern="inwh*")) %>%
+    filter(!str_detect(words,pattern="agend*")) %>% 
+    filter(!str_detect(words,pattern="wale*")) %>% 
+    filter(!str_detect(words,pattern="scot*")) %>% 
+    filter(!str_detect(words,pattern="eng*")) %>% 
+    filter(!str_detect(words,pattern="irel*")) %>% 
+    filter(!str_detect(words,pattern="datum*")) %>% 
+    filter(!str_detect(words,pattern="support*")) %>% 
+    filter(!str_detect(words,pattern="wt*")) %>% 
+    filter(!str_detect(words,pattern="rbmps*")) %>% 
+    filter(!str_detect(words,pattern="inn*")) %>%
+    filter(!str_detect(words,pattern="whilst*")) %>% 
+    filter(!str_detect(words,pattern="npt*")) %>%
+    filter(!str_detect(words,pattern="britain*")) 
+```
+
+## Frequency table
+
+The frequency of specific words and n-grams in each paragraphs.
+
+```{r, fig.align='center',fig.width=6,fig.height=4}
+(uk_tokenized %>%
+    count(words) %>% 
+    arrange(desc(n)) %>% 
+    top_n(30) %>%
+    mutate(word = fct_reorder(words, n, .desc = F)) %>%
+    ggplot(aes(x=n, y=word)) +
+    geom_col_pattern(
+    colour = "white",
+    pattern = 'gradient',
+    pattern_fill2 = '#00247D',
+    pattern_fill = '#CF142B',
+    pattern_orientation='horizontal',
+    pattern_alpha=1)+
+    scale_fill_hue() +
+    geom_text(aes(label=n),hjust=-0.1,size=7,family="IBM Plex Sans KR")+
+    labs(y = NULL, title="영국") +
+    theme_bw()+
+    theme(plot.title = element_text(size=40),
+        text=element_text(family="IBM Plex Sans KR",size=25)) -> e)
+
+(uk_ngram %>%
+    count(words) %>% 
+    arrange(desc(n)) %>% 
+    top_n(20) %>%
+    mutate(word = fct_reorder(words, n, .desc = F)) %>%
+    ggplot(aes(x=n, y=word)) +
+    geom_col_pattern(
+    colour = "white",
+    pattern = 'gradient',
+    pattern_fill2 = '#00247D',
+    pattern_fill = '#CF142B',
+    pattern_orientation='horizontal',
+    pattern_alpha=1)+
+    scale_fill_hue() +
+    geom_text(aes(label=n),hjust=-0.1,size=7,family="IBM Plex Sans KR")+
+    labs(y = NULL, title="독일") +
+    theme_bw()+
+    theme(plot.title =  element_text(size=40),
+        text=element_text(family="IBM Plex Sans KR",size=25)) -> e1) 
+```
+
+## TF-IDF per paragraph
+
+```{r, fig.align='center',fig.width=10,fig.height=10}
+uk_tfidf <- uk_tokenized %>%
+    mutate(id=glue::glue("{paragraph}-{sentence}")) %>% 
+    group_by(paragraph) %>%
+    count(paragraph,words) %>% 
+    bind_tf_idf(words, paragraph, n) %>% 
+    arrange(desc(tf_idf)) %>% 
+    relocate(words,.before=paragraph) 
+      
+uk_tfidf %>% 
+    filter(n>=2)%>% 
+    head(20) %>% 
+    kbl() %>% 
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
+
+## Topic modeling
+
+```{r}
+set.seed(2022)
+
+uk_tfidf  %>%
+  cast_dtm(paragraph, words, n) -> uk_dtm.old
+
+rowTotals <- apply(uk_dtm.old, 1, sum) # Find the sum of words in each Document
+uk_dtm <- uk_dtm.old[rowTotals> 0, ] # Remove all docs without words
+
+```
+
+### Using perplexity for hold out set
+
+The perplexity is the geometric mean of word likelihood. In 5-fold CV, we first estimate the model, usually called training model, for a given number of topics using 4 folds of the data and then use the left one fold of the data to calculate the perplexity. In calculating the perplexity, we set the model in LDA or CTM to be the training model and not to estimate the beta parameters.
+
+```{r warning = FALSE, message = FALSE, results='hide', fig.align='center',fig.width=10,fig.height=7}
+uk_split <- initial_split(uk_tfidf, prop = 0.8)
+
+# Train
+uk_split_train <- training(uk_split)
+uk_split_train  %>%
+    cast_dtm(paragraph, words, n) -> uk_train_dtm.old
+
+rowTotals <- apply(uk_train_dtm.old, 1, sum) # Find the sum of words in each Document
+uk_train_dtm <- uk_train_dtm.old[rowTotals> 0, ] # Remove all docs without words
+
+# Test
+uk_split_test <- testing(uk_split)
+uk_split_test  %>%
+    cast_dtm(paragraph, words, n) -> uk_test_dtm.old
+
+rowTotals <- apply(uk_test_dtm.old, 1, sum) # Find the sum of words in each Document
+uk_test_dtm <- uk_test_dtm.old[rowTotals> 0, ] # Remove all docs without words
+
+loglik_v     <- vector("numeric", 20)
+perplexity_v <- vector("numeric", 20)
+
+
+for (i in 2:20) {
+    cat("... ", i, "\n")
+    tmp_mod  <- LDA(uk_train_dtm, k=i, method="Gibbs", control=list(alpha=0.5, iter=1000, seed=2020, thin=3))
+    loglik_v[i] <- logLik(tmp_mod)
+    perplexity_v[i] <- perplexity(tmp_mod, newdata = uk_test_dtm)
+}
+
+uk_topic_k_df <- tibble(
+    topic_k = 1:20,
+    loglik = loglik_v,
+    perplexity = perplexity_v)
+
+uk_topic_k_df %>%
+    filter(topic_k != 1) %>%
+    gather(metric, value, -topic_k) %>%
+    ggplot(aes(x=topic_k, y=value)) +
+    geom_line() +
+    geom_point() +
+    facet_wrap(~metric, scales = "free")+
+    theme_bw() +
+    theme(plot.title = element_text(size=20),
+        text=element_text(family="IBM Plex Sans KR",size=40))
+```
+
+### Cast LDA (k=4)
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+uk_lda <-  LDA(uk_dtm, k = 4,
+              method="Gibbs",
+              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
+
+uk_tp_4 <- uk_lda %>%
+    tidy(matrix = "beta") %>%
+    group_by(term) %>%
+    slice_max(beta) 
+
+uk_tp_4 %>% 
+    group_by(topic) %>%
+    slice_max(beta,n=10) %>%
+    arrange(topic) %>%
+    mutate(term = reorder_within(term, beta, topic)) %>%
+    ggplot(aes(beta, term, fill = factor(topic))) +
+    geom_col(show.legend = FALSE) +
+    facet_wrap(~ topic, scales = "free",ncol=3) +
+    scale_y_reordered() +
+    theme_bw()+ 
+    theme(plot.title = element_text(size=20),
+          text=element_text(family="IBM Plex Sans KR",size=40),
+          axis.text.x = element_text(size = 20))  
+```
+
+### Cast LDA (k=5)
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+uk_lda <-  LDA(uk_dtm, k = 5,
+              method="Gibbs",
+              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
+
+uk_tp_5 <- uk_lda %>%
+    tidy(matrix = "beta") %>%
+    group_by(term) %>%
+    slice_max(beta) 
+
+uk_tp_5 %>% 
+    group_by(topic) %>%
+    slice_max(beta,n=10) %>%
+    arrange(topic) %>%
+    mutate(term = reorder_within(term, beta, topic)) %>%
+    ggplot(aes(beta, term, fill = factor(topic))) +
+    geom_col(show.legend = FALSE) +
+    facet_wrap(~ topic, scales = "free",ncol=3) +
+    scale_y_reordered() +
+    theme_bw()+ 
+    theme(plot.title = element_text(size=20),
+          text=element_text(family="IBM Plex Sans KR",size=40),
+          axis.text.x = element_text(size = 20))  
+```
+
+### Cast LDA (k=6)
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+uk_lda <-  LDA(uk_dtm, k = 6,
+              method="Gibbs",
+              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
+
+uk_tp_6 <- uk_lda %>%
+    tidy(matrix = "beta") %>%
+    group_by(term) %>%
+    slice_max(beta) 
+
+uk_tp_6 %>% 
+    group_by(topic) %>%
+    slice_max(beta,n=10) %>%
+    arrange(topic) %>%
+    mutate(term = reorder_within(term, beta, topic)) %>%
+    ggplot(aes(beta, term, fill = factor(topic))) +
+    geom_col(show.legend = FALSE) +
+    facet_wrap(~ topic, scales = "free",ncol=3) +
+    scale_y_reordered() +
+    theme_bw()+ 
+    theme(plot.title = element_text(size=20),
+          text=element_text(family="IBM Plex Sans KR",size=40),
+          axis.text.x = element_text(size = 20))  
+```
+
+### Cast LDA (k=7)
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+uk_lda <-  LDA(uk_dtm, k = 7,
+              method="Gibbs",
+              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
+
+uk_tp_7 <- uk_lda %>%
+    tidy(matrix = "beta") %>%
+    group_by(term) %>%
+    slice_max(beta) 
+
+uk_tp_7 %>% 
+    group_by(topic) %>%
+    slice_max(beta,n=10) %>%
+    arrange(topic) %>%
+    mutate(term = reorder_within(term, beta, topic)) %>%
+    ggplot(aes(beta, term, fill = factor(topic))) +
+    geom_col(show.legend = FALSE) +
+    facet_wrap(~ topic, scales = "free",ncol=4) +
+    scale_y_reordered() +
+    theme_bw()+ 
+    theme(plot.title = element_text(size=20),
+          text=element_text(family="IBM Plex Sans KR",size=40),
+          axis.text.x = element_text(size = 20))  
+```
+
+## Network Graph
+
+### Pairwise Count
+
+```{r}
+uk_coocur <- uk_tfidf  %>%
+    ungroup() %>% 
+    arrange(desc(n)) %>%
+    rename(term=words) %>%
+    pairwise_count(term, paragraph, sort = TRUE,upper = F) 
+```
+
+### Building links and nodes
+
+```{r}
+links <- uk_coocur %>%
+    top_n(100) %>%
+    rename(source="item1",target="item2",weight="n") 
+
+nodes <- tibble(term=union(links$source,links$target)) %>%
+    left_join(y=uk_tp_6,by="term") %>%
+    dplyr::select(nodes="term",topic)
+```
+
+### Building networks
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+uk_network <- graph_from_data_frame(d = links, vertices = nodes, directed = F)
+uk_g <- as_tbl_graph(uk_network)
+
+```
+
+### Network Graph
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+uk_g %>%
+    activate("nodes") %>%
+    mutate(degree = centrality_degree(),
+             community = as.factor(topic)) %>%
+    ggraph(layout = 'kk') +
+    geom_edge_link(aes(alpha = weight,width=weight),
+                   colour = "black", show.legend = FALSE) +
+    scale_edge_width(range = c(0.05,1.5)) +
+    scale_edge_alpha(range = c(0.3,1)) +
+    scale_size(range = c(5,20)) + 
+    geom_node_point(aes(colour = community, size = degree)) +
+    geom_node_text(aes(label = name, size=degree),size=8, repel = TRUE,family="IBM Plex Sans KR") +
+    theme_graph(base_family="IBM Plex Sans KR") +
+    theme(text=element_text(family="IBM Plex Sans KR", size=40)) +
+    guides(size="none")
+```
+
+### Network Graph per topic
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+uk_g %>%
+    activate("nodes") %>%
+    mutate(degree = centrality_degree(),
+             community = as.factor(topic)) %>%
+    ggraph(layout = 'kk') +
+    geom_edge_link(aes(alpha = weight,width=weight),
+                   colour = "black", show.legend = FALSE) +
+    scale_edge_width(range = c(0.05,1)) +
+    scale_edge_alpha(range = c(0.05,1)) + 
+    geom_node_point(aes(colour = community, size = degree)) +
+    geom_node_text(aes(label = name),size=8, repel = TRUE,family="IBM Plex Sans KR") +
+    theme_graph(base_family="IBM Plex Sans KR") +
+    theme(text=element_text(family="IBM Plex Sans KR",size=40)) +
+    guides(size="none")+
+    facet_nodes(~ community,ncol=3)
+```
+
+# Austrailia VNR
+## Preprocess
+```{r}
+austrailia<-readLines(astl_path) %>%
+    str_flatten(collapse = " ") %>%
+    str_replace_all(pattern="//", " // ") %>%
+    str_split(pattern="//") %>%
+    unlist() %>%
+    str_squish() %>%
+    str_remove_all("ABC*\\w*") %>%
+    tibble(text=.) %>% 
+    filter(trimws(text) != "") %>% 
+    mutate(paragraph=1:n(),.before=text)
+```
+
+## Tokenizing words
+
+break the text into individual tokens (a process called tokenization) and transform it to a tidy data structure.
+
+```{r}
+austrailia_tokenized <- austrailia %>% 
+   mutate(words=map(text, sentence_word1)) %>%
+   dplyr::select(-text) %>%
+   unnest(words) %>% 
+   transmute(paragraph,sentence,words) %>%
+   mutate(words=map(words, sentence_word2)) %>%
+   unnest(words) 
+```
+
+## n-grams
+
+An n-gram (sometimes written "ngram") is a term in linguistics for a contiguous sequence of\
+n items from a given sequence of text or speech. The item can be phonemes, syllables, letters, or words depending on the application, but when most people talk about n-grams, they mean a group of\
+n words.
+
+```{r}
+austrailia_ngram  <-  austrailia %>% 
+   mutate(words=map(text, sentence_word1)) %>%
+   dplyr::select(-text) %>%
+   unnest(words) %>% 
+   transmute(paragraph,sentence,words) %>%
+   mutate(words=map(words, sentence_word3)) %>%
+   unnest(words) 
+```
+
+## Remove inadequate words for analysis
+
+```{r}
+austrailia_tokenized <- austrailia_tokenized  %>% 
+    filter(!str_detect(words,pattern="[0-9]")) %>%  
+    filter(!str_detect(words,pattern="austra*[a-z]*")) %>%
+    filter(!str_detect(words,pattern="eur[a-z]*")) %>% 
+    filter(!str_detect(words,pattern="key")) %>%
+    filter(!str_detect(words,pattern="sdg*")) %>% 
+    filter(!str_detect(words,pattern="eu*")) %>%
+    filter(!str_detect(words,pattern="billi*")) %>% 
+    filter(!str_detect(words,pattern="milli*")) %>%
+    filter(!str_detect(words,pattern="inwh*")) %>%
+    filter(!str_detect(words,pattern="agend*")) %>% 
+    filter(!str_detect(words,pattern="torres*"))%>% 
+    filter(!str_detect(words,pattern="cent")) %>% 
+    filter(!str_detect(words,pattern="datum*")) %>% 
+    filter(!str_detect(words,pattern="support*")) %>%
+    filter(!str_detect(words,pattern="progra*"))
+
+austrailia_ngram <- germany_ngram %>% 
+    filter(!str_detect(words,pattern="[0-9]")) %>%  
+    filter(!str_detect(words,pattern="austrail[a-z]*")) %>%
+    filter(!str_detect(words,pattern="eur[a-z]*")) %>% 
+    filter(!str_detect(words,pattern="key")) %>%
+    filter(!str_detect(words,pattern="sdg*")) %>% 
+    filter(!str_detect(words,pattern="eu*")) %>%
+    filter(!str_detect(words,pattern="billi*")) %>% 
+    filter(!str_detect(words,pattern="milli*")) %>%
+    filter(!str_detect(words,pattern="inwh*")) %>%
+    filter(!str_detect(words,pattern="agend*")) %>% 
+    filter(!str_detect(words,pattern="torres*"))%>% 
+    filter(!str_detect(words,pattern="cent")) %>% 
+    filter(!str_detect(words,pattern="datum*")) %>% 
+    filter(!str_detect(words,pattern="support*")) %>%
+    filter(!str_detect(words,pattern="progra*"))
+```
+
+## Frequency table
+
+The frequency of specific words and n-grams in each paragraphs.
+
+```{r, fig.align='center',fig.width=6,fig.height=4}
+(austrailia_tokenized %>%
+    count(words) %>% 
+    arrange(desc(n)) %>% 
+    top_n(30) %>%
+    mutate(word = fct_reorder(words, n, .desc = F)) %>%
+    ggplot(aes(x=n, y=word)) +
+    geom_col_pattern(
+    colour = "white",
+    pattern = 'gradient',
+    pattern_fill2 = '#00008B',
+    pattern_fill = '#FFFFFF',
+    pattern_orientation='horizontal',
+    pattern_alpha=1)+
+    scale_fill_hue() +
+    geom_text(aes(label=n),hjust=-0.1,size=7,family="IBM Plex Sans KR")+
+    labs(y = NULL, title="호주") +
+    theme_bw()+
+    theme(plot.title = element_text(size=40),
+        text=element_text(family="IBM Plex Sans KR",size=25)) -> f)
+
+(austrailia_ngram %>%
+    count(words) %>% 
+    arrange(desc(n)) %>% 
+    top_n(20) %>%
+    mutate(word = fct_reorder(words, n, .desc = F)) %>%
+    ggplot(aes(x=n, y=word)) +
+    geom_col_pattern(
+    colour = "white",
+    pattern = 'gradient',
+    pattern_fill2 = '#00008B',
+    pattern_fill = '#FFFFFF',
+    pattern_orientation='horizontal',
+    pattern_alpha=1)+
+    scale_fill_hue() +
+    geom_text(aes(label=n),hjust=-0.1,size=7,family="IBM Plex Sans KR")+
+    labs(y = NULL, title="호주") +
+    theme_bw()+
+    theme(plot.title =  element_text(size=40),
+        text=element_text(family="IBM Plex Sans KR",size=25)) -> f1) 
+```
+
+## TF-IDF per paragraph
+
+```{r, fig.align='center',fig.width=10,fig.height=10}
+austrailia_tfidf <- austrailia_tokenized %>%
+    mutate(id=glue::glue("{paragraph}-{sentence}")) %>% 
+    group_by(paragraph) %>%
+    count(paragraph,words) %>% 
+    bind_tf_idf(words, paragraph, n) %>% 
+    arrange(desc(tf_idf)) %>% 
+    relocate(words,.before=paragraph) 
+      
+austrailia_tfidf %>% 
+    filter(n>=2)%>% 
+    head(20) %>% 
+    kbl() %>% 
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
+
+## Topic modeling
+
+```{r}
+set.seed(2022)
+
+austrailia_tfidf  %>%
+  cast_dtm(paragraph, words, n) -> austrailia_dtm.old
+
+rowTotals <- apply(austrailia_dtm.old, 1, sum) # Find the sum of words in each Document
+austrailia_dtm <- austrailia_dtm.old[rowTotals> 0, ] # Remove all docs without words
+
+```
+
+### Using perplexity for hold out set
+
+The perplexity is the geometric mean of word likelihood. In 5-fold CV, we first estimate the model, usually called training model, for a given number of topics using 4 folds of the data and then use the left one fold of the data to calculate the perplexity. In calculating the perplexity, we set the model in LDA or CTM to be the training model and not to estimate the beta parameters.
+
+```{r warning = FALSE, message = FALSE, results='hide', fig.align='center',fig.width=10,fig.height=7}
+austrailia_split <- initial_split(austrailia_tfidf, prop = 0.8)
+
+# Train
+austrailia_split_train <- training(austrailia_split)
+austrailia_split_train  %>%
+    cast_dtm(paragraph, words, n) -> austrailia_train_dtm.old
+
+rowTotals <- apply(austrailia_train_dtm.old, 1, sum) # Find the sum of words in each Document
+austrailia_train_dtm <- austrailia_train_dtm.old[rowTotals> 0, ] # Remove all docs without words
+
+# Test
+austrailia_split_test <- testing(austrailia_split)
+austrailia_split_test  %>%
+    cast_dtm(paragraph, words, n) -> austrailia_test_dtm.old
+
+rowTotals <- apply(austrailia_test_dtm.old, 1, sum) # Find the sum of words in each Document
+austrailia_test_dtm <- austrailia_test_dtm.old[rowTotals> 0, ] # Remove all docs without words
+
+loglik_v     <- vector("numeric", 20)
+perplexity_v <- vector("numeric", 20)
+
+
+for (i in 2:20) {
+    cat("... ", i, "\n")
+    tmp_mod  <- LDA(austrailia_train_dtm, k=i, method="Gibbs", control=list(alpha=0.5, iter=1000, seed=2020, thin=3))
+    loglik_v[i] <- logLik(tmp_mod)
+    perplexity_v[i] <- perplexity(tmp_mod, newdata = austrailia_test_dtm)}
+
+austrailia_topic_k_df <- tibble(
+    topic_k = 1:20,
+    loglik = loglik_v,
+    perplexity = perplexity_v)
+
+austrailia_topic_k_df %>%
+    filter(topic_k != 1) %>%
+    gather(metric, value, -topic_k) %>%
+    ggplot(aes(x=topic_k, y=value)) +
+    geom_line() +
+    geom_point() +
+    facet_wrap(~metric, scales = "free")+
+    theme_bw() +
+    theme(plot.title = element_text(size=20),
+        text=element_text(family="IBM Plex Sans KR",size=40))
+```
+
+### Cast LDA (k=4)
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+austrailia_lda <-  LDA(austrailia_dtm, k = 4,
+              method="Gibbs",
+              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
+
+austrailia_tp_4 <- austrailia_lda %>%
+    tidy(matrix = "beta") %>%
+    group_by(term) %>%
+    slice_max(beta) 
+
+austrailia_tp_4 %>% 
+    group_by(topic) %>%
+    slice_max(beta,n=10) %>%
+    arrange(topic) %>%
+    mutate(term = reorder_within(term, beta, topic)) %>%
+    ggplot(aes(beta, term, fill = factor(topic))) +
+    geom_col(show.legend = FALSE) +
+    facet_wrap(~ topic, scales = "free",ncol=3) +
+    scale_y_reordered() +
+    theme_bw()+ 
+    theme(plot.title = element_text(size=20),
+          text=element_text(family="IBM Plex Sans KR",size=40),
+          axis.text.x = element_text(size = 20))  
+```
+
+### Cast LDA (k=5)
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+austrailia_lda <-  LDA(austrailia_dtm, k = 5,
+              method="Gibbs",
+              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
+
+austrailia_tp_5 <- austrailia_lda %>%
+    tidy(matrix = "beta") %>%
+    group_by(term) %>%
+    slice_max(beta) 
+
+austrailia_tp_5 %>% 
+    group_by(topic) %>%
+    slice_max(beta,n=10) %>%
+    arrange(topic) %>%
+    mutate(term = reorder_within(term, beta, topic)) %>%
+    ggplot(aes(beta, term, fill = factor(topic))) +
+    geom_col(show.legend = FALSE) +
+    facet_wrap(~ topic, scales = "free",ncol=3) +
+    scale_y_reordered() +
+    theme_bw()+ 
+    theme(plot.title = element_text(size=20),
+          text=element_text(family="IBM Plex Sans KR",size=40),
+          axis.text.x = element_text(size = 20))  
+```
+
+### Cast LDA (k=6)
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+austrailia_lda <-  LDA(austrailia_dtm, k = 6,
+              method="Gibbs",
+              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
+
+austrailia_tp_6 <- austrailia_lda %>%
+    tidy(matrix = "beta") %>%
+    group_by(term) %>%
+    slice_max(beta) 
+
+austrailia_tp_6 %>% 
+    group_by(topic) %>%
+    slice_max(beta,n=10) %>%
+    arrange(topic) %>%
+    mutate(term = reorder_within(term, beta, topic)) %>%
+    ggplot(aes(beta, term, fill = factor(topic))) +
+    geom_col(show.legend = FALSE) +
+    facet_wrap(~ topic, scales = "free",ncol=3) +
+    scale_y_reordered() +
+    theme_bw()+ 
+    theme(plot.title = element_text(size=20),
+          text=element_text(family="IBM Plex Sans KR",size=40),
+          axis.text.x = element_text(size = 20))  
+```
+
+### Cast LDA (k=7)
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+austrailia_lda <-  LDA(austrailia_dtm, k = 7,
+              method="Gibbs",
+              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
+
+austrailia_tp_7 <- austrailia_lda %>%
+    tidy(matrix = "beta") %>%
+    group_by(term) %>%
+    slice_max(beta) 
+
+austrailia_tp_7 %>% 
+    group_by(topic) %>%
+    slice_max(beta,n=10) %>%
+    arrange(topic) %>%
+    mutate(term = reorder_within(term, beta, topic)) %>%
+    ggplot(aes(beta, term, fill = factor(topic))) +
+    geom_col(show.legend = FALSE) +
+    facet_wrap(~ topic, scales = "free",ncol=4) +
+    scale_y_reordered() +
+    theme_bw()+ 
+    theme(plot.title = element_text(size=20),
+          text=element_text(family="IBM Plex Sans KR",size=40),
+          axis.text.x = element_text(size = 20))  
+```
+
+## Network Graph
+
+### Pairwise Count
+
+```{r}
+austrailia_coocur <- austrailia_tfidf  %>%
+    ungroup() %>% 
+    arrange(desc(n)) %>%
+    rename(term=words) %>%
+    pairwise_count(term, paragraph, sort = TRUE,upper = F) 
+```
+
+### Building links and nodes
+
+```{r}
+links <- austrailia_coocur %>%
+    top_n(100) %>%
+    rename(source="item1",target="item2",weight="n") 
+
+nodes <- tibble(term=union(links$source,links$target)) %>%
+    left_join(y=austrailia_tp_7,by="term") %>%
+    dplyr::select(nodes="term",topic)
+```
+
+### Building networks
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+austrailia_network <- graph_from_data_frame(d = links, vertices = nodes, directed = F)
+austrailia_g <- as_tbl_graph(austrailia_network)
+
+```
+
+### Network Graph
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+austrailia_g %>%
+    activate("nodes") %>%
+    mutate(degree = centrality_degree(),
+             community = as.factor(topic)) %>%
+    ggraph(layout = 'kk') +
+    geom_edge_link(aes(alpha = weight,width=weight),
+                   colour = "black", show.legend = FALSE) +
+    scale_edge_width(range = c(0.05,1.5)) +
+    scale_edge_alpha(range = c(0.3,1)) +
+    scale_size(range = c(5,20)) + 
+    geom_node_point(aes(colour = community, size = degree)) +
+    geom_node_text(aes(label = name, size=degree),size=8, repel = TRUE,family="IBM Plex Sans KR") +
+    theme_graph(base_family="IBM Plex Sans KR") +
+    theme(text=element_text(family="IBM Plex Sans KR", size=40)) +
+    guides(size="none")
+```
+
+### Network Graph per topic
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+austrailia_g %>%
+    activate("nodes") %>%
+    mutate(degree = centrality_degree(),
+             community = as.factor(topic)) %>%
+    ggraph(layout = 'kk') +
+    geom_edge_link(aes(alpha = weight,width=weight),
+                   colour = "black", show.legend = FALSE) +
+    scale_edge_width(range = c(0.05,1)) +
+    scale_edge_alpha(range = c(0.05,1)) + 
+    geom_node_point(aes(colour = community, size = degree)) +
+    geom_node_text(aes(label = name),size=8, repel = TRUE,family="IBM Plex Sans KR") +
+    theme_graph(base_family="IBM Plex Sans KR") +
+    theme(text=element_text(family="IBM Plex Sans KR",size=40)) +
     guides(size="none")+
     facet_nodes(~ community,ncol=3)
 ```
@@ -1183,11 +2454,11 @@ finland_g %>%
 links=finland_coocur %>%
     top_n(100) %>%
     rename(source="item1",target="item2",weight="n") %>%
-    left_join(finland_tp_7 %>% select(-beta,term) %>% 
+    left_join(finland_tp_7 %>% dplyr::select(-beta,term) %>% 
                   transmute(source=term,topic1=topic),by="source") %>% 
-    left_join(finland_tp_7 %>% select(-beta,term) %>% 
+    left_join(finland_tp_7 %>% dplyr::select(-beta,term) %>% 
                   transmute(target=term,topic2=topic),by="target") %>% 
-    select(topic1,topic2,weight) %>% 
+    dplyr::select(topic1,topic2,weight) %>% 
     rename(source="topic1",target="topic2")
 
 finland_network <- graph_from_data_frame(d = links, directed = F)
@@ -1202,82 +2473,101 @@ finland_g %>%
     scale_edge_alpha(range = c(0.3,1)) +
     scale_size(range = c(5,20)) + 
     geom_node_point(aes(size = degree, color="blue")) +
-    geom_node_text(aes(label = name), repel = TRUE,family="Uchen",size=10, max.overlaps = Inf) +
-    theme_graph(base_family="Uchen") +
-    theme(text=element_text(family="Uchen",size=40)) +
+    geom_node_text(aes(label = name), repel = TRUE,family="IBM Plex Sans KR",size=10, max.overlaps = Inf) +
+    theme_graph(base_family="IBM Plex Sans KR") +
+    theme(text=element_text(family="IBM Plex Sans KR",size=40)) +
     guides(size="none",color="none")
 
 ```
 
-# Comparing three countries
+# Comparing Six countries
 
-## Comparing Word Frequencies of Three Countries
+## Comparing Word Frequencies of Six Countries
 
-```{r, fig.align='center',fig.width=10,fig.height=7}
-#| column: page
-
-grid.arrange(a,b,c, nrow=1,
-             top=textGrob("Comparing Word Frequencies of Three Countries",
-                          gp = gpar(col = "black", 
-                                    fontsize = 25,
-                                    fontfamily="Uchen")))
-
-```
-
-## Comparing bigrams of Three Countries
-
-```{r, fig.align='center',fig.width=10,fig.height=7}
-#| column: screen-inset-shaded
-grid.arrange(a1,b1,c1, nrow=1,
-             top=textGrob("Comparing Bigrams of Three Countries",
-                          gp = gpar(col = "black", 
-                                    fontsize = 25,
-                                    fontfamily="Uchen")))
-```
-
-## Comparing Tf-idf of Three Countries
-
-```{r, fig.align='center',fig.width=10,fig.height=7}
+```{r, fig.align='center',fig.width=10,fig.height=10, warning = FALSE, message = FALSE}
 #| column: page
 
 korea_tokenized %>% 
-    mutate(key="Korea") %>% 
-    full_join(germany_tokenized %>% 
-                mutate(key="Germany")) %>% 
-    full_join(finland_tokenized %>% 
-                mutate(key="Finland")) %>% 
+    mutate(key="대한민국") %>% 
+    full_join(germany_tokenized %>%
+                  mutate(key="독일")) %>% 
+    full_join(finland_tokenized %>%
+                  mutate(key="핀란드")) %>% 
+    full_join(japan_tokenized %>% 
+                mutate(key="일본")) %>%
+    full_join(uk_tokenized %>% 
+                mutate(key="영국")) %>%
+    full_join(austrailia_tokenized %>% 
+                mutate(key="호주")) %>%
     mutate(key=as_factor(key)) -> total_tokenized
+
+total_tokenized %>% 
+    group_by(key) %>%
+    count(key,words) %>% 
+    group_by(key) %>% 
+    top_n(n, n=20) %>%
+    arrange(desc(n)) %>% 
+    mutate(words = reorder_within(words, n, key)) %>%
+    ggplot(aes(x=n, y=words)) +
+    geom_col(aes(fill=key),show.legend = FALSE) +
+    scale_y_reordered() +
+    facet_wrap(~key, nrow = 2, scales = "free") +
+    labs(y = NULL, title="Comparing Word Frequencies of Six Countries") +
+    theme_bw()+
+    theme(plot.title = element_text(size=40),
+          text=element_text(family="IBM Plex Sans KR",size=40),
+          axis.text.x = element_text(size = 20))+
+    ggeasy::easy_center_title()
+
+```
+
+## Comparing bigrams of Six Countries
+
+```{r, fig.align='center',fig.width=10,fig.height=10}
+#| column: screen-inset-shaded
+grid.arrange(a1,b1,c1,d1,e1,f1, nrow=2,
+             top=textGrob("Comparing Bigrams of Six Countries",
+                          gp = gpar(col = "black", 
+                                    fontsize = 40,
+                                    fontfamily="IBM Plex Sans KR")))
+```
+
+## Comparing Tf-idf of Six Countries
+
+```{r, fig.align='center',fig.width=10,fig.height=7, warning = FALSE, message = FALSE}
+#| column: page
 
 total_tokenized %>% 
     group_by(key) %>%
     count(key,words) %>% 
     bind_tf_idf(words, key, n) %>% 
     group_by(key) %>% 
-    top_n(tf_idf, n=30) %>%
+    top_n(tf_idf, n=20) %>%
     arrange(desc(tf_idf)) %>% 
     mutate(words = reorder_within(words, tf_idf, key)) %>%
     ggplot(aes(x=tf_idf, y=words)) +
     geom_col(aes(fill=key),show.legend = FALSE) +
     scale_y_reordered() +
-    facet_wrap(~key, nrow = 1, scales = "free") +
-    labs(y = NULL) +
+    facet_wrap(~key, nrow = 2, scales = "free") +
+    labs(y = NULL, title="Comparing TF-IDF of Six Countries") +
     theme_bw()+
     theme(plot.title = element_text(size=40),
-          text=element_text(family="Uchen",size=40),
-          axis.text.x = element_text(size = 20))  
+          text=element_text(family="IBM Plex Sans KR",size=40),
+          axis.text.x = element_text(size = 20))  +
+    ggeasy::easy_center_title()
 
 ```
 
 ## Comparing the word frequencies
 
 ```{r, fig.align='center',fig.width=10,fig.height=7}
-compare_three <- total_tokenized %>% 
+compare_six <- total_tokenized %>% 
     count(key, words) %>% 
     group_by(key) %>%
     mutate(proportion = n / sum(n)) %>%
-    select(-n) %>% 
+    dplyr::select(-n) %>% 
     pivot_wider(names_from = key, values_from = proportion) %>%
-    pivot_longer(3:4,
+    pivot_longer(3:7,
                names_to = "key", values_to = "proportion")
     
 ```
@@ -1289,35 +2579,142 @@ Words that are far from the line are words that are found more in one set of tex
 
 # expect a warning about rows with missing values being removed
 set.seed(2022)
-compare_three %>%
-    ggplot(aes(x = proportion, y = Korea, color = abs(Korea - proportion))) +
+compare_six %>%
+    ggplot(aes(x = proportion, y = 대한민국, color = abs(대한민국 - proportion))) +
     geom_abline(color = "darkgreen", lty = 2, size=1.5) +
     geom_jitter(alpha = 0.1, size = 1.5, width = 0.3, height = 0.3) +
-    geom_text(aes(label = words), check_overlap = TRUE, vjust = 1.5, family="Uchen",size=10) +
+    geom_text(aes(label = words), check_overlap = TRUE, vjust = 1.5, family="IBM Plex Sans KR",size=10) +
     scale_x_log10(labels = percent_format()) +
     scale_y_log10(labels = percent_format()) +
     scale_color_gradient(limits = c(0.001, 0.01), 
-                         low = "darkslategray4", high =  "black") +
-    facet_wrap(~key, ncol = 2) +
+                         low = "darkgreen", high =  "black") +
+    facet_wrap(~key, nrow = 2) +
     theme(legend.position="none") +
-    labs(y = "Korea", x = NULL, title="Comparing the word frequencies of Three Countries") +
+    labs(y = "Korea", x = NULL, title="Comparing the word frequencies of Six Countries") +
     theme_bw() +
     theme(plot.title = element_text(size=40),
-          text=element_text(family="Uchen",size=25))+
+          text=element_text(family="IBM Plex Sans KR",size=25))+
     guides(color="none")
 ```
 
 ## Correlation of words
 
-```{r, warning = FALSE, message = FALSE}
-cor_germany=cor.test(data = compare_three[compare_three$key == "Germany",],
-         ~ proportion + Korea) %>% tidy() %>% mutate(country="Germany",.before = estimate)
-cor_finland=cor.test(data = compare_three[compare_three$key == "Finland",],
-         ~ proportion + Korea) %>% tidy() %>% mutate(country="Finland",.before = estimate)
-cor_germany %>% 
-    full_join(cor_finland) %>% 
-    mutate(across(where(is.numeric), round, 3))%>% 
-    kbl() %>% 
-    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```{r, fig.align='center',fig.width=6,fig.height=6, warning = FALSE, message = FALSE}
+#| column: page
+total_tokenized %>% 
+    count(key, words) %>% 
+    group_by(key) %>%
+    mutate(proportion = n / sum(n)) %>%
+    dplyr::select(- n) %>% 
+    pivot_wider(names_from = key, values_from = proportion) %>% 
+    dplyr::select(- words) -> correlation_total  
+
+testRes=corrplot::cor.mtest(correlation_total, conf.level = 0.95)
+
+correlation_total %>% 
+    cor(use="pairwise.complete.obs") %>% 
+    .[order(.[ , 1],decreasing = T), order(.[ 1, ],decreasing = T)] %>% 
+    corrplot(tl.col = "black",
+             p.mat = testRes$p,
+             diag=T, 
+             type="lower",
+             method="color",
+             cl.pos="n",
+             addCoef.col = 1,
+             number.cex = 4,
+             tl.cex = 3,
+             sig.level = c(0.001, 0.01, 0.05), 
+             pch.col = "red",
+             pch.cex = 2,
+             insig = 'label_sig')
 
 ```
+
+```{r result="hide"}
+cortrix = function (R, histogram = TRUE, method = c("pearson", "kendall", 
+  "spearman"), ...) 
+{
+  x = as.matrix(R, method = "matrix")
+  if (missing(method)) 
+    method = method[1]
+  cormeth <- method
+  panel.cor <- function(x, y, digits = 2, prefix = "", use = "pairwise.complete.obs", 
+    method = cormeth, cex.cor, ...) {
+    usr <- par("usr")
+    on.exit(par(usr))
+    par(usr = c(0, 1, 0, 1))
+    r <- cor(x, y, use = use, method = method)
+    txt <- format(c(r, 0.123456789), digits = digits)[1]
+    txt <- paste(prefix, txt, sep = "")
+    if (missing(cex.cor)) 
+      cex <- 2
+    test <- cor.test(as.numeric(x), as.numeric(y), method = method)
+    Signif <- symnum(test$p.value, corr = FALSE, na = FALSE, 
+      cutpoints = c(0, 0.001, 0.01, 0.05, 0.1, 1), symbols = c("***", 
+        "**", "*", ".", " "))
+    text(0.5, 0.5, txt, cex = cex)
+    text(0.8, 0.8, Signif, cex = 2, col = 2)
+  }
+  f <- function(t) {
+    dnorm(t, mean = mean(x), sd = sd.xts(x))
+  }
+  dotargs <- list(...)
+  dotargs$method <- NULL
+  rm(method)
+  hist.panel = function(x, ... = NULL) {
+    par(new = TRUE)
+    hist(x, col = "light blue", probability = TRUE, axes = FALSE, 
+      main = "", breaks = "FD")
+    lines(density(x, na.rm = TRUE), col = "red", lwd = 2)
+    rug(x)
+  }
+  if (histogram) 
+    pairs(x, gap = 0, lower.panel = panel.smooth, upper.panel = panel.cor, 
+      diag.panel = hist.panel, ...)
+  else pairs(x, gap = 0, lower.panel = panel.smooth, upper.panel = panel.cor, 
+    ...)
+}
+```
+
+```{r, fig.align='center',fig.width=4,fig.height=4, warning = FALSE, message = FALSE}
+#| column: page
+correlation_total %>% 
+    cortrix(histogram=F)
+```
+***: 0 - 0.001
+
+## Document Similarity
+
+```{r}
+korea_string <- korea %>% 
+    dplyr::select(2) %>%
+    unlist() %>% 
+    as.vector() %>% 
+    str_c(.,collapse = " ") 
+germany_string <- germany %>% 
+    dplyr::select(2) %>%
+    unlist() %>% 
+    as.vector() %>% 
+    str_c(.,collapse = " ") 
+finland_string <- finland %>% 
+    dplyr::select(2) %>%
+    unlist() %>% 
+    as.vector() %>% 
+    str_c(.,collapse = " ") 
+japan_string <- japan %>% 
+    dplyr::select(2) %>%
+    unlist() %>% 
+    as.vector() %>% 
+    str_c(.,collapse = " ") 
+uk_string <- uk %>% 
+    dplyr::select(2) %>%
+    unlist() %>% 
+    as.vector() %>% 
+    str_c(.,collapse = " ") 
+austrailia_string <- austrailia %>% 
+    dplyr::select(2) %>%
+    unlist() %>% 
+    as.vector() %>% 
+    str_c(.,collapse = " ") 
+```
+
