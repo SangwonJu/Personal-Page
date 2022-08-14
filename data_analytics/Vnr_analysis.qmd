@@ -6,7 +6,8 @@ format:
 author: "Sangwon Ju, SNU GSPA" 
 knitr:
   opts_knit:
-    verbose: true
+    verbose: false
+jupyter: python3
 date: 2022/08/06
 ---
 
@@ -103,7 +104,9 @@ sentence_word3=function(x){
 ```
 
 # Korea VNR
+
 ## Preprocess
+
 ```{r}
 korea <-  readLines(kor_path) %>%
     str_flatten(collapse = " ") %>%
@@ -496,7 +499,9 @@ korea_g %>%
 ```
 
 # Germany VNR
+
 ## Preprocess
+
 ```{r}
 germany<-readLines(ger_path) %>%
     str_flatten(collapse = " ") %>%
@@ -893,6 +898,7 @@ germany_g %>%
 ```
 
 # Finland VNR
+
 ## Preprocess
 
 ```{r}
@@ -1242,9 +1248,10 @@ finland_g %>%
     facet_nodes(~ community,ncol=3)
 ```
 
-
 # Japan VNR
+
 ## Preprocess
+
 ```{r}
 japan<-readLines(jp_path) %>%
     str_flatten(collapse = " ") %>%
@@ -1640,7 +1647,9 @@ japan_g %>%
 ```
 
 # UK VNR
+
 ## Preprocess
+
 ```{r}
 uk <-readLines(uk_path) %>%
     str_flatten(collapse = " ") %>%
@@ -2053,7 +2062,9 @@ uk_g %>%
 ```
 
 # Austrailia VNR
+
 ## Preprocess
+
 ```{r}
 austrailia<-readLines(astl_path) %>%
     str_flatten(collapse = " ") %>%
@@ -2594,7 +2605,8 @@ compare_six %>%
     theme_bw() +
     theme(plot.title = element_text(size=40),
           text=element_text(family="IBM Plex Sans KR",size=25))+
-    guides(color="none")
+    guides(color="none") +
+    ggeasy::easy_center_title()
 ```
 
 ## Correlation of words
@@ -2676,7 +2688,8 @@ cortrix = function (R, histogram = TRUE, method = c("pearson", "kendall",
 correlation_total %>% 
     cortrix(histogram=F)
 ```
-***: 0 - 0.001
+
+\*\*\*: 0 - 0.001
 
 ## Document Similarity
 
@@ -2713,3 +2726,83 @@ austrailia_string <- austrailia %>%
     str_c(.,collapse = " ") 
 ```
 
+```{python}
+import matplotlib.pylab as plt 
+import matplotlib as mpl
+import seaborn as sns
+import numpy as np
+import pandas as pd
+from IPython.display import display, Markdown
+from tabulate import tabulate
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.cluster import KMeans
+import warnings
+from nltk.stem import WordNetLemmatizer
+import nltk
+import string
+```
+
+```{python}
+mpl.rc('font', family='NanumGothic') # 폰트 설정
+mpl.rc('axes', unicode_minus=False) # 유니코드에서 음수 부호 설정
+
+# 차트 스타일 설정
+sns.set(font="NanumGothic", rc={"axes.unicode_minus":False}, style='darkgrid')
+warnings.filterwarnings("ignore")
+```
+
+### Convert data from R objects
+
+```{python}
+document_df = pd.DataFrame.from_dict(
+    {'filename': ["Korea", "Germany", "Finland", "Japan", "UK", "Austrailia"],
+    'opinion_text':[r.korea_string, r.germany_string, r.finland_string, 
+    r.japan_string, r.uk_string, r.austrailia_string]})
+```
+
+### Tokenizer
+
+```{python}
+# 단어 원형 추출 함수
+lemmar = WordNetLemmatizer()
+
+def LemTokens(tokens):
+    return [lemmar.lemmatize(token) for token in tokens]
+
+# 특수 문자 사전 생성: {33: None ...}
+# ord(): 아스키 코드 생성
+remove_punct_dict = dict((ord(punct), None) for punct in string.punctuation)
+
+# 특수 문자 제거 및 단어 원형 추출
+def LemNormalize(text):
+    text_new = text.lower().translate(remove_punct_dict)
+    word_tokens = nltk.word_tokenize(text_new)
+    return LemTokens(word_tokens)
+
+# nltk.download('punkt')
+# nltk.download('wordnet')
+# nltk.download('omw-1.4')
+tfidf_vect = TfidfVectorizer(stop_words='english' , ngram_range=(1,2), 
+                             tokenizer = LemNormalize, min_df=0.05, max_df=0.85)
+
+feature_vect = tfidf_vect.fit_transform(document_df['opinion_text'])    
+```
+
+### Cosine Similarity
+```{python} 
+from sklearn.metrics.pairwise import cosine_similarity
+
+similarity_pair = cosine_similarity(feature_vect[0] , feature_vect)
+document_df["similarity"] = similarity_pair.reshape(-1,1)
+```
+
+### 시각화
+```{python}
+#| fig-align: center
+plt.clf()
+vis=document_df.iloc[1:].sort_values(by="similarity",ascending=False).reset_index(drop=True)
+sns.set_style("white")
+plt.figure(figsize = (10,7))
+sns.barplot(x="similarity", y="filename", data=vis)
+plt.title('Korea')
+```
