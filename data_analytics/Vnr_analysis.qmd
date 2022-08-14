@@ -2523,7 +2523,7 @@ total_tokenized %>%
 
 ## Comparing bigrams of Six Countries
 
-```{r, fig.align='center',fig.width=10,fig.height=10}
+```{r, fig.align='center',fig.width=10,fig.height=10, warning = FALSE, message = FALSE}
 #| column: screen-inset-shaded
 grid.arrange(a1,b1,c1,d1,e1,f1, nrow=2,
              top=textGrob("Comparing Bigrams of Six Countries",
@@ -2534,7 +2534,7 @@ grid.arrange(a1,b1,c1,d1,e1,f1, nrow=2,
 
 ## Comparing Tf-idf of Six Countries
 
-```{r, fig.align='center',fig.width=10,fig.height=7, warning = FALSE, message = FALSE}
+```{r, fig.align='center',fig.width=10,fig.height=10, warning = FALSE, message = FALSE}
 #| column: page
 
 total_tokenized %>% 
@@ -2574,7 +2574,7 @@ compare_six <- total_tokenized %>%
 
 Words that are far from the line are words that are found more in one set of texts than another.
 
-```{r, fig.align='center',fig.width=10,fig.height=7, warning = FALSE, message = FALSE}
+```{r, fig.align='center',fig.width=11,fig.height=9, warning = FALSE, message = FALSE}
 #| column: page
 
 # expect a warning about rows with missing values being removed
@@ -2583,14 +2583,14 @@ compare_six %>%
     ggplot(aes(x = proportion, y = 대한민국, color = abs(대한민국 - proportion))) +
     geom_abline(color = "darkgreen", lty = 2, size=1.5) +
     geom_jitter(alpha = 0.1, size = 1.5, width = 0.3, height = 0.3) +
-    geom_text(aes(label = words), check_overlap = TRUE, vjust = 1.5, family="IBM Plex Sans KR",size=10) +
+    geom_text(aes(label = words), check_overlap = TRUE, vjust = 1.5, family="IBM Plex Sans KR",size=9) +
     scale_x_log10(labels = percent_format()) +
     scale_y_log10(labels = percent_format()) +
     scale_color_gradient(limits = c(0.001, 0.01), 
                          low = "darkgreen", high =  "black") +
     facet_wrap(~key, nrow = 2) +
     theme(legend.position="none") +
-    labs(y = "Korea", x = NULL, title="Comparing the word frequencies of Six Countries") +
+    labs(y = "대한민국", x = NULL, title="Comparing the word frequencies of Six Countries") +
     theme_bw() +
     theme(plot.title = element_text(size=40),
           text=element_text(family="IBM Plex Sans KR",size=25))+
@@ -2615,18 +2615,13 @@ correlation_total %>%
     cor(use="pairwise.complete.obs") %>% 
     .[order(.[ , 1],decreasing = T), order(.[ 1, ],decreasing = T)] %>% 
     corrplot(tl.col = "black",
-             p.mat = testRes$p,
              diag=T, 
              type="lower",
              method="color",
              cl.pos="n",
              addCoef.col = 1,
              number.cex = 4,
-             tl.cex = 3,
-             sig.level = c(0.001, 0.01, 0.05), 
-             pch.col = "red",
-             pch.cex = 2,
-             insig = 'label_sig')
+             tl.cex = 3) 
 
 ```
 
@@ -2676,8 +2671,8 @@ cortrix = function (R, histogram = TRUE, method = c("pearson", "kendall",
 }
 ```
 
-```{r, fig.align='center',fig.width=4,fig.height=4, warning = FALSE, message = FALSE}
-#| column: page
+```{r, fig.align='center',fig.width=4,fig.height=4, warning = FALSE, message = FALSE, out.width="150%"}
+
 correlation_total %>% 
     cortrix(histogram=F)
 ```
