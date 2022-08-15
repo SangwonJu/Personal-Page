@@ -416,7 +416,91 @@ korea_tp_7 %>%
     mutate(term = reorder_within(term, beta, topic)) %>%
     ggplot(aes(beta, term, fill = factor(topic))) +
     geom_col(show.legend = FALSE) +
-    facet_wrap(~ topic, scales = "free",ncol=3) +
+    facet_wrap(~ topic, scales = "free",ncol=4) +
+    scale_y_reordered() +
+    theme_bw()+ 
+    theme(plot.title = element_text(size=20),
+          text=element_text(family="Gowun Dodum",size=40),
+          axis.text.x = element_text(size = 20)) 
+```
+
+### Cast LDA (k=8)
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+korea_lda <-  LDA(korea_dtm, k = 8,
+              method="Gibbs",
+              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
+
+korea_tp_8 <- korea_lda %>%
+    tidy(matrix = "beta") %>%
+    group_by(term) %>%
+    slice_max(beta) 
+
+korea_tp_8 %>% 
+    group_by(topic) %>%
+    slice_max(beta,n=10) %>%
+    arrange(topic) %>%
+    mutate(term = reorder_within(term, beta, topic)) %>%
+    ggplot(aes(beta, term, fill = factor(topic))) +
+    geom_col(show.legend = FALSE) +
+    facet_wrap(~ topic, scales = "free",ncol=4) +
+    scale_y_reordered() +
+    theme_bw()+ 
+    theme(plot.title = element_text(size=20),
+          text=element_text(family="Gowun Dodum",size=40),
+          axis.text.x = element_text(size = 20)) 
+```
+
+### Cast LDA (k=9)
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+korea_lda <-  LDA(korea_dtm, k = 9,
+              method="Gibbs",
+              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
+
+korea_tp_9 <- korea_lda %>%
+    tidy(matrix = "beta") %>%
+    group_by(term) %>%
+    slice_max(beta) 
+
+korea_tp_9 %>% 
+    group_by(topic) %>%
+    slice_max(beta,n=10) %>%
+    arrange(topic) %>%
+    mutate(term = reorder_within(term, beta, topic)) %>%
+    ggplot(aes(beta, term, fill = factor(topic))) +
+    geom_col(show.legend = FALSE) +
+    facet_wrap(~ topic, scales = "free",ncol=5) +
+    scale_y_reordered() +
+    theme_bw()+ 
+    theme(plot.title = element_text(size=20),
+          text=element_text(family="Gowun Dodum",size=40),
+          axis.text.x = element_text(size = 20)) 
+```
+
+### Cast LDA (k=10)
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+korea_lda <-  LDA(korea_dtm, k = 10,
+              method="Gibbs",
+              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
+
+korea_tp_10 <- korea_lda %>%
+    tidy(matrix = "beta") %>%
+    group_by(term) %>%
+    slice_max(beta) 
+
+korea_tp_10 %>% 
+    group_by(topic) %>%
+    slice_max(beta,n=10) %>%
+    arrange(topic) %>%
+    mutate(term = reorder_within(term, beta, topic)) %>%
+    ggplot(aes(beta, term, fill = factor(topic))) +
+    geom_col(show.legend = FALSE) +
+    facet_wrap(~ topic, scales = "free",ncol=5) +
     scale_y_reordered() +
     theme_bw()+ 
     theme(plot.title = element_text(size=20),
@@ -821,6 +905,91 @@ germany_tp_7 %>%
     theme(plot.title = element_text(size=20),
           text=element_text(family="Gowun Dodum",size=40),
           axis.text.x = element_text(size = 20))  
+```
+
+
+### Cast LDA (k=8)
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+germany_lda <-  LDA(germany_dtm, k = 8,
+              method="Gibbs",
+              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
+
+germany_tp_8 <- germany_lda %>%
+    tidy(matrix = "beta") %>%
+    group_by(term) %>%
+    slice_max(beta) 
+
+germany_tp_8 %>% 
+    group_by(topic) %>%
+    slice_max(beta,n=10) %>%
+    arrange(topic) %>%
+    mutate(term = reorder_within(term, beta, topic)) %>%
+    ggplot(aes(beta, term, fill = factor(topic))) +
+    geom_col(show.legend = FALSE) +
+    facet_wrap(~ topic, scales = "free",ncol=4) +
+    scale_y_reordered() +
+    theme_bw()+ 
+    theme(plot.title = element_text(size=20),
+          text=element_text(family="Gowun Dodum",size=40),
+          axis.text.x = element_text(size = 20)) 
+```
+
+### Cast LDA (k=9)
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+germany_lda <-  LDA(germany_dtm, k = 9,
+              method="Gibbs",
+              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
+
+germany_tp_9 <- germany_lda %>%
+    tidy(matrix = "beta") %>%
+    group_by(term) %>%
+    slice_max(beta) 
+
+germany_tp_9 %>% 
+    group_by(topic) %>%
+    slice_max(beta,n=10) %>%
+    arrange(topic) %>%
+    mutate(term = reorder_within(term, beta, topic)) %>%
+    ggplot(aes(beta, term, fill = factor(topic))) +
+    geom_col(show.legend = FALSE) +
+    facet_wrap(~ topic, scales = "free",ncol=5) +
+    scale_y_reordered() +
+    theme_bw()+ 
+    theme(plot.title = element_text(size=20),
+          text=element_text(family="Gowun Dodum",size=40),
+          axis.text.x = element_text(size = 20)) 
+```
+
+### Cast LDA (k=10)
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+germany_lda <-  LDA(germany_dtm, k = 10,
+              method="Gibbs",
+              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
+
+germany_tp_10 <- germany_lda %>%
+    tidy(matrix = "beta") %>%
+    group_by(term) %>%
+    slice_max(beta) 
+
+germany_tp_10 %>% 
+    group_by(topic) %>%
+    slice_max(beta,n=10) %>%
+    arrange(topic) %>%
+    mutate(term = reorder_within(term, beta, topic)) %>%
+    ggplot(aes(beta, term, fill = factor(topic))) +
+    geom_col(show.legend = FALSE) +
+    facet_wrap(~ topic, scales = "free",ncol=5) +
+    scale_y_reordered() +
+    theme_bw()+ 
+    theme(plot.title = element_text(size=20),
+          text=element_text(family="Gowun Dodum",size=40),
+          axis.text.x = element_text(size = 20)) 
 ```
 
 ## Network Graph
@@ -2154,6 +2323,90 @@ uk_tp_7 %>%
           axis.text.x = element_text(size = 20))  
 ```
 
+### Cast LDA (k=8)
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+uk_lda <-  LDA(uk_dtm, k = 8,
+              method="Gibbs",
+              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
+
+uk_tp_8 <- uk_lda %>%
+    tidy(matrix = "beta") %>%
+    group_by(term) %>%
+    slice_max(beta) 
+
+uk_tp_8 %>% 
+    group_by(topic) %>%
+    slice_max(beta,n=10) %>%
+    arrange(topic) %>%
+    mutate(term = reorder_within(term, beta, topic)) %>%
+    ggplot(aes(beta, term, fill = factor(topic))) +
+    geom_col(show.legend = FALSE) +
+    facet_wrap(~ topic, scales = "free",ncol=4) +
+    scale_y_reordered() +
+    theme_bw()+ 
+    theme(plot.title = element_text(size=20),
+          text=element_text(family="Gowun Dodum",size=40),
+          axis.text.x = element_text(size = 20)) 
+```
+
+### Cast LDA (k=9)
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+uk_lda <-  LDA(uk_dtm, k = 9,
+              method="Gibbs",
+              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
+
+uk_tp_9 <- uk_lda %>%
+    tidy(matrix = "beta") %>%
+    group_by(term) %>%
+    slice_max(beta) 
+
+uk_tp_9 %>% 
+    group_by(topic) %>%
+    slice_max(beta,n=10) %>%
+    arrange(topic) %>%
+    mutate(term = reorder_within(term, beta, topic)) %>%
+    ggplot(aes(beta, term, fill = factor(topic))) +
+    geom_col(show.legend = FALSE) +
+    facet_wrap(~ topic, scales = "free",ncol=5) +
+    scale_y_reordered() +
+    theme_bw()+ 
+    theme(plot.title = element_text(size=20),
+          text=element_text(family="Gowun Dodum",size=40),
+          axis.text.x = element_text(size = 20)) 
+```
+
+### Cast LDA (k=10)
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+uk_lda <-  LDA(uk_dtm, k = 10,
+              method="Gibbs",
+              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
+
+uk_tp_10 <- uk_lda %>%
+    tidy(matrix = "beta") %>%
+    group_by(term) %>%
+    slice_max(beta) 
+
+uk_tp_10 %>% 
+    group_by(topic) %>%
+    slice_max(beta,n=10) %>%
+    arrange(topic) %>%
+    mutate(term = reorder_within(term, beta, topic)) %>%
+    ggplot(aes(beta, term, fill = factor(topic))) +
+    geom_col(show.legend = FALSE) +
+    facet_wrap(~ topic, scales = "free",ncol=5) +
+    scale_y_reordered() +
+    theme_bw()+ 
+    theme(plot.title = element_text(size=20),
+          text=element_text(family="Gowun Dodum",size=40),
+          axis.text.x = element_text(size = 20)) 
+```
+
 ## Network Graph
 
 ### Pairwise Count
@@ -2550,6 +2803,91 @@ austrailia_tp_7 %>%
     theme(plot.title = element_text(size=20),
           text=element_text(family="Gowun Dodum",size=40),
           axis.text.x = element_text(size = 20))  
+```
+
+
+### Cast LDA (k=8)
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+austrailia_lda <-  LDA(austrailia_dtm, k = 8,
+              method="Gibbs",
+              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
+
+austrailia_tp_8 <- austrailia_lda %>%
+    tidy(matrix = "beta") %>%
+    group_by(term) %>%
+    slice_max(beta) 
+
+austrailia_tp_8 %>% 
+    group_by(topic) %>%
+    slice_max(beta,n=10) %>%
+    arrange(topic) %>%
+    mutate(term = reorder_within(term, beta, topic)) %>%
+    ggplot(aes(beta, term, fill = factor(topic))) +
+    geom_col(show.legend = FALSE) +
+    facet_wrap(~ topic, scales = "free",ncol=4) +
+    scale_y_reordered() +
+    theme_bw()+ 
+    theme(plot.title = element_text(size=20),
+          text=element_text(family="Gowun Dodum",size=40),
+          axis.text.x = element_text(size = 20)) 
+```
+
+### Cast LDA (k=9)
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+austrailia_lda <-  LDA(austrailia_dtm, k = 9,
+              method="Gibbs",
+              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
+
+austrailia_tp_9 <- austrailia_lda %>%
+    tidy(matrix = "beta") %>%
+    group_by(term) %>%
+    slice_max(beta) 
+
+austrailia_tp_9 %>% 
+    group_by(topic) %>%
+    slice_max(beta,n=10) %>%
+    arrange(topic) %>%
+    mutate(term = reorder_within(term, beta, topic)) %>%
+    ggplot(aes(beta, term, fill = factor(topic))) +
+    geom_col(show.legend = FALSE) +
+    facet_wrap(~ topic, scales = "free",ncol=5) +
+    scale_y_reordered() +
+    theme_bw()+ 
+    theme(plot.title = element_text(size=20),
+          text=element_text(family="Gowun Dodum",size=40),
+          axis.text.x = element_text(size = 20)) 
+```
+
+### Cast LDA (k=10)
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+austrailia_lda <-  LDA(austrailia_dtm, k = 10,
+              method="Gibbs",
+              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
+
+austrailia_tp_10 <- austrailia_lda %>%
+    tidy(matrix = "beta") %>%
+    group_by(term) %>%
+    slice_max(beta) 
+
+austrailia_tp_10 %>% 
+    group_by(topic) %>%
+    slice_max(beta,n=10) %>%
+    arrange(topic) %>%
+    mutate(term = reorder_within(term, beta, topic)) %>%
+    ggplot(aes(beta, term, fill = factor(topic))) +
+    geom_col(show.legend = FALSE) +
+    facet_wrap(~ topic, scales = "free",ncol=5) +
+    scale_y_reordered() +
+    theme_bw()+ 
+    theme(plot.title = element_text(size=20),
+          text=element_text(family="Gowun Dodum",size=40),
+          axis.text.x = element_text(size = 20)) 
 ```
 
 ## Network Graph
