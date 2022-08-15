@@ -60,7 +60,7 @@ pacman::p_load("reticulate","tidyverse","tidymodels",
                "scales","ggpattern","magick","corrplot")
 
 # Font Setting
-font_add_google(name="IBM Plex Sans KR") #fonts.google.com에서 고르시면 됨
+font_add_google(name="Gowun Dodum") #fonts.google.com에서 고르시면 됨
 showtext_auto()
 ```
 
@@ -207,11 +207,11 @@ The frequency of specific words and n-grams in each paragraphs.
     pattern_orientation='horizontal',
     pattern_alpha=1)+
     scale_fill_hue() +
-    geom_text(aes(label=n),hjust=-0.1,size=7,family="IBM Plex Sans KR")+
+    geom_text(aes(label=n),hjust=-0.1,size=7,family="Gowun Dodum")+
     labs(y = NULL, title="대한민국") +
     theme_bw()+
     theme(plot.title = element_text(size=40),
-        text=element_text(family="IBM Plex Sans KR",size=25)) -> a)
+        text=element_text(family="Gowun Dodum",size=25)) -> a)
 
 (korea_ngram %>%
     count(words) %>% 
@@ -227,11 +227,11 @@ The frequency of specific words and n-grams in each paragraphs.
     pattern_orientation='horizontal',
     pattern_alpha=1)+
     scale_fill_hue() +
-    geom_text(aes(label=n),hjust=-0.1,size=7,family="IBM Plex Sans KR")+
+    geom_text(aes(label=n),hjust=-0.1,size=7,family="Gowun Dodum")+
     labs(y = NULL, title="대한민국") +
     theme_bw()+
     theme(plot.title =  element_text(size=40),
-        text=element_text(family="IBM Plex Sans KR",size=25)) -> a1) 
+        text=element_text(family="Gowun Dodum",size=25)) -> a1) 
 ```
 
 ## TF-IDF per paragraph
@@ -309,7 +309,7 @@ korea_topic_k_df %>%
     facet_wrap(~metric, scales = "free")+
     theme_bw() +
     theme(plot.title = element_text(size=20),
-        text=element_text(family="IBM Plex Sans KR",size=40))
+        text=element_text(family="Gowun Dodum",size=40))
 ```
 
 ### Cast LDA (k=4)
@@ -336,7 +336,7 @@ korea_tp_4 %>%
     scale_y_reordered() +
     theme_bw()+ 
     theme(plot.title = element_text(size=20),
-          text=element_text(family="IBM Plex Sans KR",size=40),
+          text=element_text(family="Gowun Dodum",size=40),
           axis.text.x = element_text(size = 20)) 
 ```
 
@@ -364,7 +364,7 @@ korea_tp_5 %>%
     scale_y_reordered() +
     theme_bw()+ 
     theme(plot.title = element_text(size=20),
-          text=element_text(family="IBM Plex Sans KR",size=40),
+          text=element_text(family="Gowun Dodum",size=40),
           axis.text.x = element_text(size = 20)) 
 ```
 
@@ -392,7 +392,7 @@ korea_tp_6 %>%
     scale_y_reordered() +
     theme_bw()+ 
     theme(plot.title = element_text(size=20),
-          text=element_text(family="IBM Plex Sans KR",size=40),
+          text=element_text(family="Gowun Dodum",size=40),
           axis.text.x = element_text(size = 20)) 
 ```
 
@@ -420,7 +420,7 @@ korea_tp_7 %>%
     scale_y_reordered() +
     theme_bw()+ 
     theme(plot.title = element_text(size=20),
-          text=element_text(family="IBM Plex Sans KR",size=40),
+          text=element_text(family="Gowun Dodum",size=40),
           axis.text.x = element_text(size = 20)) 
 ```
 
@@ -471,9 +471,9 @@ korea_g %>%
     scale_edge_alpha(range = c(0.3,1)) +
     scale_size(range = c(5,20)) + 
     geom_node_point(aes(colour = community, size = degree)) +
-    geom_node_text(aes(label = name, size=degree),size=8, repel = TRUE,family="IBM Plex Sans KR") +
-    theme_graph(base_family="IBM Plex Sans KR") +
-    theme(text=element_text(family="IBM Plex Sans KR", size=40)) +
+    geom_node_text(aes(label = name, size=degree),size=8, repel = TRUE,family="Gowun Dodum") +
+    theme_graph(base_family="Gowun Dodum") +
+    theme(text=element_text(family="Gowun Dodum", size=40)) +
     guides(size="none")
 ```
 
@@ -491,9 +491,9 @@ korea_g %>%
     scale_edge_width(range = c(0.05,1)) +
     scale_edge_alpha(range = c(0.05,1)) + 
     geom_node_point(aes(colour = community, size = degree)) +
-    geom_node_text(aes(label = name),size=8, repel = TRUE,family="IBM Plex Sans KR") +
-    theme_graph(base_family="IBM Plex Sans KR") +
-    theme(text=element_text(family="IBM Plex Sans KR",size=40)) +
+    geom_node_text(aes(label = name),size=8, repel = TRUE,family="Gowun Dodum") +
+    theme_graph(base_family="Gowun Dodum") +
+    theme(text=element_text(family="Gowun Dodum",size=40)) +
     guides(size="none")+
     facet_nodes(~ community,ncol=3)
 ```
@@ -602,11 +602,11 @@ The frequency of specific words and n-grams in each paragraphs.
     pattern_orientation='horizontal',
     pattern_alpha=1)+
     scale_fill_hue() +
-    geom_text(aes(label=n),hjust=-0.1,size=7,family="IBM Plex Sans KR")+
+    geom_text(aes(label=n),hjust=-0.1,size=7,family="Gowun Dodum")+
     labs(y = NULL, title="독일") +
     theme_bw()+
     theme(plot.title = element_text(size=40),
-        text=element_text(family="IBM Plex Sans KR",size=25)) -> b)
+        text=element_text(family="Gowun Dodum",size=25)) -> b)
 
 (germany_ngram %>%
     count(words) %>% 
@@ -622,11 +622,11 @@ The frequency of specific words and n-grams in each paragraphs.
     pattern_orientation='horizontal',
     pattern_alpha=1)+
     scale_fill_hue() +
-    geom_text(aes(label=n),hjust=-0.1,size=7,family="IBM Plex Sans KR")+
+    geom_text(aes(label=n),hjust=-0.1,size=7,family="Gowun Dodum")+
     labs(y = NULL, title="독일") +
     theme_bw()+
     theme(plot.title =  element_text(size=40),
-        text=element_text(family="IBM Plex Sans KR",size=25)) -> b1) 
+        text=element_text(family="Gowun Dodum",size=25)) -> b1) 
 ```
 
 ## TF-IDF per paragraph
@@ -708,7 +708,7 @@ germany_topic_k_df %>%
     facet_wrap(~metric, scales = "free")+
     theme_bw() +
     theme(plot.title = element_text(size=20),
-        text=element_text(family="IBM Plex Sans KR",size=40))
+        text=element_text(family="Gowun Dodum",size=40))
 ```
 
 ### Cast LDA (k=4)
@@ -735,7 +735,7 @@ germany_tp_4 %>%
     scale_y_reordered() +
     theme_bw()+ 
     theme(plot.title = element_text(size=20),
-          text=element_text(family="IBM Plex Sans KR",size=40),
+          text=element_text(family="Gowun Dodum",size=40),
           axis.text.x = element_text(size = 20))  
 ```
 
@@ -763,7 +763,7 @@ germany_tp_5 %>%
     scale_y_reordered() +
     theme_bw()+ 
     theme(plot.title = element_text(size=20),
-          text=element_text(family="IBM Plex Sans KR",size=40),
+          text=element_text(family="Gowun Dodum",size=40),
           axis.text.x = element_text(size = 20))  
 ```
 
@@ -791,7 +791,7 @@ germany_tp_6 %>%
     scale_y_reordered() +
     theme_bw()+ 
     theme(plot.title = element_text(size=20),
-          text=element_text(family="IBM Plex Sans KR",size=40),
+          text=element_text(family="Gowun Dodum",size=40),
           axis.text.x = element_text(size = 20))  
 ```
 
@@ -819,7 +819,7 @@ germany_tp_7 %>%
     scale_y_reordered() +
     theme_bw()+ 
     theme(plot.title = element_text(size=20),
-          text=element_text(family="IBM Plex Sans KR",size=40),
+          text=element_text(family="Gowun Dodum",size=40),
           axis.text.x = element_text(size = 20))  
 ```
 
@@ -870,9 +870,9 @@ germany_g %>%
     scale_edge_alpha(range = c(0.3,1)) +
     scale_size(range = c(5,20)) + 
     geom_node_point(aes(colour = community, size = degree)) +
-    geom_node_text(aes(label = name, size=degree),size=8, repel = TRUE,family="IBM Plex Sans KR") +
-    theme_graph(base_family="IBM Plex Sans KR") +
-    theme(text=element_text(family="IBM Plex Sans KR", size=40)) +
+    geom_node_text(aes(label = name, size=degree),size=8, repel = TRUE,family="Gowun Dodum") +
+    theme_graph(base_family="Gowun Dodum") +
+    theme(text=element_text(family="Gowun Dodum", size=40)) +
     guides(size="none")
 ```
 
@@ -890,9 +890,9 @@ germany_g %>%
     scale_edge_width(range = c(0.05,1)) +
     scale_edge_alpha(range = c(0.05,1)) + 
     geom_node_point(aes(colour = community, size = degree)) +
-    geom_node_text(aes(label = name),size=8, repel = TRUE,family="IBM Plex Sans KR") +
-    theme_graph(base_family="IBM Plex Sans KR") +
-    theme(text=element_text(family="IBM Plex Sans KR",size=40)) +
+    geom_node_text(aes(label = name),size=8, repel = TRUE,family="Gowun Dodum") +
+    theme_graph(base_family="Gowun Dodum") +
+    theme(text=element_text(family="Gowun Dodum",size=40)) +
     guides(size="none")+
     facet_nodes(~ community,ncol=3)
 ```
@@ -999,11 +999,11 @@ The frequency of specific words and n-grams in each paragraphs.
     pattern_orientation='horizontal',
     pattern_alpha=1)+
     scale_fill_hue() +
-    geom_text(aes(label=n),hjust=-0.1,size=7,family="IBM Plex Sans KR")+
+    geom_text(aes(label=n),hjust=-0.1,size=7,family="Gowun Dodum")+
     labs(y = NULL, title="핀란드") +
     theme_bw()+
     theme(plot.title = element_text(size=40),
-        text=element_text(family="IBM Plex Sans KR",size=25)) -> c)
+        text=element_text(family="Gowun Dodum",size=25)) -> c)
 
 (germany_ngram %>%
     count(words) %>% 
@@ -1019,11 +1019,11 @@ The frequency of specific words and n-grams in each paragraphs.
     pattern_orientation='horizontal',
     pattern_alpha=1)+
     scale_fill_hue() +
-    geom_text(aes(label=n),hjust=-0.1,size=7,family="IBM Plex Sans KR")+
+    geom_text(aes(label=n),hjust=-0.1,size=7,family="Gowun Dodum")+
     labs(y = NULL, title="핀란드") +
     theme_bw()+
     theme(plot.title =  element_text(size=40),
-        text=element_text(family="IBM Plex Sans KR",size=25)) -> c1) 
+        text=element_text(family="Gowun Dodum",size=25)) -> c1) 
 ```
 
 ## TF-IDF per paragraph
@@ -1085,7 +1085,7 @@ finland_tp_4 %>%
     scale_y_reordered() +
     theme_bw()+ 
     theme(plot.title = element_text(size=20),
-          text=element_text(family="IBM Plex Sans KR",size=40),
+          text=element_text(family="Gowun Dodum",size=40),
           axis.text.x = element_text(size = 20))  
 ```
 
@@ -1113,7 +1113,7 @@ finland_tp_5 %>%
     scale_y_reordered() +
     theme_bw()+ 
     theme(plot.title = element_text(size=20),
-          text=element_text(family="IBM Plex Sans KR",size=40),
+          text=element_text(family="Gowun Dodum",size=40),
           axis.text.x = element_text(size = 20))  
 ```
 
@@ -1141,7 +1141,7 @@ finland_tp_6 %>%
     scale_y_reordered() +
     theme_bw()+ 
     theme(plot.title = element_text(size=20),
-          text=element_text(family="IBM Plex Sans KR",size=40),
+          text=element_text(family="Gowun Dodum",size=40),
           axis.text.x = element_text(size = 20))  
 ```
 
@@ -1169,10 +1169,93 @@ finland_tp_7 %>%
     scale_y_reordered() +
     theme_bw()+ 
     theme(plot.title = element_text(size=20),
-          text=element_text(family="IBM Plex Sans KR",size=40),
+          text=element_text(family="Gowun Dodum",size=40),
           axis.text.x = element_text(size = 20))  
 ```
 
+### Cast LDA (k=8)
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+finland_lda <-  LDA(finland_dtm, k = 8,
+              method="Gibbs",
+              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
+
+finland_tp_8 <- finland_lda %>%
+    tidy(matrix = "beta") %>%
+    group_by(term) %>%
+    slice_max(beta) 
+
+finland_tp_8 %>% 
+    group_by(topic) %>%
+    slice_max(beta,n=10) %>%
+    arrange(topic) %>%
+    mutate(term = reorder_within(term, beta, topic)) %>%
+    ggplot(aes(beta, term, fill = factor(topic))) +
+    geom_col(show.legend = FALSE) +
+    facet_wrap(~ topic, scales = "free",ncol=4) +
+    scale_y_reordered() +
+    theme_bw()+ 
+    theme(plot.title = element_text(size=20),
+          text=element_text(family="Gowun Dodum",size=40),
+          axis.text.x = element_text(size = 20))  
+```
+
+### Cast LDA (k=9)
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+finland_lda <-  LDA(finland_dtm, k = 9,
+              method="Gibbs",
+              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
+
+finland_tp_9 <- finland_lda %>%
+    tidy(matrix = "beta") %>%
+    group_by(term) %>%
+    slice_max(beta) 
+
+finland_tp_9 %>% 
+    group_by(topic) %>%
+    slice_max(beta,n=10) %>%
+    arrange(topic) %>%
+    mutate(term = reorder_within(term, beta, topic)) %>%
+    ggplot(aes(beta, term, fill = factor(topic))) +
+    geom_col(show.legend = FALSE) +
+    facet_wrap(~ topic, scales = "free",ncol=5) +
+    scale_y_reordered() +
+    theme_bw()+ 
+    theme(plot.title = element_text(size=20),
+          text=element_text(family="Gowun Dodum",size=40),
+          axis.text.x = element_text(size = 20))  
+```
+
+### Cast LDA (k=10)
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+finland_lda <-  LDA(finland_dtm, k = 10,
+              method="Gibbs",
+              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
+
+finland_tp_10 <- finland_lda %>%
+    tidy(matrix = "beta") %>%
+    group_by(term) %>%
+    slice_max(beta) 
+
+finland_tp_10 %>% 
+    group_by(topic) %>%
+    slice_max(beta,n=10) %>%
+    arrange(topic) %>%
+    mutate(term = reorder_within(term, beta, topic)) %>%
+    ggplot(aes(beta, term, fill = factor(topic))) +
+    geom_col(show.legend = FALSE) +
+    facet_wrap(~ topic, scales = "free",ncol=5) +
+    scale_y_reordered() +
+    theme_bw()+ 
+    theme(plot.title = element_text(size=20),
+          text=element_text(family="Gowun Dodum",size=40),
+          axis.text.x = element_text(size = 20))  
+```
 ## Network Graph
 
 ### Pairwise Count
@@ -1221,9 +1304,9 @@ finland_g %>%
     scale_edge_alpha(range = c(0.3,1)) +
     scale_size(range = c(5,20)) + 
     geom_node_point(aes(colour = community, size = degree)) +
-    geom_node_text(aes(label = name, size=degree),size=8, repel = TRUE,family="IBM Plex Sans KR") +
-    theme_graph(base_family="IBM Plex Sans KR") +
-    theme(text=element_text(family="IBM Plex Sans KR", size=40)) +
+    geom_node_text(aes(label = name, size=degree),size=8, repel = TRUE,family="Gowun Dodum") +
+    theme_graph(base_family="Gowun Dodum") +
+    theme(text=element_text(family="Gowun Dodum", size=40)) +
     guides(size="none")
 ```
 
@@ -1241,9 +1324,9 @@ finland_g %>%
     scale_edge_width(range = c(0.05,1)) +
     scale_edge_alpha(range = c(0.05,1)) + 
     geom_node_point(aes(colour = community, size = degree)) +
-    geom_node_text(aes(label = name),size=8, repel = TRUE,family="IBM Plex Sans KR") +
-    theme_graph(base_family="IBM Plex Sans KR") +
-    theme(text=element_text(family="IBM Plex Sans KR",size=40)) +
+    geom_node_text(aes(label = name),size=8, repel = TRUE,family="Gowun Dodum") +
+    theme_graph(base_family="Gowun Dodum") +
+    theme(text=element_text(family="Gowun Dodum",size=40)) +
     guides(size="none")+
     facet_nodes(~ community,ncol=3)
 ```
@@ -1351,11 +1434,11 @@ The frequency of specific words and n-grams in each paragraphs.
     pattern_orientation='horizontal',
     pattern_alpha=1)+
     scale_fill_hue() +
-    geom_text(aes(label=n),hjust=-0.1,size=7,family="IBM Plex Sans KR")+
+    geom_text(aes(label=n),hjust=-0.1,size=7,family="Gowun Dodum")+
     labs(y = NULL, title="일본") +
     theme_bw()+
     theme(plot.title = element_text(size=40),
-        text=element_text(family="IBM Plex Sans KR",size=25)) -> d)
+        text=element_text(family="Gowun Dodum",size=25)) -> d)
 
 (japan_ngram %>%
     count(words) %>% 
@@ -1371,11 +1454,11 @@ The frequency of specific words and n-grams in each paragraphs.
     pattern_orientation='horizontal',
     pattern_alpha=1)+
     scale_fill_hue() +
-    geom_text(aes(label=n),hjust=-0.1,size=7,family="IBM Plex Sans KR")+
+    geom_text(aes(label=n),hjust=-0.1,size=7,family="Gowun Dodum")+
     labs(y = NULL, title="일본") +
     theme_bw()+
     theme(plot.title =  element_text(size=40),
-        text=element_text(family="IBM Plex Sans KR",size=25)) -> d1) 
+        text=element_text(family="Gowun Dodum",size=25)) -> d1) 
 ```
 
 ## TF-IDF per paragraph
@@ -1457,7 +1540,7 @@ japan_topic_k_df %>%
     facet_wrap(~metric, scales = "free")+
     theme_bw() +
     theme(plot.title = element_text(size=20),
-        text=element_text(family="IBM Plex Sans KR",size=40))
+        text=element_text(family="Gowun Dodum",size=40))
 ```
 
 ### Cast LDA (k=4)
@@ -1484,7 +1567,7 @@ japan_tp_4 %>%
     scale_y_reordered() +
     theme_bw()+ 
     theme(plot.title = element_text(size=20),
-          text=element_text(family="IBM Plex Sans KR",size=40),
+          text=element_text(family="Gowun Dodum",size=40),
           axis.text.x = element_text(size = 20))  
 ```
 
@@ -1512,7 +1595,7 @@ japan_tp_5 %>%
     scale_y_reordered() +
     theme_bw()+ 
     theme(plot.title = element_text(size=20),
-          text=element_text(family="IBM Plex Sans KR",size=40),
+          text=element_text(family="Gowun Dodum",size=40),
           axis.text.x = element_text(size = 20))  
 ```
 
@@ -1540,7 +1623,7 @@ japan_tp_6 %>%
     scale_y_reordered() +
     theme_bw()+ 
     theme(plot.title = element_text(size=20),
-          text=element_text(family="IBM Plex Sans KR",size=40),
+          text=element_text(family="Gowun Dodum",size=40),
           axis.text.x = element_text(size = 20))  
 ```
 
@@ -1568,10 +1651,94 @@ japan_tp_7 %>%
     scale_y_reordered() +
     theme_bw()+ 
     theme(plot.title = element_text(size=20),
-          text=element_text(family="IBM Plex Sans KR",size=40),
+          text=element_text(family="Gowun Dodum",size=40),
           axis.text.x = element_text(size = 20))  
 ```
 
+### Cast LDA (k=8)
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+japan_lda <-  LDA(japan_dtm, k = 8,
+              method="Gibbs",
+              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
+
+japan_tp_8 <- japan_lda %>%
+    tidy(matrix = "beta") %>%
+    group_by(term) %>%
+    slice_max(beta) 
+
+japan_tp_8 %>% 
+    group_by(topic) %>%
+    slice_max(beta,n=10) %>%
+    arrange(topic) %>%
+    mutate(term = reorder_within(term, beta, topic)) %>%
+    ggplot(aes(beta, term, fill = factor(topic))) +
+    geom_col(show.legend = FALSE) +
+    facet_wrap(~ topic, scales = "free",ncol=4) +
+    scale_y_reordered() +
+    theme_bw()+ 
+    theme(plot.title = element_text(size=20),
+          text=element_text(family="Gowun Dodum",size=40),
+          axis.text.x = element_text(size = 20))  
+```
+
+### Cast LDA (k=9)
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+japan_lda <-  LDA(japan_dtm, k = 9,
+              method="Gibbs",
+              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
+
+japan_tp_9 <- japan_lda %>%
+    tidy(matrix = "beta") %>%
+    group_by(term) %>%
+    slice_max(beta) 
+
+japan_tp_9 %>% 
+    group_by(topic) %>%
+    slice_max(beta,n=10) %>%
+    arrange(topic) %>%
+    mutate(term = reorder_within(term, beta, topic)) %>%
+    ggplot(aes(beta, term, fill = factor(topic))) +
+    geom_col(show.legend = FALSE) +
+    facet_wrap(~ topic, scales = "free",ncol=5) +
+    scale_y_reordered() +
+    theme_bw()+ 
+    theme(plot.title = element_text(size=20),
+          text=element_text(family="Gowun Dodum",size=40),
+          axis.text.x = element_text(size = 20))  
+```
+
+
+### Cast LDA (k=10)
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+japan_lda <-  LDA(japan_dtm, k = 10,
+              method="Gibbs",
+              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
+
+japan_tp_10 <- japan_lda %>%
+    tidy(matrix = "beta") %>%
+    group_by(term) %>%
+    slice_max(beta) 
+
+japan_tp_10 %>% 
+    group_by(topic) %>%
+    slice_max(beta,n=10) %>%
+    arrange(topic) %>%
+    mutate(term = reorder_within(term, beta, topic)) %>%
+    ggplot(aes(beta, term, fill = factor(topic))) +
+    geom_col(show.legend = FALSE) +
+    facet_wrap(~ topic, scales = "free",ncol=5) +
+    scale_y_reordered() +
+    theme_bw()+ 
+    theme(plot.title = element_text(size=20),
+          text=element_text(family="Gowun Dodum",size=40),
+          axis.text.x = element_text(size = 20))  
+```
 ## Network Graph
 
 ### Pairwise Count
@@ -1619,9 +1786,9 @@ japan_g %>%
     scale_edge_alpha(range = c(0.3,1)) +
     scale_size(range = c(5,20)) + 
     geom_node_point(aes(colour = community, size = degree)) +
-    geom_node_text(aes(label = name, size=degree),size=8, repel = TRUE,family="IBM Plex Sans KR") +
-    theme_graph(base_family="IBM Plex Sans KR") +
-    theme(text=element_text(family="IBM Plex Sans KR", size=40)) +
+    geom_node_text(aes(label = name, size=degree),size=8, repel = TRUE,family="Gowun Dodum") +
+    theme_graph(base_family="Gowun Dodum") +
+    theme(text=element_text(family="Gowun Dodum", size=40)) +
     guides(size="none")
 ```
 
@@ -1639,9 +1806,9 @@ japan_g %>%
     scale_edge_width(range = c(0.05,1)) +
     scale_edge_alpha(range = c(0.05,1)) + 
     geom_node_point(aes(colour = community, size = degree)) +
-    geom_node_text(aes(label = name),size=8, repel = TRUE,family="IBM Plex Sans KR") +
-    theme_graph(base_family="IBM Plex Sans KR") +
-    theme(text=element_text(family="IBM Plex Sans KR",size=40)) +
+    geom_node_text(aes(label = name),size=8, repel = TRUE,family="Gowun Dodum") +
+    theme_graph(base_family="Gowun Dodum") +
+    theme(text=element_text(family="Gowun Dodum",size=40)) +
     guides(size="none")+
     facet_nodes(~ community,ncol=3)
 ```
@@ -1766,11 +1933,11 @@ The frequency of specific words and n-grams in each paragraphs.
     pattern_orientation='horizontal',
     pattern_alpha=1)+
     scale_fill_hue() +
-    geom_text(aes(label=n),hjust=-0.1,size=7,family="IBM Plex Sans KR")+
+    geom_text(aes(label=n),hjust=-0.1,size=7,family="Gowun Dodum")+
     labs(y = NULL, title="영국") +
     theme_bw()+
     theme(plot.title = element_text(size=40),
-        text=element_text(family="IBM Plex Sans KR",size=25)) -> e)
+        text=element_text(family="Gowun Dodum",size=25)) -> e)
 
 (uk_ngram %>%
     count(words) %>% 
@@ -1786,11 +1953,11 @@ The frequency of specific words and n-grams in each paragraphs.
     pattern_orientation='horizontal',
     pattern_alpha=1)+
     scale_fill_hue() +
-    geom_text(aes(label=n),hjust=-0.1,size=7,family="IBM Plex Sans KR")+
+    geom_text(aes(label=n),hjust=-0.1,size=7,family="Gowun Dodum")+
     labs(y = NULL, title="독일") +
     theme_bw()+
     theme(plot.title =  element_text(size=40),
-        text=element_text(family="IBM Plex Sans KR",size=25)) -> e1) 
+        text=element_text(family="Gowun Dodum",size=25)) -> e1) 
 ```
 
 ## TF-IDF per paragraph
@@ -1872,7 +2039,7 @@ uk_topic_k_df %>%
     facet_wrap(~metric, scales = "free")+
     theme_bw() +
     theme(plot.title = element_text(size=20),
-        text=element_text(family="IBM Plex Sans KR",size=40))
+        text=element_text(family="Gowun Dodum",size=40))
 ```
 
 ### Cast LDA (k=4)
@@ -1899,7 +2066,7 @@ uk_tp_4 %>%
     scale_y_reordered() +
     theme_bw()+ 
     theme(plot.title = element_text(size=20),
-          text=element_text(family="IBM Plex Sans KR",size=40),
+          text=element_text(family="Gowun Dodum",size=40),
           axis.text.x = element_text(size = 20))  
 ```
 
@@ -1927,7 +2094,7 @@ uk_tp_5 %>%
     scale_y_reordered() +
     theme_bw()+ 
     theme(plot.title = element_text(size=20),
-          text=element_text(family="IBM Plex Sans KR",size=40),
+          text=element_text(family="Gowun Dodum",size=40),
           axis.text.x = element_text(size = 20))  
 ```
 
@@ -1955,7 +2122,7 @@ uk_tp_6 %>%
     scale_y_reordered() +
     theme_bw()+ 
     theme(plot.title = element_text(size=20),
-          text=element_text(family="IBM Plex Sans KR",size=40),
+          text=element_text(family="Gowun Dodum",size=40),
           axis.text.x = element_text(size = 20))  
 ```
 
@@ -1983,7 +2150,7 @@ uk_tp_7 %>%
     scale_y_reordered() +
     theme_bw()+ 
     theme(plot.title = element_text(size=20),
-          text=element_text(family="IBM Plex Sans KR",size=40),
+          text=element_text(family="Gowun Dodum",size=40),
           axis.text.x = element_text(size = 20))  
 ```
 
@@ -2034,9 +2201,9 @@ uk_g %>%
     scale_edge_alpha(range = c(0.3,1)) +
     scale_size(range = c(5,20)) + 
     geom_node_point(aes(colour = community, size = degree)) +
-    geom_node_text(aes(label = name, size=degree),size=8, repel = TRUE,family="IBM Plex Sans KR") +
-    theme_graph(base_family="IBM Plex Sans KR") +
-    theme(text=element_text(family="IBM Plex Sans KR", size=40)) +
+    geom_node_text(aes(label = name, size=degree),size=8, repel = TRUE,family="Gowun Dodum") +
+    theme_graph(base_family="Gowun Dodum") +
+    theme(text=element_text(family="Gowun Dodum", size=40)) +
     guides(size="none")
 ```
 
@@ -2054,9 +2221,9 @@ uk_g %>%
     scale_edge_width(range = c(0.05,1)) +
     scale_edge_alpha(range = c(0.05,1)) + 
     geom_node_point(aes(colour = community, size = degree)) +
-    geom_node_text(aes(label = name),size=8, repel = TRUE,family="IBM Plex Sans KR") +
-    theme_graph(base_family="IBM Plex Sans KR") +
-    theme(text=element_text(family="IBM Plex Sans KR",size=40)) +
+    geom_node_text(aes(label = name),size=8, repel = TRUE,family="Gowun Dodum") +
+    theme_graph(base_family="Gowun Dodum") +
+    theme(text=element_text(family="Gowun Dodum",size=40)) +
     guides(size="none")+
     facet_nodes(~ community,ncol=3)
 ```
@@ -2165,11 +2332,11 @@ The frequency of specific words and n-grams in each paragraphs.
     pattern_orientation='horizontal',
     pattern_alpha=1)+
     scale_fill_hue() +
-    geom_text(aes(label=n),hjust=-0.1,size=7,family="IBM Plex Sans KR")+
+    geom_text(aes(label=n),hjust=-0.1,size=7,family="Gowun Dodum")+
     labs(y = NULL, title="호주") +
     theme_bw()+
     theme(plot.title = element_text(size=40),
-        text=element_text(family="IBM Plex Sans KR",size=25)) -> f)
+        text=element_text(family="Gowun Dodum",size=25)) -> f)
 
 (austrailia_ngram %>%
     count(words) %>% 
@@ -2185,11 +2352,11 @@ The frequency of specific words and n-grams in each paragraphs.
     pattern_orientation='horizontal',
     pattern_alpha=1)+
     scale_fill_hue() +
-    geom_text(aes(label=n),hjust=-0.1,size=7,family="IBM Plex Sans KR")+
+    geom_text(aes(label=n),hjust=-0.1,size=7,family="Gowun Dodum")+
     labs(y = NULL, title="호주") +
     theme_bw()+
     theme(plot.title =  element_text(size=40),
-        text=element_text(family="IBM Plex Sans KR",size=25)) -> f1) 
+        text=element_text(family="Gowun Dodum",size=25)) -> f1) 
 ```
 
 ## TF-IDF per paragraph
@@ -2270,7 +2437,7 @@ austrailia_topic_k_df %>%
     facet_wrap(~metric, scales = "free")+
     theme_bw() +
     theme(plot.title = element_text(size=20),
-        text=element_text(family="IBM Plex Sans KR",size=40))
+        text=element_text(family="Gowun Dodum",size=40))
 ```
 
 ### Cast LDA (k=4)
@@ -2297,7 +2464,7 @@ austrailia_tp_4 %>%
     scale_y_reordered() +
     theme_bw()+ 
     theme(plot.title = element_text(size=20),
-          text=element_text(family="IBM Plex Sans KR",size=40),
+          text=element_text(family="Gowun Dodum",size=40),
           axis.text.x = element_text(size = 20))  
 ```
 
@@ -2325,7 +2492,7 @@ austrailia_tp_5 %>%
     scale_y_reordered() +
     theme_bw()+ 
     theme(plot.title = element_text(size=20),
-          text=element_text(family="IBM Plex Sans KR",size=40),
+          text=element_text(family="Gowun Dodum",size=40),
           axis.text.x = element_text(size = 20))  
 ```
 
@@ -2353,7 +2520,7 @@ austrailia_tp_6 %>%
     scale_y_reordered() +
     theme_bw()+ 
     theme(plot.title = element_text(size=20),
-          text=element_text(family="IBM Plex Sans KR",size=40),
+          text=element_text(family="Gowun Dodum",size=40),
           axis.text.x = element_text(size = 20))  
 ```
 
@@ -2381,7 +2548,7 @@ austrailia_tp_7 %>%
     scale_y_reordered() +
     theme_bw()+ 
     theme(plot.title = element_text(size=20),
-          text=element_text(family="IBM Plex Sans KR",size=40),
+          text=element_text(family="Gowun Dodum",size=40),
           axis.text.x = element_text(size = 20))  
 ```
 
@@ -2432,9 +2599,9 @@ austrailia_g %>%
     scale_edge_alpha(range = c(0.3,1)) +
     scale_size(range = c(5,20)) + 
     geom_node_point(aes(colour = community, size = degree)) +
-    geom_node_text(aes(label = name, size=degree),size=8, repel = TRUE,family="IBM Plex Sans KR") +
-    theme_graph(base_family="IBM Plex Sans KR") +
-    theme(text=element_text(family="IBM Plex Sans KR", size=40)) +
+    geom_node_text(aes(label = name, size=degree),size=8, repel = TRUE,family="Gowun Dodum") +
+    theme_graph(base_family="Gowun Dodum") +
+    theme(text=element_text(family="Gowun Dodum", size=40)) +
     guides(size="none")
 ```
 
@@ -2452,9 +2619,9 @@ austrailia_g %>%
     scale_edge_width(range = c(0.05,1)) +
     scale_edge_alpha(range = c(0.05,1)) + 
     geom_node_point(aes(colour = community, size = degree)) +
-    geom_node_text(aes(label = name),size=8, repel = TRUE,family="IBM Plex Sans KR") +
-    theme_graph(base_family="IBM Plex Sans KR") +
-    theme(text=element_text(family="IBM Plex Sans KR",size=40)) +
+    geom_node_text(aes(label = name),size=8, repel = TRUE,family="Gowun Dodum") +
+    theme_graph(base_family="Gowun Dodum") +
+    theme(text=element_text(family="Gowun Dodum",size=40)) +
     guides(size="none")+
     facet_nodes(~ community,ncol=3)
 ```
@@ -2484,9 +2651,9 @@ finland_g %>%
     scale_edge_alpha(range = c(0.3,1)) +
     scale_size(range = c(5,20)) + 
     geom_node_point(aes(size = degree, color="blue")) +
-    geom_node_text(aes(label = name), repel = TRUE,family="IBM Plex Sans KR",size=10, max.overlaps = Inf) +
-    theme_graph(base_family="IBM Plex Sans KR") +
-    theme(text=element_text(family="IBM Plex Sans KR",size=40)) +
+    geom_node_text(aes(label = name), repel = TRUE,family="Gowun Dodum",size=10, max.overlaps = Inf) +
+    theme_graph(base_family="Gowun Dodum") +
+    theme(text=element_text(family="Gowun Dodum",size=40)) +
     guides(size="none",color="none")
 
 ```
@@ -2526,7 +2693,7 @@ total_tokenized %>%
     labs(y = NULL, title="Comparing Word Frequencies of Six Countries") +
     theme_bw()+
     theme(plot.title = element_text(size=40),
-          text=element_text(family="IBM Plex Sans KR",size=40),
+          text=element_text(family="Gowun Dodum",size=40),
           axis.text.x = element_text(size = 20))+
     ggeasy::easy_center_title()
 
@@ -2540,7 +2707,7 @@ grid.arrange(a1,b1,c1,d1,e1,f1, nrow=2,
              top=textGrob("Comparing Bigrams of Six Countries",
                           gp = gpar(col = "black", 
                                     fontsize = 40,
-                                    fontfamily="IBM Plex Sans KR")))
+                                    fontfamily="Gowun Dodum")))
 ```
 
 ## Comparing Tf-idf of Six Countries
@@ -2563,7 +2730,7 @@ total_tokenized %>%
     labs(y = NULL, title="Comparing TF-IDF of Six Countries") +
     theme_bw()+
     theme(plot.title = element_text(size=40),
-          text=element_text(family="IBM Plex Sans KR",size=40),
+          text=element_text(family="Gowun Dodum",size=40),
           axis.text.x = element_text(size = 20))  +
     ggeasy::easy_center_title()
 
@@ -2594,7 +2761,7 @@ compare_six %>%
     ggplot(aes(x = proportion, y = 대한민국, color = abs(대한민국 - proportion))) +
     geom_abline(color = "darkgreen", lty = 2, size=1.5) +
     geom_jitter(alpha = 0.1, size = 1.5, width = 0.3, height = 0.3) +
-    geom_text(aes(label = words), check_overlap = TRUE, vjust = 1.5, family="IBM Plex Sans KR",size=9) +
+    geom_text(aes(label = words), check_overlap = TRUE, vjust = 1.5, family="Gowun Dodum",size=9) +
     scale_x_log10(labels = percent_format()) +
     scale_y_log10(labels = percent_format()) +
     scale_color_gradient(limits = c(0.001, 0.01), 
@@ -2604,7 +2771,7 @@ compare_six %>%
     labs(y = "대한민국", x = NULL, title="Comparing the word frequencies of Six Countries") +
     theme_bw() +
     theme(plot.title = element_text(size=40),
-          text=element_text(family="IBM Plex Sans KR",size=25))+
+          text=element_text(family="Gowun Dodum",size=25))+
     guides(color="none") +
     ggeasy::easy_center_title()
 ```
@@ -2747,7 +2914,7 @@ mpl.rc('font', family='NanumGothic') # 폰트 설정
 mpl.rc('axes', unicode_minus=False) # 유니코드에서 음수 부호 설정
 
 # 차트 스타일 설정
-sns.set(font="NanumGothic", rc={"axes.unicode_minus":False}, style='darkgrid')
+sns.set(font="NanumGothic", rc={"axes.unicode_minus":False}, style='white')
 warnings.filterwarnings("ignore")
 ```
 
@@ -2789,7 +2956,8 @@ feature_vect = tfidf_vect.fit_transform(document_df['opinion_text'])
 ```
 
 ### Cosine Similarity
-```{python} 
+
+```{python}
 from sklearn.metrics.pairwise import cosine_similarity
 
 similarity_pair = cosine_similarity(feature_vect[0] , feature_vect)
@@ -2797,6 +2965,7 @@ document_df["similarity"] = similarity_pair.reshape(-1,1)
 ```
 
 ### 시각화
+
 ```{python}
 #| fig-align: center
 plt.clf()
