@@ -8,6 +8,8 @@ knitr:
   opts_knit:
     verbose: false
 jupyter: python3
+execute:
+  freeze: auto 
 date: 2022/08/06
 ---
 
@@ -60,7 +62,7 @@ pacman::p_load("reticulate","tidyverse","tidymodels",
                "scales","ggpattern","magick","corrplot")
 
 # Font Setting
-font_add_google(name="Gowun Dodum") #fonts.google.com에서 고르시면 됨
+font_add_google(name="Nanum Gothic") #fonts.google.com에서 고르시면 됨
 showtext_auto()
 ```
 
@@ -207,11 +209,11 @@ The frequency of specific words and n-grams in each paragraphs.
     pattern_orientation='horizontal',
     pattern_alpha=1)+
     scale_fill_hue() +
-    geom_text(aes(label=n),hjust=-0.1,size=7,family="Gowun Dodum")+
+    geom_text(aes(label=n),hjust=-0.1,size=7,family="Nanum Gothic")+
     labs(y = NULL, title="대한민국") +
     theme_bw()+
     theme(plot.title = element_text(size=40),
-        text=element_text(family="Gowun Dodum",size=25)) -> a)
+        text=element_text(family="Nanum Gothic",size=25)) -> a)
 
 (korea_ngram %>%
     count(words) %>% 
@@ -227,11 +229,11 @@ The frequency of specific words and n-grams in each paragraphs.
     pattern_orientation='horizontal',
     pattern_alpha=1)+
     scale_fill_hue() +
-    geom_text(aes(label=n),hjust=-0.1,size=7,family="Gowun Dodum")+
+    geom_text(aes(label=n),hjust=-0.1,size=7,family="Nanum Gothic")+
     labs(y = NULL, title="대한민국") +
     theme_bw()+
     theme(plot.title =  element_text(size=40),
-        text=element_text(family="Gowun Dodum",size=25)) -> a1) 
+        text=element_text(family="Nanum Gothic",size=25)) -> a1) 
 ```
 
 ## TF-IDF per paragraph
@@ -309,66 +311,26 @@ korea_topic_k_df %>%
     facet_wrap(~metric, scales = "free")+
     theme_bw() +
     theme(plot.title = element_text(size=20),
-        text=element_text(family="Gowun Dodum",size=40))
-```
-
-### Cast LDA (k=4)
-
-```{r, fig.align='center',fig.width=10,fig.height=7}
-#| column: page
-korea_lda <-  LDA(korea_dtm, k = 4,
-              method="Gibbs",
-              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
-
-korea_tp_4 <- korea_lda %>%
-    tidy(matrix = "beta") %>%
-    group_by(term) %>%
-    slice_max(beta) 
-
-korea_tp_4 %>% 
-    group_by(topic) %>%
-    slice_max(beta,n=10) %>%
-    arrange(topic) %>%
-    mutate(term = reorder_within(term, beta, topic)) %>%
-    ggplot(aes(beta, term, fill = factor(topic))) +
-    geom_col(show.legend = FALSE) +
-    facet_wrap(~ topic, scales = "free",ncol=3) +
-    scale_y_reordered() +
-    theme_bw()+ 
-    theme(plot.title = element_text(size=20),
-          text=element_text(family="Gowun Dodum",size=40),
-          axis.text.x = element_text(size = 20)) 
-```
-
-### Cast LDA (k=5)
-
-```{r, fig.align='center',fig.width=10,fig.height=7}
-#| column: page
-korea_lda <-  LDA(korea_dtm, k = 5,
-              method="Gibbs",
-              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
-
-korea_tp_5 <- korea_lda %>%
-    tidy(matrix = "beta") %>%
-    group_by(term) %>%
-    slice_max(beta) 
-
-korea_tp_5 %>% 
-    group_by(topic) %>%
-    slice_max(beta,n=10) %>%
-    arrange(topic) %>%
-    mutate(term = reorder_within(term, beta, topic)) %>%
-    ggplot(aes(beta, term, fill = factor(topic))) +
-    geom_col(show.legend = FALSE) +
-    facet_wrap(~ topic, scales = "free",ncol=3) +
-    scale_y_reordered() +
-    theme_bw()+ 
-    theme(plot.title = element_text(size=20),
-          text=element_text(family="Gowun Dodum",size=40),
-          axis.text.x = element_text(size = 20)) 
+        text=element_text(family="Nanum Gothic",size=40))
 ```
 
 ### Cast LDA (k=6)
+
+```{r}
+korea_topic="
+government, implementation, policy, international, establish, national, framework, ministry, stakeholder, oda, cooperation, humanitarian, assistance, project, strategy, saemual,  undong, partnership, global,
+disability, sector, service, increase, public, act, person, welfare, strengthen, promote, ensure,
+economic, social, plan, goal, target, integrate, environmental, society, relate,
+sustainable, development, create, environment, organization, civil, report,
+girl, country, initiative, life, education, develop, health, quality, school, capacity"
+korea_topic_update <- korea_topic %>% 
+    str_squish() %>% 
+    str_split(pattern=", ",simplify =T) 
+korea_topic_names=data.frame(
+  stringsAsFactors = FALSE,
+                topic = c(1L, 2L, 3L, 4L, 5L, 6L),
+                topic2= c("정부 정책", "국제협력", "복지", "통합적 목표설정", "지속가능개발", "인권"))
+```
 
 ```{r, fig.align='center',fig.width=10,fig.height=7}
 #| column: page
@@ -379,134 +341,30 @@ korea_lda <-  LDA(korea_dtm, k = 6,
 korea_tp_6 <- korea_lda %>%
     tidy(matrix = "beta") %>%
     group_by(term) %>%
-    slice_max(beta) 
+    slice_max(beta) %>%
+    dplyr::left_join(korea_topic_names,by="topic") %>% 
+    ungroup() %>% 
+    select(-topic) %>% 
+    rename(topic="topic2")
 
 korea_tp_6 %>% 
     group_by(topic) %>%
     slice_max(beta,n=10) %>%
-    arrange(topic) %>%
+    filter(term %in% as.vector(korea_topic_update)) %>% 
+    arrange(topic)  %>% 
     mutate(term = reorder_within(term, beta, topic)) %>%
-    ggplot(aes(beta, term, fill = factor(topic))) +
+    ggplot(aes(beta, term, fill = topic)) +
     geom_col(show.legend = FALSE) +
     facet_wrap(~ topic, scales = "free",ncol=3) +
     scale_y_reordered() +
     theme_bw()+ 
     theme(plot.title = element_text(size=20),
-          text=element_text(family="Gowun Dodum",size=40),
-          axis.text.x = element_text(size = 20)) 
+          text=element_text(family="Nanum Gothic",size=40),
+          axis.text.x = element_text(size = 20),
+          axis.title.y=element_blank()) + 
+    ghibli::scale_fill_ghibli_d("PonyoLight", direction = 1)
 ```
 
-### Cast LDA (k=7)
-
-```{r, fig.align='center',fig.width=10,fig.height=7}
-#| column: page
-korea_lda <-  LDA(korea_dtm, k = 7,
-              method="Gibbs",
-              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
-
-korea_tp_7 <- korea_lda %>%
-    tidy(matrix = "beta") %>%
-    group_by(term) %>%
-    slice_max(beta) 
-
-korea_tp_7 %>% 
-    group_by(topic) %>%
-    slice_max(beta,n=10) %>%
-    arrange(topic) %>%
-    mutate(term = reorder_within(term, beta, topic)) %>%
-    ggplot(aes(beta, term, fill = factor(topic))) +
-    geom_col(show.legend = FALSE) +
-    facet_wrap(~ topic, scales = "free",ncol=4) +
-    scale_y_reordered() +
-    theme_bw()+ 
-    theme(plot.title = element_text(size=20),
-          text=element_text(family="Gowun Dodum",size=40),
-          axis.text.x = element_text(size = 20)) 
-```
-
-### Cast LDA (k=8)
-
-```{r, fig.align='center',fig.width=10,fig.height=7}
-#| column: page
-korea_lda <-  LDA(korea_dtm, k = 8,
-              method="Gibbs",
-              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
-
-korea_tp_8 <- korea_lda %>%
-    tidy(matrix = "beta") %>%
-    group_by(term) %>%
-    slice_max(beta) 
-
-korea_tp_8 %>% 
-    group_by(topic) %>%
-    slice_max(beta,n=10) %>%
-    arrange(topic) %>%
-    mutate(term = reorder_within(term, beta, topic)) %>%
-    ggplot(aes(beta, term, fill = factor(topic))) +
-    geom_col(show.legend = FALSE) +
-    facet_wrap(~ topic, scales = "free",ncol=4) +
-    scale_y_reordered() +
-    theme_bw()+ 
-    theme(plot.title = element_text(size=20),
-          text=element_text(family="Gowun Dodum",size=40),
-          axis.text.x = element_text(size = 20)) 
-```
-
-### Cast LDA (k=9)
-
-```{r, fig.align='center',fig.width=10,fig.height=7}
-#| column: page
-korea_lda <-  LDA(korea_dtm, k = 9,
-              method="Gibbs",
-              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
-
-korea_tp_9 <- korea_lda %>%
-    tidy(matrix = "beta") %>%
-    group_by(term) %>%
-    slice_max(beta) 
-
-korea_tp_9 %>% 
-    group_by(topic) %>%
-    slice_max(beta,n=10) %>%
-    arrange(topic) %>%
-    mutate(term = reorder_within(term, beta, topic)) %>%
-    ggplot(aes(beta, term, fill = factor(topic))) +
-    geom_col(show.legend = FALSE) +
-    facet_wrap(~ topic, scales = "free",ncol=5) +
-    scale_y_reordered() +
-    theme_bw()+ 
-    theme(plot.title = element_text(size=20),
-          text=element_text(family="Gowun Dodum",size=40),
-          axis.text.x = element_text(size = 20)) 
-```
-
-### Cast LDA (k=10)
-
-```{r, fig.align='center',fig.width=10,fig.height=7}
-#| column: page
-korea_lda <-  LDA(korea_dtm, k = 10,
-              method="Gibbs",
-              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
-
-korea_tp_10 <- korea_lda %>%
-    tidy(matrix = "beta") %>%
-    group_by(term) %>%
-    slice_max(beta) 
-
-korea_tp_10 %>% 
-    group_by(topic) %>%
-    slice_max(beta,n=10) %>%
-    arrange(topic) %>%
-    mutate(term = reorder_within(term, beta, topic)) %>%
-    ggplot(aes(beta, term, fill = factor(topic))) +
-    geom_col(show.legend = FALSE) +
-    facet_wrap(~ topic, scales = "free",ncol=5) +
-    scale_y_reordered() +
-    theme_bw()+ 
-    theme(plot.title = element_text(size=20),
-          text=element_text(family="Gowun Dodum",size=40),
-          axis.text.x = element_text(size = 20)) 
-```
 
 ## Network Graph
 
@@ -555,10 +413,13 @@ korea_g %>%
     scale_edge_alpha(range = c(0.3,1)) +
     scale_size(range = c(5,20)) + 
     geom_node_point(aes(colour = community, size = degree)) +
-    geom_node_text(aes(label = name, size=degree),size=8, repel = TRUE,family="Gowun Dodum") +
-    theme_graph(base_family="Gowun Dodum") +
-    theme(text=element_text(family="Gowun Dodum", size=40)) +
-    guides(size="none")
+    geom_node_text(aes(label = name, size=degree),size=8, repel = TRUE,family="Nanum Gothic") +
+    theme_graph(base_family="Nanum Gothic") +
+    theme(text=element_text(family="Nanum Gothic", size=30)) +
+    guides(size="none",
+           color = guide_legend(title="Topic 명",
+                                override.aes = list(size=5))) +
+    ghibli::scale_color_ghibli_d("PonyoLight", direction = 1)
 ```
 
 ### Network Graph per topic
@@ -575,17 +436,20 @@ korea_g %>%
     scale_edge_width(range = c(0.05,1)) +
     scale_edge_alpha(range = c(0.05,1)) + 
     geom_node_point(aes(colour = community, size = degree)) +
-    geom_node_text(aes(label = name),size=8, repel = TRUE,family="Gowun Dodum") +
-    theme_graph(base_family="Gowun Dodum") +
-    theme(text=element_text(family="Gowun Dodum",size=40)) +
-    guides(size="none")+
-    facet_nodes(~ community,ncol=3)
+    geom_node_text(aes(label = name),size=8, repel = TRUE,family="Nanum Gothic") +
+    theme_graph(base_family="Nanum Gothic") +
+    theme(text=element_text(family="Nanum Gothic", size=30),
+          strip.text = element_text(size = 20),
+          panel.border = element_rect(color = "black", fill = NA, size = 1)) +
+    guides(size="none",
+           color = guide_legend(title="Topic 명",
+                                override.aes = list(size=5))) +
+    ghibli::scale_color_ghibli_d("PonyoLight", direction = 1) +
+    facet_nodes(~ community, ncol=3, scales = "free")
 ```
-
 # Germany VNR
 
 ## Preprocess
-
 ```{r}
 germany<-readLines(ger_path) %>%
     str_flatten(collapse = " ") %>%
@@ -645,7 +509,7 @@ germany_tokenized <- germany_tokenized  %>%
     filter(!str_detect(words,pattern="inwh*")) %>%
     filter(!str_detect(words,pattern="agend*")) %>% 
     filter(!str_detect(words,pattern="billi*")) %>% 
-     filter(!str_detect(words,pattern="datum*")) %>% 
+    filter(!str_detect(words,pattern="datum*")) %>% 
     filter(!str_detect(words,pattern="support*")) %>%
     filter(!str_detect(words,pattern="progra*"))
 
@@ -662,7 +526,7 @@ germany_ngram <- germany_ngram  %>%
     filter(!str_detect(words,pattern="inwh*")) %>%
     filter(!str_detect(words,pattern="agend*")) %>% 
     filter(!str_detect(words,pattern="billi*")) %>% 
-     filter(!str_detect(words,pattern="datum*")) %>% 
+    filter(!str_detect(words,pattern="datum*")) %>% 
     filter(!str_detect(words,pattern="support*")) %>%
     filter(!str_detect(words,pattern="progra*"))
 ```
@@ -686,11 +550,11 @@ The frequency of specific words and n-grams in each paragraphs.
     pattern_orientation='horizontal',
     pattern_alpha=1)+
     scale_fill_hue() +
-    geom_text(aes(label=n),hjust=-0.1,size=7,family="Gowun Dodum")+
+    geom_text(aes(label=n),hjust=-0.1,size=7,family="Nanum Gothic")+
     labs(y = NULL, title="독일") +
     theme_bw()+
     theme(plot.title = element_text(size=40),
-        text=element_text(family="Gowun Dodum",size=25)) -> b)
+        text=element_text(family="Nanum Gothic",size=25)) -> b)
 
 (germany_ngram %>%
     count(words) %>% 
@@ -706,11 +570,11 @@ The frequency of specific words and n-grams in each paragraphs.
     pattern_orientation='horizontal',
     pattern_alpha=1)+
     scale_fill_hue() +
-    geom_text(aes(label=n),hjust=-0.1,size=7,family="Gowun Dodum")+
+    geom_text(aes(label=n),hjust=-0.1,size=7,family="Nanum Gothic")+
     labs(y = NULL, title="독일") +
     theme_bw()+
     theme(plot.title =  element_text(size=40),
-        text=element_text(family="Gowun Dodum",size=25)) -> b1) 
+        text=element_text(family="Nanum Gothic",size=25)) -> b1) 
 ```
 
 ## TF-IDF per paragraph
@@ -792,66 +656,27 @@ germany_topic_k_df %>%
     facet_wrap(~metric, scales = "free")+
     theme_bw() +
     theme(plot.title = element_text(size=20),
-        text=element_text(family="Gowun Dodum",size=40))
-```
-
-### Cast LDA (k=4)
-
-```{r, fig.align='center',fig.width=10,fig.height=7}
-#| column: page
-germany_lda <-  LDA(germany_dtm, k = 4,
-              method="Gibbs",
-              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
-
-germany_tp_4 <- germany_lda %>%
-    tidy(matrix = "beta") %>%
-    group_by(term) %>%
-    slice_max(beta) 
-
-germany_tp_4 %>% 
-    group_by(topic) %>%
-    slice_max(beta,n=10) %>%
-    arrange(topic) %>%
-    mutate(term = reorder_within(term, beta, topic)) %>%
-    ggplot(aes(beta, term, fill = factor(topic))) +
-    geom_col(show.legend = FALSE) +
-    facet_wrap(~ topic, scales = "free",ncol=3) +
-    scale_y_reordered() +
-    theme_bw()+ 
-    theme(plot.title = element_text(size=20),
-          text=element_text(family="Gowun Dodum",size=40),
-          axis.text.x = element_text(size = 20))  
-```
-
-### Cast LDA (k=5)
-
-```{r, fig.align='center',fig.width=10,fig.height=7}
-#| column: page
-germany_lda <-  LDA(germany_dtm, k = 5,
-              method="Gibbs",
-              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
-
-germany_tp_5 <- germany_lda %>%
-    tidy(matrix = "beta") %>%
-    group_by(term) %>%
-    slice_max(beta) 
-
-germany_tp_5 %>% 
-    group_by(topic) %>%
-    slice_max(beta,n=10) %>%
-    arrange(topic) %>%
-    mutate(term = reorder_within(term, beta, topic)) %>%
-    ggplot(aes(beta, term, fill = factor(topic))) +
-    geom_col(show.legend = FALSE) +
-    facet_wrap(~ topic, scales = "free",ncol=3) +
-    scale_y_reordered() +
-    theme_bw()+ 
-    theme(plot.title = element_text(size=20),
-          text=element_text(family="Gowun Dodum",size=40),
-          axis.text.x = element_text(size = 20))  
+        text=element_text(family="Nanum Gothic",size=40))
 ```
 
 ### Cast LDA (k=6)
+
+```{r}
+germany_topic="
+action, indicator, policy, plan, goal, gas, basis. ministry, assign, provision, conflict, body,
+sustainability, city, urban, supply, chain, national, human, local, adopt community,
+woman, train, social, act, opportunity, child, labour, vocational, law,
+food, quality, farm, land, agricultural, natural, population, organic,
+consumption, transition, public, innovation, focus, transport, build, 
+country, global, fund, world, financial, condition, covid, contribution"
+germany_topic_update <- germany_topic %>% 
+    str_squish() %>% 
+    str_split(pattern=", ",simplify =T) 
+germany_topic_names=data.frame(
+  stringsAsFactors = FALSE,
+                topic = c(1L, 2L, 3L, 4L, 5L, 6L),
+                topic2= c("정부 정책", "지역사회", "인권", "식량", "사회 혁신", "국제 협력"))
+```
 
 ```{r, fig.align='center',fig.width=10,fig.height=7}
 #| column: page
@@ -862,134 +687,28 @@ germany_lda <-  LDA(germany_dtm, k = 6,
 germany_tp_6 <- germany_lda %>%
     tidy(matrix = "beta") %>%
     group_by(term) %>%
-    slice_max(beta) 
+    slice_max(beta) %>%
+    dplyr::left_join(germany_topic_names,by="topic") %>% 
+    ungroup() %>% 
+    select(-topic) %>% 
+    rename(topic="topic2")
 
 germany_tp_6 %>% 
     group_by(topic) %>%
     slice_max(beta,n=10) %>%
-    arrange(topic) %>%
+    filter(term %in% as.vector(germany_topic_update)) %>% 
+    arrange(topic)  %>% 
     mutate(term = reorder_within(term, beta, topic)) %>%
-    ggplot(aes(beta, term, fill = factor(topic))) +
+    ggplot(aes(beta, term, fill = topic)) +
     geom_col(show.legend = FALSE) +
     facet_wrap(~ topic, scales = "free",ncol=3) +
     scale_y_reordered() +
     theme_bw()+ 
     theme(plot.title = element_text(size=20),
-          text=element_text(family="Gowun Dodum",size=40),
-          axis.text.x = element_text(size = 20))  
-```
-
-### Cast LDA (k=7)
-
-```{r, fig.align='center',fig.width=10,fig.height=7}
-#| column: page
-germany_lda <-  LDA(germany_dtm, k = 7,
-              method="Gibbs",
-              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
-
-germany_tp_7 <- germany_lda %>%
-    tidy(matrix = "beta") %>%
-    group_by(term) %>%
-    slice_max(beta) 
-
-germany_tp_7 %>% 
-    group_by(topic) %>%
-    slice_max(beta,n=10) %>%
-    arrange(topic) %>%
-    mutate(term = reorder_within(term, beta, topic)) %>%
-    ggplot(aes(beta, term, fill = factor(topic))) +
-    geom_col(show.legend = FALSE) +
-    facet_wrap(~ topic, scales = "free",ncol=4) +
-    scale_y_reordered() +
-    theme_bw()+ 
-    theme(plot.title = element_text(size=20),
-          text=element_text(family="Gowun Dodum",size=40),
-          axis.text.x = element_text(size = 20))  
-```
-
-
-### Cast LDA (k=8)
-
-```{r, fig.align='center',fig.width=10,fig.height=7}
-#| column: page
-germany_lda <-  LDA(germany_dtm, k = 8,
-              method="Gibbs",
-              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
-
-germany_tp_8 <- germany_lda %>%
-    tidy(matrix = "beta") %>%
-    group_by(term) %>%
-    slice_max(beta) 
-
-germany_tp_8 %>% 
-    group_by(topic) %>%
-    slice_max(beta,n=10) %>%
-    arrange(topic) %>%
-    mutate(term = reorder_within(term, beta, topic)) %>%
-    ggplot(aes(beta, term, fill = factor(topic))) +
-    geom_col(show.legend = FALSE) +
-    facet_wrap(~ topic, scales = "free",ncol=4) +
-    scale_y_reordered() +
-    theme_bw()+ 
-    theme(plot.title = element_text(size=20),
-          text=element_text(family="Gowun Dodum",size=40),
-          axis.text.x = element_text(size = 20)) 
-```
-
-### Cast LDA (k=9)
-
-```{r, fig.align='center',fig.width=10,fig.height=7}
-#| column: page
-germany_lda <-  LDA(germany_dtm, k = 9,
-              method="Gibbs",
-              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
-
-germany_tp_9 <- germany_lda %>%
-    tidy(matrix = "beta") %>%
-    group_by(term) %>%
-    slice_max(beta) 
-
-germany_tp_9 %>% 
-    group_by(topic) %>%
-    slice_max(beta,n=10) %>%
-    arrange(topic) %>%
-    mutate(term = reorder_within(term, beta, topic)) %>%
-    ggplot(aes(beta, term, fill = factor(topic))) +
-    geom_col(show.legend = FALSE) +
-    facet_wrap(~ topic, scales = "free",ncol=5) +
-    scale_y_reordered() +
-    theme_bw()+ 
-    theme(plot.title = element_text(size=20),
-          text=element_text(family="Gowun Dodum",size=40),
-          axis.text.x = element_text(size = 20)) 
-```
-
-### Cast LDA (k=10)
-
-```{r, fig.align='center',fig.width=10,fig.height=7}
-#| column: page
-germany_lda <-  LDA(germany_dtm, k = 10,
-              method="Gibbs",
-              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
-
-germany_tp_10 <- germany_lda %>%
-    tidy(matrix = "beta") %>%
-    group_by(term) %>%
-    slice_max(beta) 
-
-germany_tp_10 %>% 
-    group_by(topic) %>%
-    slice_max(beta,n=10) %>%
-    arrange(topic) %>%
-    mutate(term = reorder_within(term, beta, topic)) %>%
-    ggplot(aes(beta, term, fill = factor(topic))) +
-    geom_col(show.legend = FALSE) +
-    facet_wrap(~ topic, scales = "free",ncol=5) +
-    scale_y_reordered() +
-    theme_bw()+ 
-    theme(plot.title = element_text(size=20),
-          text=element_text(family="Gowun Dodum",size=40),
-          axis.text.x = element_text(size = 20)) 
+          text=element_text(family="Nanum Gothic",size=40),
+          axis.text.x = element_text(size = 20),
+          axis.title.y=element_blank()) + 
+    ghibli::scale_fill_ghibli_d("PonyoLight", direction = 1)
 ```
 
 ## Network Graph
@@ -1012,7 +731,7 @@ links <- germany_coocur %>%
     rename(source="item1",target="item2",weight="n") 
 
 nodes <- tibble(term=union(links$source,links$target)) %>%
-    left_join(y=germany_tp_7,by="term") %>%
+    left_join(y=germany_tp_6,by="term") %>%
     dplyr::select(nodes="term",topic)
 ```
 
@@ -1021,7 +740,6 @@ nodes <- tibble(term=union(links$source,links$target)) %>%
 ```{r, fig.align='center',fig.width=10,fig.height=7}
 germany_network <- graph_from_data_frame(d = links, vertices = nodes, directed = F)
 germany_g <- as_tbl_graph(germany_network)
-
 ```
 
 ### Network Graph
@@ -1039,10 +757,13 @@ germany_g %>%
     scale_edge_alpha(range = c(0.3,1)) +
     scale_size(range = c(5,20)) + 
     geom_node_point(aes(colour = community, size = degree)) +
-    geom_node_text(aes(label = name, size=degree),size=8, repel = TRUE,family="Gowun Dodum") +
-    theme_graph(base_family="Gowun Dodum") +
-    theme(text=element_text(family="Gowun Dodum", size=40)) +
-    guides(size="none")
+    geom_node_text(aes(label = name, size=degree),size=8, repel = TRUE,family="Nanum Gothic") +
+    theme_graph(base_family="Nanum Gothic") +
+    theme(text=element_text(family="Nanum Gothic", size=30)) +
+    guides(size="none",
+           color = guide_legend(title="Topic 명",
+                                override.aes = list(size=5))) +
+    ghibli::scale_color_ghibli_d("PonyoLight", direction = 1)
 ```
 
 ### Network Graph per topic
@@ -1059,13 +780,17 @@ germany_g %>%
     scale_edge_width(range = c(0.05,1)) +
     scale_edge_alpha(range = c(0.05,1)) + 
     geom_node_point(aes(colour = community, size = degree)) +
-    geom_node_text(aes(label = name),size=8, repel = TRUE,family="Gowun Dodum") +
-    theme_graph(base_family="Gowun Dodum") +
-    theme(text=element_text(family="Gowun Dodum",size=40)) +
-    guides(size="none")+
-    facet_nodes(~ community,ncol=3)
+    geom_node_text(aes(label = name),size=8, repel = TRUE,family="Nanum Gothic") +
+    theme_graph(base_family="Nanum Gothic") +
+    theme(text=element_text(family="Nanum Gothic", size=30),
+          strip.text = element_text(size = 20),
+          panel.border = element_rect(color = "black", fill = NA, size = 1)) +
+    guides(size="none",
+           color = guide_legend(title="Topic 명",
+                                override.aes = list(size=5))) +
+    ghibli::scale_color_ghibli_d("PonyoLight", direction = 1) +
+    facet_nodes(~ community, ncol=3, scales = "free")
 ```
-
 # Finland VNR
 
 ## Preprocess
@@ -1129,7 +854,7 @@ finland_tokenized <-finland_tokenized  %>%
     filter(!str_detect(words,pattern="agend*")) %>% 
     filter(!str_detect(words,pattern="datum*")) %>% 
     filter(!str_detect(words,pattern="support*")) %>% 
-     filter(!str_detect(words,pattern="datum*"))  %>%
+    filter(!str_detect(words,pattern="datum*"))  %>%
     filter(!str_detect(words,pattern="progra*"))
 
 finland_ngram <- finland_ngram  %>% 
@@ -1143,7 +868,7 @@ finland_ngram <- finland_ngram  %>%
     filter(!str_detect(words,pattern="line")) %>% 
     filter(!str_detect(words,pattern="progra*")) %>%
     filter(!str_detect(words,pattern="agend*")) %>% 
-     filter(!str_detect(words,pattern="datum*")) %>% 
+    filter(!str_detect(words,pattern="datum*")) %>% 
     filter(!str_detect(words,pattern="support*")) %>%
     filter(!str_detect(words,pattern="progra*"))
 
@@ -1168,13 +893,13 @@ The frequency of specific words and n-grams in each paragraphs.
     pattern_orientation='horizontal',
     pattern_alpha=1)+
     scale_fill_hue() +
-    geom_text(aes(label=n),hjust=-0.1,size=7,family="Gowun Dodum")+
+    geom_text(aes(label=n),hjust=-0.1,size=7,family="Nanum Gothic")+
     labs(y = NULL, title="핀란드") +
     theme_bw()+
     theme(plot.title = element_text(size=40),
-        text=element_text(family="Gowun Dodum",size=25)) -> c)
+        text=element_text(family="Nanum Gothic",size=25)) -> c)
 
-(germany_ngram %>%
+(finland_ngram %>%
     count(words) %>% 
     arrange(desc(n)) %>% 
     top_n(20) %>%
@@ -1188,11 +913,11 @@ The frequency of specific words and n-grams in each paragraphs.
     pattern_orientation='horizontal',
     pattern_alpha=1)+
     scale_fill_hue() +
-    geom_text(aes(label=n),hjust=-0.1,size=7,family="Gowun Dodum")+
+    geom_text(aes(label=n),hjust=-0.1,size=7,family="Nanum Gothic")+
     labs(y = NULL, title="핀란드") +
     theme_bw()+
     theme(plot.title =  element_text(size=40),
-        text=element_text(family="Gowun Dodum",size=25)) -> c1) 
+        text=element_text(family="Nanum Gothic",size=25)) -> c1) 
 ```
 
 ## TF-IDF per paragraph
@@ -1230,63 +955,26 @@ finland_dtm <- finland_dtm.old[rowTotals> 0, ] # Remove all docs without words
 
 The perplexity is the geometric mean of word likelihood. In 5-fold CV, we first estimate the model, usually called training model, for a given number of topics using 4 folds of the data and then use the left one fold of the data to calculate the perplexity. In calculating the perplexity, we set the model in LDA or CTM to be the training model and not to estimate the beta parameters.
 
-### Cast LDA (k=4)
-
-```{r, fig.align='center',fig.width=10,fig.height=7}
-#| column: page
-finland_lda <-  LDA(finland_dtm, k = 4,
-              method="Gibbs",
-              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
-
-finland_tp_4 <- finland_lda %>%
-    tidy(matrix = "beta") %>%
-    group_by(term) %>%
-    slice_max(beta) 
-
-finland_tp_4 %>% 
-    group_by(topic) %>%
-    slice_max(beta,n=10) %>%
-    arrange(topic) %>%
-    mutate(term = reorder_within(term, beta, topic)) %>%
-    ggplot(aes(beta, term, fill = factor(topic))) +
-    geom_col(show.legend = FALSE) +
-    facet_wrap(~ topic, scales = "free",ncol=3) +
-    scale_y_reordered() +
-    theme_bw()+ 
-    theme(plot.title = element_text(size=20),
-          text=element_text(family="Gowun Dodum",size=40),
-          axis.text.x = element_text(size = 20))  
-```
-
-### Cast LDA (k=5)
-
-```{r, fig.align='center',fig.width=10,fig.height=7}
-#| column: page
-finland_lda <-  LDA(finland_dtm, k = 5,
-              method="Gibbs",
-              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
-
-finland_tp_5 <- finland_lda %>%
-    tidy(matrix = "beta") %>%
-    group_by(term) %>%
-    slice_max(beta) 
-
-finland_tp_5 %>% 
-    group_by(topic) %>%
-    slice_max(beta,n=10) %>%
-    arrange(topic) %>%
-    mutate(term = reorder_within(term, beta, topic)) %>%
-    ggplot(aes(beta, term, fill = factor(topic))) +
-    geom_col(show.legend = FALSE) +
-    facet_wrap(~ topic, scales = "free",ncol=3) +
-    scale_y_reordered() +
-    theme_bw()+ 
-    theme(plot.title = element_text(size=20),
-          text=element_text(family="Gowun Dodum",size=40),
-          axis.text.x = element_text(size = 20))  
-```
 
 ### Cast LDA (k=6)
+
+```{r}
+finland_topic="
+government, national, policy, report, implementation, plan, ministry, parliament, committee, commission,
+innovation, development, sustainable, society, research, commitment, company, business, public, sector,
+indicator, assessment, people, panel, union, organisation, participate, issue, include, act,
+education, increase, social, health, service, equality, woman, population, child,
+energy, water, carbon, food, emission, consumption, reduce, economy, forest,
+country, global, climate, international, cooperation, develop, promote, change"
+finland_topic_update <- finland_topic %>% 
+    str_squish() %>% 
+    str_split(pattern=", ",simplify =T) 
+finland_topic_names=data.frame(
+  stringsAsFactors = FALSE,
+                topic = c(1L, 2L, 3L, 4L, 5L, 6L),
+                topic2= c("정부 정책", "사회 혁신", "거버넌스", "인권", "자원 관리", "국제 협력"))
+
+```
 
 ```{r, fig.align='center',fig.width=10,fig.height=7}
 #| column: page
@@ -1297,134 +985,31 @@ finland_lda <-  LDA(finland_dtm, k = 6,
 finland_tp_6 <- finland_lda %>%
     tidy(matrix = "beta") %>%
     group_by(term) %>%
-    slice_max(beta) 
+    slice_max(beta) %>%
+    dplyr::left_join(finland_topic_names,by="topic") %>% 
+    ungroup() %>% 
+    select(-topic) %>% 
+    rename(topic="topic2")
 
 finland_tp_6 %>% 
     group_by(topic) %>%
     slice_max(beta,n=10) %>%
-    arrange(topic) %>%
+    filter(term %in% as.vector(finland_topic_update)) %>% 
+    arrange(topic)  %>% 
     mutate(term = reorder_within(term, beta, topic)) %>%
-    ggplot(aes(beta, term, fill = factor(topic))) +
+    ggplot(aes(beta, term, fill = topic)) +
     geom_col(show.legend = FALSE) +
     facet_wrap(~ topic, scales = "free",ncol=3) +
     scale_y_reordered() +
     theme_bw()+ 
     theme(plot.title = element_text(size=20),
-          text=element_text(family="Gowun Dodum",size=40),
-          axis.text.x = element_text(size = 20))  
+          text=element_text(family="Nanum Gothic",size=40),
+          axis.text.x = element_text(size = 20),
+          axis.title.y=element_blank()) + 
+    ghibli::scale_fill_ghibli_d("PonyoLight", direction = 1)
 ```
 
-### Cast LDA (k=7)
 
-```{r, fig.align='center',fig.width=10,fig.height=7}
-#| column: page
-finland_lda <-  LDA(finland_dtm, k = 7,
-              method="Gibbs",
-              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
-
-finland_tp_7 <- finland_lda %>%
-    tidy(matrix = "beta") %>%
-    group_by(term) %>%
-    slice_max(beta) 
-
-finland_tp_7 %>% 
-    group_by(topic) %>%
-    slice_max(beta,n=10) %>%
-    arrange(topic) %>%
-    mutate(term = reorder_within(term, beta, topic)) %>%
-    ggplot(aes(beta, term, fill = factor(topic))) +
-    geom_col(show.legend = FALSE) +
-    facet_wrap(~ topic, scales = "free",ncol=4) +
-    scale_y_reordered() +
-    theme_bw()+ 
-    theme(plot.title = element_text(size=20),
-          text=element_text(family="Gowun Dodum",size=40),
-          axis.text.x = element_text(size = 20))  
-```
-
-### Cast LDA (k=8)
-
-```{r, fig.align='center',fig.width=10,fig.height=7}
-#| column: page
-finland_lda <-  LDA(finland_dtm, k = 8,
-              method="Gibbs",
-              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
-
-finland_tp_8 <- finland_lda %>%
-    tidy(matrix = "beta") %>%
-    group_by(term) %>%
-    slice_max(beta) 
-
-finland_tp_8 %>% 
-    group_by(topic) %>%
-    slice_max(beta,n=10) %>%
-    arrange(topic) %>%
-    mutate(term = reorder_within(term, beta, topic)) %>%
-    ggplot(aes(beta, term, fill = factor(topic))) +
-    geom_col(show.legend = FALSE) +
-    facet_wrap(~ topic, scales = "free",ncol=4) +
-    scale_y_reordered() +
-    theme_bw()+ 
-    theme(plot.title = element_text(size=20),
-          text=element_text(family="Gowun Dodum",size=40),
-          axis.text.x = element_text(size = 20))  
-```
-
-### Cast LDA (k=9)
-
-```{r, fig.align='center',fig.width=10,fig.height=7}
-#| column: page
-finland_lda <-  LDA(finland_dtm, k = 9,
-              method="Gibbs",
-              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
-
-finland_tp_9 <- finland_lda %>%
-    tidy(matrix = "beta") %>%
-    group_by(term) %>%
-    slice_max(beta) 
-
-finland_tp_9 %>% 
-    group_by(topic) %>%
-    slice_max(beta,n=10) %>%
-    arrange(topic) %>%
-    mutate(term = reorder_within(term, beta, topic)) %>%
-    ggplot(aes(beta, term, fill = factor(topic))) +
-    geom_col(show.legend = FALSE) +
-    facet_wrap(~ topic, scales = "free",ncol=5) +
-    scale_y_reordered() +
-    theme_bw()+ 
-    theme(plot.title = element_text(size=20),
-          text=element_text(family="Gowun Dodum",size=40),
-          axis.text.x = element_text(size = 20))  
-```
-
-### Cast LDA (k=10)
-
-```{r, fig.align='center',fig.width=10,fig.height=7}
-#| column: page
-finland_lda <-  LDA(finland_dtm, k = 10,
-              method="Gibbs",
-              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
-
-finland_tp_10 <- finland_lda %>%
-    tidy(matrix = "beta") %>%
-    group_by(term) %>%
-    slice_max(beta) 
-
-finland_tp_10 %>% 
-    group_by(topic) %>%
-    slice_max(beta,n=10) %>%
-    arrange(topic) %>%
-    mutate(term = reorder_within(term, beta, topic)) %>%
-    ggplot(aes(beta, term, fill = factor(topic))) +
-    geom_col(show.legend = FALSE) +
-    facet_wrap(~ topic, scales = "free",ncol=5) +
-    scale_y_reordered() +
-    theme_bw()+ 
-    theme(plot.title = element_text(size=20),
-          text=element_text(family="Gowun Dodum",size=40),
-          axis.text.x = element_text(size = 20))  
-```
 ## Network Graph
 
 ### Pairwise Count
@@ -1445,17 +1030,16 @@ links <- finland_coocur %>%
     rename(source="item1",target="item2",weight="n") 
 
 nodes <- tibble(term=union(links$source,links$target)) %>%
-    left_join(y=finland_tp_7,by="term") %>%
+    left_join(y=finland_tp_6,by="term") %>%
     dplyr::select(nodes="term",topic)
 ```
+
 
 ### Building networks
 
 ```{r, fig.align='center',fig.width=10,fig.height=7}
-
 finland_network <- graph_from_data_frame(d = links, vertices = nodes, directed = F)
 finland_g <- as_tbl_graph(finland_network)
-
 ```
 
 ### Network Graph
@@ -1473,10 +1057,13 @@ finland_g %>%
     scale_edge_alpha(range = c(0.3,1)) +
     scale_size(range = c(5,20)) + 
     geom_node_point(aes(colour = community, size = degree)) +
-    geom_node_text(aes(label = name, size=degree),size=8, repel = TRUE,family="Gowun Dodum") +
-    theme_graph(base_family="Gowun Dodum") +
-    theme(text=element_text(family="Gowun Dodum", size=40)) +
-    guides(size="none")
+    geom_node_text(aes(label = name, size=degree),size=8, repel = TRUE,family="Nanum Gothic") +
+    theme_graph(base_family="Nanum Gothic") +
+    theme(text=element_text(family="Nanum Gothic", size=30)) +
+    guides(size="none",
+           color = guide_legend(title="Topic 명",
+                                override.aes = list(size=5))) +
+    ghibli::scale_color_ghibli_d("PonyoLight", direction = 1)
 ```
 
 ### Network Graph per topic
@@ -1493,11 +1080,16 @@ finland_g %>%
     scale_edge_width(range = c(0.05,1)) +
     scale_edge_alpha(range = c(0.05,1)) + 
     geom_node_point(aes(colour = community, size = degree)) +
-    geom_node_text(aes(label = name),size=8, repel = TRUE,family="Gowun Dodum") +
-    theme_graph(base_family="Gowun Dodum") +
-    theme(text=element_text(family="Gowun Dodum",size=40)) +
-    guides(size="none")+
-    facet_nodes(~ community,ncol=3)
+    geom_node_text(aes(label = name),size=8, repel = TRUE,family="Nanum Gothic") +
+    theme_graph(base_family="Nanum Gothic") +
+    theme(text=element_text(family="Nanum Gothic", size=30),
+          strip.text = element_text(size = 20),
+          panel.border = element_rect(color = "black", fill = NA, size = 1)) +
+    guides(size="none",
+           color = guide_legend(title="Topic 명",
+                                override.aes = list(size=5))) +
+    ghibli::scale_color_ghibli_d("PonyoLight", direction = 1) +
+    facet_nodes(~ community, ncol=3, scales = "free")
 ```
 
 # Japan VNR
@@ -1562,7 +1154,7 @@ japan_tokenized <- japan_tokenized  %>%
     filter(!str_detect(words,pattern="inwh*")) %>%
     filter(!str_detect(words,pattern="agend*")) %>% 
     filter(!str_detect(words,pattern="billi*")) %>% 
-     filter(!str_detect(words,pattern="datum*")) %>% 
+    filter(!str_detect(words,pattern="datum*")) %>% 
     filter(!str_detect(words,pattern="support*")) %>%
     filter(!str_detect(words,pattern="progra*"))
 
@@ -1579,7 +1171,7 @@ japan_ngram <- japan_ngram  %>%
     filter(!str_detect(words,pattern="inwh*")) %>%
     filter(!str_detect(words,pattern="agend*")) %>% 
     filter(!str_detect(words,pattern="billi*")) %>% 
-     filter(!str_detect(words,pattern="datum*")) %>% 
+    filter(!str_detect(words,pattern="datum*")) %>% 
     filter(!str_detect(words,pattern="support*")) %>%
     filter(!str_detect(words,pattern="progra*"))
 ```
@@ -1603,11 +1195,11 @@ The frequency of specific words and n-grams in each paragraphs.
     pattern_orientation='horizontal',
     pattern_alpha=1)+
     scale_fill_hue() +
-    geom_text(aes(label=n),hjust=-0.1,size=7,family="Gowun Dodum")+
+    geom_text(aes(label=n),hjust=-0.1,size=7,family="Nanum Gothic")+
     labs(y = NULL, title="일본") +
     theme_bw()+
     theme(plot.title = element_text(size=40),
-        text=element_text(family="Gowun Dodum",size=25)) -> d)
+        text=element_text(family="Nanum Gothic",size=25)) -> d)
 
 (japan_ngram %>%
     count(words) %>% 
@@ -1623,11 +1215,11 @@ The frequency of specific words and n-grams in each paragraphs.
     pattern_orientation='horizontal',
     pattern_alpha=1)+
     scale_fill_hue() +
-    geom_text(aes(label=n),hjust=-0.1,size=7,family="Gowun Dodum")+
+    geom_text(aes(label=n),hjust=-0.1,size=7,family="Nanum Gothic")+
     labs(y = NULL, title="일본") +
     theme_bw()+
     theme(plot.title =  element_text(size=40),
-        text=element_text(family="Gowun Dodum",size=25)) -> d1) 
+        text=element_text(family="Nanum Gothic",size=25)) -> d1) 
 ```
 
 ## TF-IDF per paragraph
@@ -1709,179 +1301,25 @@ japan_topic_k_df %>%
     facet_wrap(~metric, scales = "free")+
     theme_bw() +
     theme(plot.title = element_text(size=20),
-        text=element_text(family="Gowun Dodum",size=40))
-```
-
-### Cast LDA (k=4)
-
-```{r, fig.align='center',fig.width=10,fig.height=7}
-#| column: page
-japan_lda <-  LDA(japan_dtm, k = 4,
-              method="Gibbs",
-              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
-
-japan_tp_4 <- japan_lda %>%
-    tidy(matrix = "beta") %>%
-    group_by(term) %>%
-    slice_max(beta) 
-
-japan_tp_4 %>% 
-    group_by(topic) %>%
-    slice_max(beta,n=10) %>%
-    arrange(topic) %>%
-    mutate(term = reorder_within(term, beta, topic)) %>%
-    ggplot(aes(beta, term, fill = factor(topic))) +
-    geom_col(show.legend = FALSE) +
-    facet_wrap(~ topic, scales = "free",ncol=3) +
-    scale_y_reordered() +
-    theme_bw()+ 
-    theme(plot.title = element_text(size=20),
-          text=element_text(family="Gowun Dodum",size=40),
-          axis.text.x = element_text(size = 20))  
-```
-
-### Cast LDA (k=5)
-
-```{r, fig.align='center',fig.width=10,fig.height=7}
-#| column: page
-japan_lda <-  LDA(japan_dtm, k = 5,
-              method="Gibbs",
-              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
-
-japan_tp_5 <- japan_lda %>%
-    tidy(matrix = "beta") %>%
-    group_by(term) %>%
-    slice_max(beta) 
-
-japan_tp_5 %>% 
-    group_by(topic) %>%
-    slice_max(beta,n=10) %>%
-    arrange(topic) %>%
-    mutate(term = reorder_within(term, beta, topic)) %>%
-    ggplot(aes(beta, term, fill = factor(topic))) +
-    geom_col(show.legend = FALSE) +
-    facet_wrap(~ topic, scales = "free",ncol=3) +
-    scale_y_reordered() +
-    theme_bw()+ 
-    theme(plot.title = element_text(size=20),
-          text=element_text(family="Gowun Dodum",size=40),
-          axis.text.x = element_text(size = 20))  
-```
-
-### Cast LDA (k=6)
-
-```{r, fig.align='center',fig.width=10,fig.height=7}
-#| column: page
-japan_lda <-  LDA(japan_dtm, k = 6,
-              method="Gibbs",
-              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
-
-japan_tp_6 <- japan_lda %>%
-    tidy(matrix = "beta") %>%
-    group_by(term) %>%
-    slice_max(beta) 
-
-japan_tp_6 %>% 
-    group_by(topic) %>%
-    slice_max(beta,n=10) %>%
-    arrange(topic) %>%
-    mutate(term = reorder_within(term, beta, topic)) %>%
-    ggplot(aes(beta, term, fill = factor(topic))) +
-    geom_col(show.legend = FALSE) +
-    facet_wrap(~ topic, scales = "free",ncol=3) +
-    scale_y_reordered() +
-    theme_bw()+ 
-    theme(plot.title = element_text(size=20),
-          text=element_text(family="Gowun Dodum",size=40),
-          axis.text.x = element_text(size = 20))  
-```
-
-### Cast LDA (k=7)
-
-```{r, fig.align='center',fig.width=10,fig.height=7}
-#| column: page
-japan_lda <-  LDA(japan_dtm, k = 7,
-              method="Gibbs",
-              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
-
-japan_tp_7 <- japan_lda %>%
-    tidy(matrix = "beta") %>%
-    group_by(term) %>%
-    slice_max(beta) 
-
-japan_tp_7 %>% 
-    group_by(topic) %>%
-    slice_max(beta,n=10) %>%
-    arrange(topic) %>%
-    mutate(term = reorder_within(term, beta, topic)) %>%
-    ggplot(aes(beta, term, fill = factor(topic))) +
-    geom_col(show.legend = FALSE) +
-    facet_wrap(~ topic, scales = "free",ncol=4) +
-    scale_y_reordered() +
-    theme_bw()+ 
-    theme(plot.title = element_text(size=20),
-          text=element_text(family="Gowun Dodum",size=40),
-          axis.text.x = element_text(size = 20))  
-```
-
-### Cast LDA (k=8)
-
-```{r, fig.align='center',fig.width=10,fig.height=7}
-#| column: page
-japan_lda <-  LDA(japan_dtm, k = 8,
-              method="Gibbs",
-              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
-
-japan_tp_8 <- japan_lda %>%
-    tidy(matrix = "beta") %>%
-    group_by(term) %>%
-    slice_max(beta) 
-
-japan_tp_8 %>% 
-    group_by(topic) %>%
-    slice_max(beta,n=10) %>%
-    arrange(topic) %>%
-    mutate(term = reorder_within(term, beta, topic)) %>%
-    ggplot(aes(beta, term, fill = factor(topic))) +
-    geom_col(show.legend = FALSE) +
-    facet_wrap(~ topic, scales = "free",ncol=4) +
-    scale_y_reordered() +
-    theme_bw()+ 
-    theme(plot.title = element_text(size=20),
-          text=element_text(family="Gowun Dodum",size=40),
-          axis.text.x = element_text(size = 20))  
-```
-
-### Cast LDA (k=9)
-
-```{r, fig.align='center',fig.width=10,fig.height=7}
-#| column: page
-japan_lda <-  LDA(japan_dtm, k = 9,
-              method="Gibbs",
-              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
-
-japan_tp_9 <- japan_lda %>%
-    tidy(matrix = "beta") %>%
-    group_by(term) %>%
-    slice_max(beta) 
-
-japan_tp_9 %>% 
-    group_by(topic) %>%
-    slice_max(beta,n=10) %>%
-    arrange(topic) %>%
-    mutate(term = reorder_within(term, beta, topic)) %>%
-    ggplot(aes(beta, term, fill = factor(topic))) +
-    geom_col(show.legend = FALSE) +
-    facet_wrap(~ topic, scales = "free",ncol=5) +
-    scale_y_reordered() +
-    theme_bw()+ 
-    theme(plot.title = element_text(size=20),
-          text=element_text(family="Gowun Dodum",size=40),
-          axis.text.x = element_text(size = 20))  
+        text=element_text(family="Nanum Gothic",size=40))
 ```
 
 
 ### Cast LDA (k=10)
+
+```{r}
+japan_topic="covid, pandemic, system, poverty, life, population, age, service, people, local, government, city, promote, regional, aim, organization, private, public, initiative, disaster, increase, numb, water, reduction, survey, time, rate, worker, result, previous, compare, approximately, society, woman, gender, human, include, business, equality, activity, company, civil, child, education, school, national, awareness, raise, disability, center, student, generation, country, development, international, develop, cooperation, contribute, nation, provide, fund, peace,food, forest, resource, waste, marine, plastic, loss, management, fishery, biodiversity, change, economic, social, infrastructure, sustainable, quality, environment, technology, growth, innovation, energy, transportation, renewable, consumption, addition, emission, reduce, power, project, promotion, effort, plan, policy, action, achieve, target, goal, stakeholder"
+japan_topic_update <- japan_topic %>% 
+    str_squish() %>% 
+    str_split(pattern=", ",simplify =T) 
+japan_topic_names=data.frame(
+  stringsAsFactors = T,
+                                  topic = c(1L,2L,3L,4L,5L,6L,7L,8L,9L,
+                                         10L),
+                                  topic2= c("삶의 질","국가 정책","재난 관리","인권",
+                                         "교육","국제 협력","자연 자원","혁신적 성장",
+                                         "재생 에너지","목표 지향"))
+```
 
 ```{r, fig.align='center',fig.width=10,fig.height=7}
 #| column: page
@@ -1892,22 +1330,31 @@ japan_lda <-  LDA(japan_dtm, k = 10,
 japan_tp_10 <- japan_lda %>%
     tidy(matrix = "beta") %>%
     group_by(term) %>%
-    slice_max(beta) 
+    slice_max(beta) %>%
+    dplyr::left_join(japan_topic_names,by="topic") %>% 
+    ungroup() %>% 
+    select(-topic) %>% 
+    rename(topic="topic2")
 
 japan_tp_10 %>% 
     group_by(topic) %>%
     slice_max(beta,n=10) %>%
-    arrange(topic) %>%
+    filter(term %in% as.vector(japan_topic_update)) %>% 
+    arrange(topic)  %>% 
     mutate(term = reorder_within(term, beta, topic)) %>%
-    ggplot(aes(beta, term, fill = factor(topic))) +
+    ggplot(aes(beta, term, fill = topic)) +
     geom_col(show.legend = FALSE) +
-    facet_wrap(~ topic, scales = "free",ncol=5) +
+    facet_wrap(~ topic, scales = "free", ncol=4) +
     scale_y_reordered() +
     theme_bw()+ 
     theme(plot.title = element_text(size=20),
-          text=element_text(family="Gowun Dodum",size=40),
-          axis.text.x = element_text(size = 20))  
+          text=element_text(family="Nanum Gothic",size=20),
+          axis.text.x = element_text(size = 25),
+          axis.title.y=element_blank()) + 
+    scale_fill_manual( values = colorRampPalette(ghibli::ghibli_palette("PonyoLight"))(10))
+
 ```
+
 ## Network Graph
 
 ### Pairwise Count
@@ -1917,18 +1364,19 @@ japan_coocur <- japan_tfidf  %>%
     ungroup() %>% 
     arrange(desc(n)) %>%
     rename(term=words) %>%
-    pairwise_count(term, paragraph, sort = TRUE,upper = F) 
+    pairwise_count(term, paragraph, sort = TRUE,upper = F) %>%
+    filter(!item1=="gender"&!item2=="gender")
 ```
 
 ### Building links and nodes
 
 ```{r}
 links <- japan_coocur %>%
-    top_n(100) %>%
+    top_n(150) %>%
     rename(source="item1",target="item2",weight="n") 
 
 nodes <- tibble(term=union(links$source,links$target)) %>%
-    left_join(y=japan_tp_5,by="term") %>%
+    left_join(y=japan_tp_10,by="term") %>%
     dplyr::select(nodes="term",topic)
 ```
 
@@ -1937,8 +1385,8 @@ nodes <- tibble(term=union(links$source,links$target)) %>%
 ```{r, fig.align='center',fig.width=10,fig.height=7}
 japan_network <- graph_from_data_frame(d = links, vertices = nodes, directed = F)
 japan_g <- as_tbl_graph(japan_network)
-
 ```
+
 
 ### Network Graph
 
@@ -1947,7 +1395,7 @@ japan_g <- as_tbl_graph(japan_network)
 japan_g %>%
     activate("nodes") %>%
     mutate(degree = centrality_degree(),
-             community = as.factor(topic)) %>%
+             community = topic) %>%
     ggraph(layout = 'kk') +
     geom_edge_link(aes(alpha = weight,width=weight),
                    colour = "black", show.legend = FALSE) +
@@ -1955,10 +1403,13 @@ japan_g %>%
     scale_edge_alpha(range = c(0.3,1)) +
     scale_size(range = c(5,20)) + 
     geom_node_point(aes(colour = community, size = degree)) +
-    geom_node_text(aes(label = name, size=degree),size=8, repel = TRUE,family="Gowun Dodum") +
-    theme_graph(base_family="Gowun Dodum") +
-    theme(text=element_text(family="Gowun Dodum", size=40)) +
-    guides(size="none")
+    geom_node_text(aes(label = name, size=degree),size=8, repel = TRUE,family="Nanum Gothic") +
+    theme_graph(base_family="Nanum Gothic") +
+    theme(text=element_text(family="Nanum Gothic", size=30)) +
+    guides(size="none",
+           color = guide_legend(title="Topic 명",
+                                override.aes = list(size=5))) +
+    scale_color_manual(values = colorRampPalette(ghibli::ghibli_palette("PonyoLight"))(10)[-8])
 ```
 
 ### Network Graph per topic
@@ -1975,12 +1426,18 @@ japan_g %>%
     scale_edge_width(range = c(0.05,1)) +
     scale_edge_alpha(range = c(0.05,1)) + 
     geom_node_point(aes(colour = community, size = degree)) +
-    geom_node_text(aes(label = name),size=8, repel = TRUE,family="Gowun Dodum") +
-    theme_graph(base_family="Gowun Dodum") +
-    theme(text=element_text(family="Gowun Dodum",size=40)) +
-    guides(size="none")+
-    facet_nodes(~ community,ncol=3)
+    geom_node_text(aes(label = name),size=8, repel = TRUE,family="Nanum Gothic") +
+    theme_graph(base_family="Nanum Gothic") +
+    theme(text=element_text(family="Nanum Gothic", size=30),
+          strip.text = element_text(size = 20),
+          panel.border = element_rect(color = "black", fill = NA, size = 1)) +
+    guides(size="none",
+           color = guide_legend(title="Topic 명",
+                                override.aes = list(size=5))) +
+    facet_nodes(~ community, ncol=5, scales = "free") +
+    scale_color_manual(values = colorRampPalette(ghibli::ghibli_palette("PonyoLight"))(10)[-8])
 ```
+
 
 # UK VNR
 
@@ -2102,11 +1559,11 @@ The frequency of specific words and n-grams in each paragraphs.
     pattern_orientation='horizontal',
     pattern_alpha=1)+
     scale_fill_hue() +
-    geom_text(aes(label=n),hjust=-0.1,size=7,family="Gowun Dodum")+
+    geom_text(aes(label=n),hjust=-0.1,size=7,family="Nanum Gothic")+
     labs(y = NULL, title="영국") +
     theme_bw()+
     theme(plot.title = element_text(size=40),
-        text=element_text(family="Gowun Dodum",size=25)) -> e)
+        text=element_text(family="Nanum Gothic",size=25)) -> e)
 
 (uk_ngram %>%
     count(words) %>% 
@@ -2122,11 +1579,11 @@ The frequency of specific words and n-grams in each paragraphs.
     pattern_orientation='horizontal',
     pattern_alpha=1)+
     scale_fill_hue() +
-    geom_text(aes(label=n),hjust=-0.1,size=7,family="Gowun Dodum")+
-    labs(y = NULL, title="독일") +
+    geom_text(aes(label=n),hjust=-0.1,size=7,family="Nanum Gothic")+
+    labs(y = NULL, title="영국") +
     theme_bw()+
     theme(plot.title =  element_text(size=40),
-        text=element_text(family="Gowun Dodum",size=25)) -> e1) 
+        text=element_text(family="Nanum Gothic",size=25)) -> e1) 
 ```
 
 ## TF-IDF per paragraph
@@ -2208,66 +1665,28 @@ uk_topic_k_df %>%
     facet_wrap(~metric, scales = "free")+
     theme_bw() +
     theme(plot.title = element_text(size=20),
-        text=element_text(family="Gowun Dodum",size=40))
+        text=element_text(family="Nanum Gothic",size=40))
 ```
 
-### Cast LDA (k=4)
-
-```{r, fig.align='center',fig.width=10,fig.height=7}
-#| column: page
-uk_lda <-  LDA(uk_dtm, k = 4,
-              method="Gibbs",
-              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
-
-uk_tp_4 <- uk_lda %>%
-    tidy(matrix = "beta") %>%
-    group_by(term) %>%
-    slice_max(beta) 
-
-uk_tp_4 %>% 
-    group_by(topic) %>%
-    slice_max(beta,n=10) %>%
-    arrange(topic) %>%
-    mutate(term = reorder_within(term, beta, topic)) %>%
-    ggplot(aes(beta, term, fill = factor(topic))) +
-    geom_col(show.legend = FALSE) +
-    facet_wrap(~ topic, scales = "free",ncol=3) +
-    scale_y_reordered() +
-    theme_bw()+ 
-    theme(plot.title = element_text(size=20),
-          text=element_text(family="Gowun Dodum",size=40),
-          axis.text.x = element_text(size = 20))  
-```
-
-### Cast LDA (k=5)
-
-```{r, fig.align='center',fig.width=10,fig.height=7}
-#| column: page
-uk_lda <-  LDA(uk_dtm, k = 5,
-              method="Gibbs",
-              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
-
-uk_tp_5 <- uk_lda %>%
-    tidy(matrix = "beta") %>%
-    group_by(term) %>%
-    slice_max(beta) 
-
-uk_tp_5 %>% 
-    group_by(topic) %>%
-    slice_max(beta,n=10) %>%
-    arrange(topic) %>%
-    mutate(term = reorder_within(term, beta, topic)) %>%
-    ggplot(aes(beta, term, fill = factor(topic))) +
-    geom_col(show.legend = FALSE) +
-    facet_wrap(~ topic, scales = "free",ncol=3) +
-    scale_y_reordered() +
-    theme_bw()+ 
-    theme(plot.title = element_text(size=20),
-          text=element_text(family="Gowun Dodum",size=40),
-          axis.text.x = element_text(size = 20))  
-```
 
 ### Cast LDA (k=6)
+
+```{r}
+uk_topic="
+plastic, quality, population, land, significant, impact, priority, monitor, air,
+child, school, fund, girl, disability, family, adult, additional,
+goal, community, local, national, public, risk, act, approach, opportunity, authority,
+plan, action, policy, publish, gap, launch, focus, fair, ambition,
+global, country, commit, build, job, capacity, poor, africa, bank,
+food, supply, transport, company, standard, city, productivity, aim, product"
+uk_topic_update <- uk_topic %>% 
+    str_squish() %>% 
+    str_split(pattern=", ",simplify =T) 
+uk_topic_names=data.frame(
+  stringsAsFactors = FALSE,
+                topic = c(1L, 2L, 3L, 4L, 5L, 6L),
+                topic2= c("환경", "인권", "거버넌스", "정부 정책", "국제 협력", "식량 안보"))
+```
 
 ```{r, fig.align='center',fig.width=10,fig.height=7}
 #| column: page
@@ -2278,134 +1697,30 @@ uk_lda <-  LDA(uk_dtm, k = 6,
 uk_tp_6 <- uk_lda %>%
     tidy(matrix = "beta") %>%
     group_by(term) %>%
-    slice_max(beta) 
+    slice_max(beta) %>%
+    dplyr::left_join(uk_topic_names,by="topic") %>% 
+    ungroup() %>% 
+    select(-topic) %>% 
+    rename(topic="topic2")
 
 uk_tp_6 %>% 
     group_by(topic) %>%
     slice_max(beta,n=10) %>%
-    arrange(topic) %>%
+    filter(term %in% as.vector(uk_topic_update)) %>% 
+    arrange(topic)  %>% 
     mutate(term = reorder_within(term, beta, topic)) %>%
-    ggplot(aes(beta, term, fill = factor(topic))) +
+    ggplot(aes(beta, term, fill = topic)) +
     geom_col(show.legend = FALSE) +
     facet_wrap(~ topic, scales = "free",ncol=3) +
     scale_y_reordered() +
     theme_bw()+ 
     theme(plot.title = element_text(size=20),
-          text=element_text(family="Gowun Dodum",size=40),
-          axis.text.x = element_text(size = 20))  
+          text=element_text(family="Nanum Gothic",size=40),
+          axis.text.x = element_text(size = 20),
+          axis.title.y=element_blank()) + 
+    ghibli::scale_fill_ghibli_d("PonyoLight", direction = 1)
 ```
 
-### Cast LDA (k=7)
-
-```{r, fig.align='center',fig.width=10,fig.height=7}
-#| column: page
-uk_lda <-  LDA(uk_dtm, k = 7,
-              method="Gibbs",
-              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
-
-uk_tp_7 <- uk_lda %>%
-    tidy(matrix = "beta") %>%
-    group_by(term) %>%
-    slice_max(beta) 
-
-uk_tp_7 %>% 
-    group_by(topic) %>%
-    slice_max(beta,n=10) %>%
-    arrange(topic) %>%
-    mutate(term = reorder_within(term, beta, topic)) %>%
-    ggplot(aes(beta, term, fill = factor(topic))) +
-    geom_col(show.legend = FALSE) +
-    facet_wrap(~ topic, scales = "free",ncol=4) +
-    scale_y_reordered() +
-    theme_bw()+ 
-    theme(plot.title = element_text(size=20),
-          text=element_text(family="Gowun Dodum",size=40),
-          axis.text.x = element_text(size = 20))  
-```
-
-### Cast LDA (k=8)
-
-```{r, fig.align='center',fig.width=10,fig.height=7}
-#| column: page
-uk_lda <-  LDA(uk_dtm, k = 8,
-              method="Gibbs",
-              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
-
-uk_tp_8 <- uk_lda %>%
-    tidy(matrix = "beta") %>%
-    group_by(term) %>%
-    slice_max(beta) 
-
-uk_tp_8 %>% 
-    group_by(topic) %>%
-    slice_max(beta,n=10) %>%
-    arrange(topic) %>%
-    mutate(term = reorder_within(term, beta, topic)) %>%
-    ggplot(aes(beta, term, fill = factor(topic))) +
-    geom_col(show.legend = FALSE) +
-    facet_wrap(~ topic, scales = "free",ncol=4) +
-    scale_y_reordered() +
-    theme_bw()+ 
-    theme(plot.title = element_text(size=20),
-          text=element_text(family="Gowun Dodum",size=40),
-          axis.text.x = element_text(size = 20)) 
-```
-
-### Cast LDA (k=9)
-
-```{r, fig.align='center',fig.width=10,fig.height=7}
-#| column: page
-uk_lda <-  LDA(uk_dtm, k = 9,
-              method="Gibbs",
-              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
-
-uk_tp_9 <- uk_lda %>%
-    tidy(matrix = "beta") %>%
-    group_by(term) %>%
-    slice_max(beta) 
-
-uk_tp_9 %>% 
-    group_by(topic) %>%
-    slice_max(beta,n=10) %>%
-    arrange(topic) %>%
-    mutate(term = reorder_within(term, beta, topic)) %>%
-    ggplot(aes(beta, term, fill = factor(topic))) +
-    geom_col(show.legend = FALSE) +
-    facet_wrap(~ topic, scales = "free",ncol=5) +
-    scale_y_reordered() +
-    theme_bw()+ 
-    theme(plot.title = element_text(size=20),
-          text=element_text(family="Gowun Dodum",size=40),
-          axis.text.x = element_text(size = 20)) 
-```
-
-### Cast LDA (k=10)
-
-```{r, fig.align='center',fig.width=10,fig.height=7}
-#| column: page
-uk_lda <-  LDA(uk_dtm, k = 10,
-              method="Gibbs",
-              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
-
-uk_tp_10 <- uk_lda %>%
-    tidy(matrix = "beta") %>%
-    group_by(term) %>%
-    slice_max(beta) 
-
-uk_tp_10 %>% 
-    group_by(topic) %>%
-    slice_max(beta,n=10) %>%
-    arrange(topic) %>%
-    mutate(term = reorder_within(term, beta, topic)) %>%
-    ggplot(aes(beta, term, fill = factor(topic))) +
-    geom_col(show.legend = FALSE) +
-    facet_wrap(~ topic, scales = "free",ncol=5) +
-    scale_y_reordered() +
-    theme_bw()+ 
-    theme(plot.title = element_text(size=20),
-          text=element_text(family="Gowun Dodum",size=40),
-          axis.text.x = element_text(size = 20)) 
-```
 
 ## Network Graph
 
@@ -2416,7 +1731,11 @@ uk_coocur <- uk_tfidf  %>%
     ungroup() %>% 
     arrange(desc(n)) %>%
     rename(term=words) %>%
-    pairwise_count(term, paragraph, sort = TRUE,upper = F) 
+    pairwise_count(term, paragraph, sort = TRUE,upper = F) %>% 
+    filter(!(item1=="school"&item2=="child")) %>% 
+    filter(!(item2=="school"&item1=="child")) %>% 
+    filter(!(item2=="family"&item1=="child")) %>% 
+    filter(!(item2=="child"&item1=="family"))
 ```
 
 ### Building links and nodes
@@ -2428,7 +1747,8 @@ links <- uk_coocur %>%
 
 nodes <- tibble(term=union(links$source,links$target)) %>%
     left_join(y=uk_tp_6,by="term") %>%
-    dplyr::select(nodes="term",topic)
+    dplyr::select(nodes="term",topic) %>% 
+    filter(!(nodes %in% c("school","child","family")))
 ```
 
 ### Building networks
@@ -2436,7 +1756,6 @@ nodes <- tibble(term=union(links$source,links$target)) %>%
 ```{r, fig.align='center',fig.width=10,fig.height=7}
 uk_network <- graph_from_data_frame(d = links, vertices = nodes, directed = F)
 uk_g <- as_tbl_graph(uk_network)
-
 ```
 
 ### Network Graph
@@ -2454,10 +1773,33 @@ uk_g %>%
     scale_edge_alpha(range = c(0.3,1)) +
     scale_size(range = c(5,20)) + 
     geom_node_point(aes(colour = community, size = degree)) +
-    geom_node_text(aes(label = name, size=degree),size=8, repel = TRUE,family="Gowun Dodum") +
-    theme_graph(base_family="Gowun Dodum") +
-    theme(text=element_text(family="Gowun Dodum", size=40)) +
-    guides(size="none")
+    geom_node_text(aes(label = name, size=degree),size=8, repel = TRUE,family="Nanum Gothic") +
+    theme_graph(base_family="Nanum Gothic") +
+    theme(text=element_text(family="Nanum Gothic", size=30)) +
+    guides(size="none",
+           color = guide_legend(title="Topic 명",
+                                override.aes = list(size=5))) +
+    ghibli::scale_color_ghibli_d("PonyoLight", direction = 1)
+```
+
+
+```{r}
+uk_coocur <- uk_tfidf  %>%
+    ungroup() %>% 
+    arrange(desc(n)) %>%
+    rename(term=words) %>%
+    pairwise_count(term, paragraph, sort = TRUE,upper = F) 
+
+links <- uk_coocur %>%
+    top_n(100) %>%
+    rename(source="item1",target="item2",weight="n") 
+
+nodes <- tibble(term=union(links$source,links$target)) %>%
+    left_join(y=uk_tp_6,by="term") %>%
+    dplyr::select(nodes="term",topic) 
+
+uk_network <- graph_from_data_frame(d = links, vertices = nodes, directed = F)
+uk_g <- as_tbl_graph(uk_network)
 ```
 
 ### Network Graph per topic
@@ -2474,11 +1816,16 @@ uk_g %>%
     scale_edge_width(range = c(0.05,1)) +
     scale_edge_alpha(range = c(0.05,1)) + 
     geom_node_point(aes(colour = community, size = degree)) +
-    geom_node_text(aes(label = name),size=8, repel = TRUE,family="Gowun Dodum") +
-    theme_graph(base_family="Gowun Dodum") +
-    theme(text=element_text(family="Gowun Dodum",size=40)) +
-    guides(size="none")+
-    facet_nodes(~ community,ncol=3)
+    geom_node_text(aes(label = name),size=8, repel = TRUE,family="Nanum Gothic") +
+    theme_graph(base_family="Nanum Gothic") +
+    theme(text=element_text(family="Nanum Gothic", size=30),
+          strip.text = element_text(size = 20),
+          panel.border = element_rect(color = "black", fill = NA, size = 1)) +
+    guides(size="none",
+           color = guide_legend(title="Topic 명",
+                                override.aes = list(size=5))) +
+    ghibli::scale_color_ghibli_d("PonyoLight", direction = 1) +
+    facet_nodes(~ community, ncol=3, scales = "free")
 ```
 
 # Austrailia VNR
@@ -2548,7 +1895,7 @@ austrailia_tokenized <- austrailia_tokenized  %>%
     filter(!str_detect(words,pattern="support*")) %>%
     filter(!str_detect(words,pattern="progra*"))
 
-austrailia_ngram <- germany_ngram %>% 
+austrailia_ngram <- austrailia_ngram %>% 
     filter(!str_detect(words,pattern="[0-9]")) %>%  
     filter(!str_detect(words,pattern="austrail[a-z]*")) %>%
     filter(!str_detect(words,pattern="eur[a-z]*")) %>% 
@@ -2585,11 +1932,11 @@ The frequency of specific words and n-grams in each paragraphs.
     pattern_orientation='horizontal',
     pattern_alpha=1)+
     scale_fill_hue() +
-    geom_text(aes(label=n),hjust=-0.1,size=7,family="Gowun Dodum")+
+    geom_text(aes(label=n),hjust=-0.1,size=7,family="Nanum Gothic")+
     labs(y = NULL, title="호주") +
     theme_bw()+
     theme(plot.title = element_text(size=40),
-        text=element_text(family="Gowun Dodum",size=25)) -> f)
+        text=element_text(family="Nanum Gothic",size=25)) -> f)
 
 (austrailia_ngram %>%
     count(words) %>% 
@@ -2605,11 +1952,11 @@ The frequency of specific words and n-grams in each paragraphs.
     pattern_orientation='horizontal',
     pattern_alpha=1)+
     scale_fill_hue() +
-    geom_text(aes(label=n),hjust=-0.1,size=7,family="Gowun Dodum")+
+    geom_text(aes(label=n),hjust=-0.1,size=7,family="Nanum Gothic")+
     labs(y = NULL, title="호주") +
     theme_bw()+
     theme(plot.title =  element_text(size=40),
-        text=element_text(family="Gowun Dodum",size=25)) -> f1) 
+        text=element_text(family="Nanum Gothic",size=25)) -> f1) 
 ```
 
 ## TF-IDF per paragraph
@@ -2690,66 +2037,26 @@ austrailia_topic_k_df %>%
     facet_wrap(~metric, scales = "free")+
     theme_bw() +
     theme(plot.title = element_text(size=20),
-        text=element_text(family="Gowun Dodum",size=40))
-```
-
-### Cast LDA (k=4)
-
-```{r, fig.align='center',fig.width=10,fig.height=7}
-#| column: page
-austrailia_lda <-  LDA(austrailia_dtm, k = 4,
-              method="Gibbs",
-              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
-
-austrailia_tp_4 <- austrailia_lda %>%
-    tidy(matrix = "beta") %>%
-    group_by(term) %>%
-    slice_max(beta) 
-
-austrailia_tp_4 %>% 
-    group_by(topic) %>%
-    slice_max(beta,n=10) %>%
-    arrange(topic) %>%
-    mutate(term = reorder_within(term, beta, topic)) %>%
-    ggplot(aes(beta, term, fill = factor(topic))) +
-    geom_col(show.legend = FALSE) +
-    facet_wrap(~ topic, scales = "free",ncol=3) +
-    scale_y_reordered() +
-    theme_bw()+ 
-    theme(plot.title = element_text(size=20),
-          text=element_text(family="Gowun Dodum",size=40),
-          axis.text.x = element_text(size = 20))  
-```
-
-### Cast LDA (k=5)
-
-```{r, fig.align='center',fig.width=10,fig.height=7}
-#| column: page
-austrailia_lda <-  LDA(austrailia_dtm, k = 5,
-              method="Gibbs",
-              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
-
-austrailia_tp_5 <- austrailia_lda %>%
-    tidy(matrix = "beta") %>%
-    group_by(term) %>%
-    slice_max(beta) 
-
-austrailia_tp_5 %>% 
-    group_by(topic) %>%
-    slice_max(beta,n=10) %>%
-    arrange(topic) %>%
-    mutate(term = reorder_within(term, beta, topic)) %>%
-    ggplot(aes(beta, term, fill = factor(topic))) +
-    geom_col(show.legend = FALSE) +
-    facet_wrap(~ topic, scales = "free",ncol=3) +
-    scale_y_reordered() +
-    theme_bw()+ 
-    theme(plot.title = element_text(size=20),
-          text=element_text(family="Gowun Dodum",size=40),
-          axis.text.x = element_text(size = 20))  
+        text=element_text(family="Nanum Gothic",size=40))
 ```
 
 ### Cast LDA (k=6)
+
+```{r}
+austrailia_topic=" organisation, approach, policy, indicator, civil, social, financial, action,
+food, supply, cost, world, agricultural, risk, aim, production,
+woman, aboriginal, disability, child, school, participation, girl, family,
+human, national, law, public, activity, institution, commit, land, discrimination,
+city, plan, community, sustainability, build, growth, local, urban, opportunity, council,
+pacific, country, fund, island, indo, capacity, asia, aid, major, bank, assist"
+austrailia_topic_update <- austrailia_topic %>% 
+    str_squish() %>% 
+    str_split(pattern=", ",simplify =T) 
+austrailia_topic_names=data.frame(
+  stringsAsFactors = FALSE,
+                topic = c(1L, 2L, 3L, 4L, 5L, 6L),
+                topic2= c("정부 정책", "식량 안보", "인권", "공공성", "거버넌스", "국제 협력"))
+```
 
 ```{r, fig.align='center',fig.width=10,fig.height=7}
 #| column: page
@@ -2760,135 +2067,30 @@ austrailia_lda <-  LDA(austrailia_dtm, k = 6,
 austrailia_tp_6 <- austrailia_lda %>%
     tidy(matrix = "beta") %>%
     group_by(term) %>%
-    slice_max(beta) 
+    slice_max(beta) %>%
+    dplyr::left_join(austrailia_topic_names,by="topic") %>% 
+    ungroup() %>% 
+    select(-topic) %>% 
+    rename(topic="topic2")
 
 austrailia_tp_6 %>% 
     group_by(topic) %>%
     slice_max(beta,n=10) %>%
-    arrange(topic) %>%
+    filter(term %in% as.vector(austrailia_topic_update)) %>% 
+    arrange(topic)  %>% 
     mutate(term = reorder_within(term, beta, topic)) %>%
-    ggplot(aes(beta, term, fill = factor(topic))) +
+    ggplot(aes(beta, term, fill = topic)) +
     geom_col(show.legend = FALSE) +
     facet_wrap(~ topic, scales = "free",ncol=3) +
     scale_y_reordered() +
     theme_bw()+ 
     theme(plot.title = element_text(size=20),
-          text=element_text(family="Gowun Dodum",size=40),
-          axis.text.x = element_text(size = 20))  
+          text=element_text(family="Nanum Gothic",size=40),
+          axis.text.x = element_text(size = 20),
+          axis.title.y=element_blank()) + 
+    ghibli::scale_fill_ghibli_d("PonyoLight", direction = 1)
 ```
 
-### Cast LDA (k=7)
-
-```{r, fig.align='center',fig.width=10,fig.height=7}
-#| column: page
-austrailia_lda <-  LDA(austrailia_dtm, k = 7,
-              method="Gibbs",
-              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
-
-austrailia_tp_7 <- austrailia_lda %>%
-    tidy(matrix = "beta") %>%
-    group_by(term) %>%
-    slice_max(beta) 
-
-austrailia_tp_7 %>% 
-    group_by(topic) %>%
-    slice_max(beta,n=10) %>%
-    arrange(topic) %>%
-    mutate(term = reorder_within(term, beta, topic)) %>%
-    ggplot(aes(beta, term, fill = factor(topic))) +
-    geom_col(show.legend = FALSE) +
-    facet_wrap(~ topic, scales = "free",ncol=4) +
-    scale_y_reordered() +
-    theme_bw()+ 
-    theme(plot.title = element_text(size=20),
-          text=element_text(family="Gowun Dodum",size=40),
-          axis.text.x = element_text(size = 20))  
-```
-
-
-### Cast LDA (k=8)
-
-```{r, fig.align='center',fig.width=10,fig.height=7}
-#| column: page
-austrailia_lda <-  LDA(austrailia_dtm, k = 8,
-              method="Gibbs",
-              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
-
-austrailia_tp_8 <- austrailia_lda %>%
-    tidy(matrix = "beta") %>%
-    group_by(term) %>%
-    slice_max(beta) 
-
-austrailia_tp_8 %>% 
-    group_by(topic) %>%
-    slice_max(beta,n=10) %>%
-    arrange(topic) %>%
-    mutate(term = reorder_within(term, beta, topic)) %>%
-    ggplot(aes(beta, term, fill = factor(topic))) +
-    geom_col(show.legend = FALSE) +
-    facet_wrap(~ topic, scales = "free",ncol=4) +
-    scale_y_reordered() +
-    theme_bw()+ 
-    theme(plot.title = element_text(size=20),
-          text=element_text(family="Gowun Dodum",size=40),
-          axis.text.x = element_text(size = 20)) 
-```
-
-### Cast LDA (k=9)
-
-```{r, fig.align='center',fig.width=10,fig.height=7}
-#| column: page
-austrailia_lda <-  LDA(austrailia_dtm, k = 9,
-              method="Gibbs",
-              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
-
-austrailia_tp_9 <- austrailia_lda %>%
-    tidy(matrix = "beta") %>%
-    group_by(term) %>%
-    slice_max(beta) 
-
-austrailia_tp_9 %>% 
-    group_by(topic) %>%
-    slice_max(beta,n=10) %>%
-    arrange(topic) %>%
-    mutate(term = reorder_within(term, beta, topic)) %>%
-    ggplot(aes(beta, term, fill = factor(topic))) +
-    geom_col(show.legend = FALSE) +
-    facet_wrap(~ topic, scales = "free",ncol=5) +
-    scale_y_reordered() +
-    theme_bw()+ 
-    theme(plot.title = element_text(size=20),
-          text=element_text(family="Gowun Dodum",size=40),
-          axis.text.x = element_text(size = 20)) 
-```
-
-### Cast LDA (k=10)
-
-```{r, fig.align='center',fig.width=10,fig.height=7}
-#| column: page
-austrailia_lda <-  LDA(austrailia_dtm, k = 10,
-              method="Gibbs",
-              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
-
-austrailia_tp_10 <- austrailia_lda %>%
-    tidy(matrix = "beta") %>%
-    group_by(term) %>%
-    slice_max(beta) 
-
-austrailia_tp_10 %>% 
-    group_by(topic) %>%
-    slice_max(beta,n=10) %>%
-    arrange(topic) %>%
-    mutate(term = reorder_within(term, beta, topic)) %>%
-    ggplot(aes(beta, term, fill = factor(topic))) +
-    geom_col(show.legend = FALSE) +
-    facet_wrap(~ topic, scales = "free",ncol=5) +
-    scale_y_reordered() +
-    theme_bw()+ 
-    theme(plot.title = element_text(size=20),
-          text=element_text(family="Gowun Dodum",size=40),
-          axis.text.x = element_text(size = 20)) 
-```
 
 ## Network Graph
 
@@ -2910,7 +2112,7 @@ links <- austrailia_coocur %>%
     rename(source="item1",target="item2",weight="n") 
 
 nodes <- tibble(term=union(links$source,links$target)) %>%
-    left_join(y=austrailia_tp_7,by="term") %>%
+    left_join(y=austrailia_tp_6,by="term") %>%
     dplyr::select(nodes="term",topic)
 ```
 
@@ -2937,10 +2139,13 @@ austrailia_g %>%
     scale_edge_alpha(range = c(0.3,1)) +
     scale_size(range = c(5,20)) + 
     geom_node_point(aes(colour = community, size = degree)) +
-    geom_node_text(aes(label = name, size=degree),size=8, repel = TRUE,family="Gowun Dodum") +
-    theme_graph(base_family="Gowun Dodum") +
-    theme(text=element_text(family="Gowun Dodum", size=40)) +
-    guides(size="none")
+    geom_node_text(aes(label = name, size=degree),size=8, repel = TRUE,family="Nanum Gothic") +
+    theme_graph(base_family="Nanum Gothic") +
+    theme(text=element_text(family="Nanum Gothic", size=30)) +
+    guides(size="none",
+           color = guide_legend(title="Topic 명",
+                                override.aes = list(size=5))) +
+    ghibli::scale_color_ghibli_d("PonyoLight", direction = 1)
 ```
 
 ### Network Graph per topic
@@ -2957,11 +2162,16 @@ austrailia_g %>%
     scale_edge_width(range = c(0.05,1)) +
     scale_edge_alpha(range = c(0.05,1)) + 
     geom_node_point(aes(colour = community, size = degree)) +
-    geom_node_text(aes(label = name),size=8, repel = TRUE,family="Gowun Dodum") +
-    theme_graph(base_family="Gowun Dodum") +
-    theme(text=element_text(family="Gowun Dodum",size=40)) +
-    guides(size="none")+
-    facet_nodes(~ community,ncol=3)
+    geom_node_text(aes(label = name),size=8, repel = TRUE,family="Nanum Gothic") +
+    theme_graph(base_family="Nanum Gothic") +
+    theme(text=element_text(family="Nanum Gothic", size=30),
+          strip.text = element_text(size = 20),
+          panel.border = element_rect(color = "black", fill = NA, size = 1)) +
+    guides(size="none",
+           color = guide_legend(title="Topic 명",
+                                override.aes = list(size=5))) +
+    ghibli::scale_color_ghibli_d("PonyoLight", direction = 1) +
+    facet_nodes(~ community, ncol=3, scales = "free")
 ```
 
 ### simplify?
@@ -2970,29 +2180,34 @@ austrailia_g %>%
 links=finland_coocur %>%
     top_n(100) %>%
     rename(source="item1",target="item2",weight="n") %>%
-    left_join(finland_tp_7 %>% dplyr::select(-beta,term) %>% 
+    left_join(finland_tp_6 %>% dplyr::select(-beta,term) %>% 
                   transmute(source=term,topic1=topic),by="source") %>% 
-    left_join(finland_tp_7 %>% dplyr::select(-beta,term) %>% 
+    left_join(finland_tp_6 %>% dplyr::select(-beta,term) %>% 
                   transmute(target=term,topic2=topic),by="target") %>% 
     dplyr::select(topic1,topic2,weight) %>% 
     rename(source="topic1",target="topic2")
 
 finland_network <- graph_from_data_frame(d = links, directed = F)
 finland_g <- as_tbl_graph(simplify(finland_network))
+```
 
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
 finland_g %>%
     activate("nodes") %>%
     mutate(degree = centrality_degree()) %>%
-    ggraph(layout = 'kk') +
+    ggraph(layout = 'stress') +
     geom_edge_link(aes(alpha = weight), show.legend = FALSE) +
     scale_edge_width(range = c(0.05,1.5)) +
     scale_edge_alpha(range = c(0.3,1)) +
-    scale_size(range = c(5,20)) + 
-    geom_node_point(aes(size = degree, color="blue")) +
-    geom_node_text(aes(label = name), repel = TRUE,family="Gowun Dodum",size=10, max.overlaps = Inf) +
-    theme_graph(base_family="Gowun Dodum") +
-    theme(text=element_text(family="Gowun Dodum",size=40)) +
-    guides(size="none",color="none")
+    scale_size(range = c(5,10)) + 
+    geom_node_point(aes(size = degree, colour=name)) +
+    geom_node_text(aes(label = name), repel = TRUE,family="Nanum Gothic",size=10, max.overlaps = Inf) +
+    theme_graph(base_family="Nanum Gothic") +
+    theme(text=element_text(family="Nanum Gothic",size=40)) +
+    guides(size="none",color="none")+
+    ghibli::scale_color_ghibli_d("PonyoLight", direction = 1)
 
 ```
 
@@ -3031,7 +2246,7 @@ total_tokenized %>%
     labs(y = NULL, title="Comparing Word Frequencies of Six Countries") +
     theme_bw()+
     theme(plot.title = element_text(size=40),
-          text=element_text(family="Gowun Dodum",size=40),
+          text=element_text(family="Nanum Gothic",size=40),
           axis.text.x = element_text(size = 20))+
     ggeasy::easy_center_title()
 
@@ -3045,7 +2260,7 @@ grid.arrange(a1,b1,c1,d1,e1,f1, nrow=2,
              top=textGrob("Comparing Bigrams of Six Countries",
                           gp = gpar(col = "black", 
                                     fontsize = 40,
-                                    fontfamily="Gowun Dodum")))
+                                    fontfamily="Nanum Gothic")))
 ```
 
 ## Comparing Tf-idf of Six Countries
@@ -3068,7 +2283,7 @@ total_tokenized %>%
     labs(y = NULL, title="Comparing TF-IDF of Six Countries") +
     theme_bw()+
     theme(plot.title = element_text(size=40),
-          text=element_text(family="Gowun Dodum",size=40),
+          text=element_text(family="Nanum Gothic",size=40),
           axis.text.x = element_text(size = 20))  +
     ggeasy::easy_center_title()
 
@@ -3099,7 +2314,7 @@ compare_six %>%
     ggplot(aes(x = proportion, y = 대한민국, color = abs(대한민국 - proportion))) +
     geom_abline(color = "darkgreen", lty = 2, size=1.5) +
     geom_jitter(alpha = 0.1, size = 1.5, width = 0.3, height = 0.3) +
-    geom_text(aes(label = words), check_overlap = TRUE, vjust = 1.5, family="Gowun Dodum",size=9) +
+    geom_text(aes(label = words), check_overlap = TRUE, vjust = 1.5, family="Nanum Gothic",size=9) +
     scale_x_log10(labels = percent_format()) +
     scale_y_log10(labels = percent_format()) +
     scale_color_gradient(limits = c(0.001, 0.01), 
@@ -3109,7 +2324,7 @@ compare_six %>%
     labs(y = "대한민국", x = NULL, title="Comparing the word frequencies of Six Countries") +
     theme_bw() +
     theme(plot.title = element_text(size=40),
-          text=element_text(family="Gowun Dodum",size=25))+
+          text=element_text(family="Nanum Gothic",size=25))+
     guides(color="none") +
     ggeasy::easy_center_title()
 ```
@@ -3306,6 +2521,7 @@ document_df["similarity"] = similarity_pair.reshape(-1,1)
 
 ```{python}
 #| fig-align: center
+#| column: page
 plt.clf()
 vis=document_df.iloc[1:].sort_values(by="similarity",ascending=False).reset_index(drop=True)
 sns.set_style("white")
