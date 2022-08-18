@@ -1350,7 +1350,8 @@ japan_tp_10 %>%
     theme(plot.title = element_text(size=20),
           text=element_text(family="Nanum Gothic",size=20),
           axis.text.x = element_text(size = 25),
-          axis.title.y=element_blank()) + 
+          axis.title.y=element_blank(),
+          strip.text = element_text(size = 30)) + 
     scale_fill_manual( values = colorRampPalette(ghibli::ghibli_palette("PonyoLight"))(10))
 
 ```
@@ -2321,9 +2322,10 @@ compare_six %>%
                          low = "darkgreen", high =  "black") +
     facet_wrap(~key, nrow = 2) +
     theme(legend.position="none") +
-    labs(y = "대한민국", x = NULL, title="Comparing the word frequencies of Six Countries") +
+    labs(y = "대한민국", x = NULL, title=NULL) +
     theme_bw() +
     theme(plot.title = element_text(size=40),
+          strip.text = element_text(size = 40),
           text=element_text(family="Nanum Gothic",size=25))+
     guides(color="none") +
     ggeasy::easy_center_title()
@@ -2355,6 +2357,37 @@ correlation_total %>%
              number.cex = 4,
              tl.cex = 3) 
 
+```
+```{r, fig.align='center',fig.width=10,fig.height=7, warning = FALSE, message = FALSE}
+#| column: page
+correlation_total %>% 
+    cor(use="pairwise.complete.obs") %>% 
+    data.frame() %>% 
+    mutate(countries=row.names(.)) %>% 
+    tibble %>% 
+    select(countries, 대한민국) %>% 
+    rename(key="countries",corrr="대한민국")-> corr1
+
+total_tokenized %>% 
+    group_by(key) %>%
+    count(key,words) %>% 
+    group_by(key) %>% 
+    top_n(n, n=10) %>%
+    arrange(desc(n)) %>% 
+    left_join(y=corr1,by="key") %>% 
+    mutate(words = reorder_within(words, n, key)) %>%
+    ggplot(aes(x=n, y=words)) +
+    geom_col(aes(fill=corrr),show.legend = T) +
+    scale_y_reordered() +
+    facet_wrap(~fct_reorder(key,corrr,.desc=T), nrow = 2, scales = "free") +
+    labs(y = NULL, title=NULL,fill='상관관계') +
+    theme_bw()+
+    theme(plot.title = element_text(size=40),
+          strip.text = element_text(size = 40),
+          text=element_text(family="Nanum Gothic",size=40),
+          axis.text.x = element_text(size = 20))+
+    ggeasy::easy_center_title()+
+    scale_fill_gradient(low = "grey", high = "black")
 ```
 
 ```{r result="hide"}

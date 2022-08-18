@@ -2856,8 +2856,9 @@ n words.</p>
 <span id="cb75-25"><a href="#cb75-25" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">20</span>),</span>
 <span id="cb75-26"><a href="#cb75-26" aria-hidden="true" tabindex="-1"></a>          <span class="at">text=</span><span class="fu">element_text</span>(<span class="at">family=</span><span class="st">"Nanum Gothic"</span>,<span class="at">size=</span><span class="dv">20</span>),</span>
 <span id="cb75-27"><a href="#cb75-27" aria-hidden="true" tabindex="-1"></a>          <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">25</span>),</span>
-<span id="cb75-28"><a href="#cb75-28" aria-hidden="true" tabindex="-1"></a>          <span class="at">axis.title.y=</span><span class="fu">element_blank</span>()) <span class="sc">+</span> </span>
-<span id="cb75-29"><a href="#cb75-29" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_fill_manual</span>( <span class="at">values =</span> <span class="fu">colorRampPalette</span>(ghibli<span class="sc">::</span><span class="fu">ghibli_palette</span>(<span class="st">"PonyoLight"</span>))(<span class="dv">10</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb75-28"><a href="#cb75-28" aria-hidden="true" tabindex="-1"></a>          <span class="at">axis.title.y=</span><span class="fu">element_blank</span>(),</span>
+<span id="cb75-29"><a href="#cb75-29" aria-hidden="true" tabindex="-1"></a>          <span class="at">strip.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">30</span>)) <span class="sc">+</span> </span>
+<span id="cb75-30"><a href="#cb75-30" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_fill_manual</span>( <span class="at">values =</span> <span class="fu">colorRampPalette</span>(ghibli<span class="sc">::</span><span class="fu">ghibli_palette</span>(<span class="st">"PonyoLight"</span>))(<span class="dv">10</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display column-page">
 <div class="quarto-figure quarto-figure-center">
@@ -4448,12 +4449,13 @@ n words.</p>
 <span id="cb134-11"><a href="#cb134-11" aria-hidden="true" tabindex="-1"></a>                         <span class="at">low =</span> <span class="st">"darkgreen"</span>, <span class="at">high =</span>  <span class="st">"black"</span>) <span class="sc">+</span></span>
 <span id="cb134-12"><a href="#cb134-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">facet_wrap</span>(<span class="sc">~</span>key, <span class="at">nrow =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
 <span id="cb134-13"><a href="#cb134-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">legend.position=</span><span class="st">"none"</span>) <span class="sc">+</span></span>
-<span id="cb134-14"><a href="#cb134-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">"대한민국"</span>, <span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">title=</span><span class="st">"Comparing the word frequencies of Six Countries"</span>) <span class="sc">+</span></span>
+<span id="cb134-14"><a href="#cb134-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">"대한민국"</span>, <span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">title=</span><span class="cn">NULL</span>) <span class="sc">+</span></span>
 <span id="cb134-15"><a href="#cb134-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
 <span id="cb134-16"><a href="#cb134-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">40</span>),</span>
-<span id="cb134-17"><a href="#cb134-17" aria-hidden="true" tabindex="-1"></a>          <span class="at">text=</span><span class="fu">element_text</span>(<span class="at">family=</span><span class="st">"Nanum Gothic"</span>,<span class="at">size=</span><span class="dv">25</span>))<span class="sc">+</span></span>
-<span id="cb134-18"><a href="#cb134-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">guides</span>(<span class="at">color=</span><span class="st">"none"</span>) <span class="sc">+</span></span>
-<span id="cb134-19"><a href="#cb134-19" aria-hidden="true" tabindex="-1"></a>    ggeasy<span class="sc">::</span><span class="fu">easy_center_title</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb134-17"><a href="#cb134-17" aria-hidden="true" tabindex="-1"></a>          <span class="at">strip.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">40</span>),</span>
+<span id="cb134-18"><a href="#cb134-18" aria-hidden="true" tabindex="-1"></a>          <span class="at">text=</span><span class="fu">element_text</span>(<span class="at">family=</span><span class="st">"Nanum Gothic"</span>,<span class="at">size=</span><span class="dv">25</span>))<span class="sc">+</span></span>
+<span id="cb134-19"><a href="#cb134-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">guides</span>(<span class="at">color=</span><span class="st">"none"</span>) <span class="sc">+</span></span>
+<span id="cb134-20"><a href="#cb134-20" aria-hidden="true" tabindex="-1"></a>    ggeasy<span class="sc">::</span><span class="fu">easy_center_title</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display column-page">
 <div class="quarto-figure quarto-figure-center">
@@ -4499,64 +4501,104 @@ n words.</p>
 </div>
 </div>
 </div>
+<div class="cell page-columns page-full" data-layout-align="center">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb136"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb136-1"><a href="#cb136-1" aria-hidden="true" tabindex="-1"></a>correlation_total <span class="sc">%&gt;%</span> </span>
+<span id="cb136-2"><a href="#cb136-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cor</span>(<span class="at">use=</span><span class="st">"pairwise.complete.obs"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb136-3"><a href="#cb136-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">data.frame</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb136-4"><a href="#cb136-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">countries=</span><span class="fu">row.names</span>(.)) <span class="sc">%&gt;%</span> </span>
+<span id="cb136-5"><a href="#cb136-5" aria-hidden="true" tabindex="-1"></a>    tibble <span class="sc">%&gt;%</span> </span>
+<span id="cb136-6"><a href="#cb136-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(countries, 대한민국) <span class="sc">%&gt;%</span> </span>
+<span id="cb136-7"><a href="#cb136-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rename</span>(<span class="at">key=</span><span class="st">"countries"</span>,<span class="at">corrr=</span><span class="st">"대한민국"</span>)<span class="ot">-&gt;</span> corr1</span>
+<span id="cb136-8"><a href="#cb136-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb136-9"><a href="#cb136-9" aria-hidden="true" tabindex="-1"></a>total_tokenized <span class="sc">%&gt;%</span> </span>
+<span id="cb136-10"><a href="#cb136-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(key) <span class="sc">%&gt;%</span></span>
+<span id="cb136-11"><a href="#cb136-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">count</span>(key,words) <span class="sc">%&gt;%</span> </span>
+<span id="cb136-12"><a href="#cb136-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(key) <span class="sc">%&gt;%</span> </span>
+<span id="cb136-13"><a href="#cb136-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">top_n</span>(n, <span class="at">n=</span><span class="dv">10</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb136-14"><a href="#cb136-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">arrange</span>(<span class="fu">desc</span>(n)) <span class="sc">%&gt;%</span> </span>
+<span id="cb136-15"><a href="#cb136-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">left_join</span>(<span class="at">y=</span>corr1,<span class="at">by=</span><span class="st">"key"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb136-16"><a href="#cb136-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">words =</span> <span class="fu">reorder_within</span>(words, n, key)) <span class="sc">%&gt;%</span></span>
+<span id="cb136-17"><a href="#cb136-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>n, <span class="at">y=</span>words)) <span class="sc">+</span></span>
+<span id="cb136-18"><a href="#cb136-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_col</span>(<span class="fu">aes</span>(<span class="at">fill=</span>corrr),<span class="at">show.legend =</span> T) <span class="sc">+</span></span>
+<span id="cb136-19"><a href="#cb136-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_y_reordered</span>() <span class="sc">+</span></span>
+<span id="cb136-20"><a href="#cb136-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">facet_wrap</span>(<span class="sc">~</span><span class="fu">fct_reorder</span>(key,corrr,<span class="at">.desc=</span>T), <span class="at">nrow =</span> <span class="dv">2</span>, <span class="at">scales =</span> <span class="st">"free"</span>) <span class="sc">+</span></span>
+<span id="cb136-21"><a href="#cb136-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">y =</span> <span class="cn">NULL</span>, <span class="at">title=</span><span class="cn">NULL</span>,<span class="at">fill=</span><span class="st">'상관관계'</span>) <span class="sc">+</span></span>
+<span id="cb136-22"><a href="#cb136-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_bw</span>()<span class="sc">+</span></span>
+<span id="cb136-23"><a href="#cb136-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">40</span>),</span>
+<span id="cb136-24"><a href="#cb136-24" aria-hidden="true" tabindex="-1"></a>          <span class="at">strip.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">40</span>),</span>
+<span id="cb136-25"><a href="#cb136-25" aria-hidden="true" tabindex="-1"></a>          <span class="at">text=</span><span class="fu">element_text</span>(<span class="at">family=</span><span class="st">"Nanum Gothic"</span>,<span class="at">size=</span><span class="dv">40</span>),</span>
+<span id="cb136-26"><a href="#cb136-26" aria-hidden="true" tabindex="-1"></a>          <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">20</span>))<span class="sc">+</span></span>
+<span id="cb136-27"><a href="#cb136-27" aria-hidden="true" tabindex="-1"></a>    ggeasy<span class="sc">::</span><span class="fu">easy_center_title</span>()<span class="sc">+</span></span>
+<span id="cb136-28"><a href="#cb136-28" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_fill_gradient</span>(<span class="at">low =</span> <span class="st">"grey"</span>, <span class="at">high =</span> <span class="st">"black"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display column-page">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="Vnr_analysis_files/figure-html/unnamed-chunk-102-1.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
 <div class="cell" data-result="hide">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb136"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb136-1"><a href="#cb136-1" aria-hidden="true" tabindex="-1"></a>cortrix <span class="ot">=</span> <span class="cf">function</span> (R, <span class="at">histogram =</span> <span class="cn">TRUE</span>, <span class="at">method =</span> <span class="fu">c</span>(<span class="st">"pearson"</span>, <span class="st">"kendall"</span>, </span>
-<span id="cb136-2"><a href="#cb136-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"spearman"</span>), ...) </span>
-<span id="cb136-3"><a href="#cb136-3" aria-hidden="true" tabindex="-1"></a>{</span>
-<span id="cb136-4"><a href="#cb136-4" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">=</span> <span class="fu">as.matrix</span>(R, <span class="at">method =</span> <span class="st">"matrix"</span>)</span>
-<span id="cb136-5"><a href="#cb136-5" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">missing</span>(method)) </span>
-<span id="cb136-6"><a href="#cb136-6" aria-hidden="true" tabindex="-1"></a>    method <span class="ot">=</span> method[<span class="dv">1</span>]</span>
-<span id="cb136-7"><a href="#cb136-7" aria-hidden="true" tabindex="-1"></a>  cormeth <span class="ot">&lt;-</span> method</span>
-<span id="cb136-8"><a href="#cb136-8" aria-hidden="true" tabindex="-1"></a>  panel.cor <span class="ot">&lt;-</span> <span class="cf">function</span>(x, y, <span class="at">digits =</span> <span class="dv">2</span>, <span class="at">prefix =</span> <span class="st">""</span>, <span class="at">use =</span> <span class="st">"pairwise.complete.obs"</span>, </span>
-<span id="cb136-9"><a href="#cb136-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">method =</span> cormeth, cex.cor, ...) {</span>
-<span id="cb136-10"><a href="#cb136-10" aria-hidden="true" tabindex="-1"></a>    usr <span class="ot">&lt;-</span> <span class="fu">par</span>(<span class="st">"usr"</span>)</span>
-<span id="cb136-11"><a href="#cb136-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">on.exit</span>(<span class="fu">par</span>(usr))</span>
-<span id="cb136-12"><a href="#cb136-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">par</span>(<span class="at">usr =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>))</span>
-<span id="cb136-13"><a href="#cb136-13" aria-hidden="true" tabindex="-1"></a>    r <span class="ot">&lt;-</span> <span class="fu">cor</span>(x, y, <span class="at">use =</span> use, <span class="at">method =</span> method)</span>
-<span id="cb136-14"><a href="#cb136-14" aria-hidden="true" tabindex="-1"></a>    txt <span class="ot">&lt;-</span> <span class="fu">format</span>(<span class="fu">c</span>(r, <span class="fl">0.123456789</span>), <span class="at">digits =</span> digits)[<span class="dv">1</span>]</span>
-<span id="cb136-15"><a href="#cb136-15" aria-hidden="true" tabindex="-1"></a>    txt <span class="ot">&lt;-</span> <span class="fu">paste</span>(prefix, txt, <span class="at">sep =</span> <span class="st">""</span>)</span>
-<span id="cb136-16"><a href="#cb136-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">missing</span>(cex.cor)) </span>
-<span id="cb136-17"><a href="#cb136-17" aria-hidden="true" tabindex="-1"></a>      cex <span class="ot">&lt;-</span> <span class="dv">2</span></span>
-<span id="cb136-18"><a href="#cb136-18" aria-hidden="true" tabindex="-1"></a>    test <span class="ot">&lt;-</span> <span class="fu">cor.test</span>(<span class="fu">as.numeric</span>(x), <span class="fu">as.numeric</span>(y), <span class="at">method =</span> method)</span>
-<span id="cb136-19"><a href="#cb136-19" aria-hidden="true" tabindex="-1"></a>    Signif <span class="ot">&lt;-</span> <span class="fu">symnum</span>(test<span class="sc">$</span>p.value, <span class="at">corr =</span> <span class="cn">FALSE</span>, <span class="at">na =</span> <span class="cn">FALSE</span>, </span>
-<span id="cb136-20"><a href="#cb136-20" aria-hidden="true" tabindex="-1"></a>      <span class="at">cutpoints =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.001</span>, <span class="fl">0.01</span>, <span class="fl">0.05</span>, <span class="fl">0.1</span>, <span class="dv">1</span>), <span class="at">symbols =</span> <span class="fu">c</span>(<span class="st">"***"</span>, </span>
-<span id="cb136-21"><a href="#cb136-21" aria-hidden="true" tabindex="-1"></a>        <span class="st">"**"</span>, <span class="st">"*"</span>, <span class="st">"."</span>, <span class="st">" "</span>))</span>
-<span id="cb136-22"><a href="#cb136-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">text</span>(<span class="fl">0.5</span>, <span class="fl">0.5</span>, txt, <span class="at">cex =</span> cex)</span>
-<span id="cb136-23"><a href="#cb136-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">text</span>(<span class="fl">0.8</span>, <span class="fl">0.8</span>, Signif, <span class="at">cex =</span> <span class="dv">2</span>, <span class="at">col =</span> <span class="dv">2</span>)</span>
-<span id="cb136-24"><a href="#cb136-24" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb136-25"><a href="#cb136-25" aria-hidden="true" tabindex="-1"></a>  f <span class="ot">&lt;-</span> <span class="cf">function</span>(t) {</span>
-<span id="cb136-26"><a href="#cb136-26" aria-hidden="true" tabindex="-1"></a>    <span class="fu">dnorm</span>(t, <span class="at">mean =</span> <span class="fu">mean</span>(x), <span class="at">sd =</span> <span class="fu">sd.xts</span>(x))</span>
-<span id="cb136-27"><a href="#cb136-27" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb136-28"><a href="#cb136-28" aria-hidden="true" tabindex="-1"></a>  dotargs <span class="ot">&lt;-</span> <span class="fu">list</span>(...)</span>
-<span id="cb136-29"><a href="#cb136-29" aria-hidden="true" tabindex="-1"></a>  dotargs<span class="sc">$</span>method <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
-<span id="cb136-30"><a href="#cb136-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rm</span>(method)</span>
-<span id="cb136-31"><a href="#cb136-31" aria-hidden="true" tabindex="-1"></a>  hist.panel <span class="ot">=</span> <span class="cf">function</span>(x, <span class="at">... =</span> <span class="cn">NULL</span>) {</span>
-<span id="cb136-32"><a href="#cb136-32" aria-hidden="true" tabindex="-1"></a>    <span class="fu">par</span>(<span class="at">new =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb136-33"><a href="#cb136-33" aria-hidden="true" tabindex="-1"></a>    <span class="fu">hist</span>(x, <span class="at">col =</span> <span class="st">"light blue"</span>, <span class="at">probability =</span> <span class="cn">TRUE</span>, <span class="at">axes =</span> <span class="cn">FALSE</span>, </span>
-<span id="cb136-34"><a href="#cb136-34" aria-hidden="true" tabindex="-1"></a>      <span class="at">main =</span> <span class="st">""</span>, <span class="at">breaks =</span> <span class="st">"FD"</span>)</span>
-<span id="cb136-35"><a href="#cb136-35" aria-hidden="true" tabindex="-1"></a>    <span class="fu">lines</span>(<span class="fu">density</span>(x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="at">col =</span> <span class="st">"red"</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
-<span id="cb136-36"><a href="#cb136-36" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rug</span>(x)</span>
-<span id="cb136-37"><a href="#cb136-37" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb136-38"><a href="#cb136-38" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (histogram) </span>
-<span id="cb136-39"><a href="#cb136-39" aria-hidden="true" tabindex="-1"></a>    <span class="fu">pairs</span>(x, <span class="at">gap =</span> <span class="dv">0</span>, <span class="at">lower.panel =</span> panel.smooth, <span class="at">upper.panel =</span> panel.cor, </span>
-<span id="cb136-40"><a href="#cb136-40" aria-hidden="true" tabindex="-1"></a>      <span class="at">diag.panel =</span> hist.panel, ...)</span>
-<span id="cb136-41"><a href="#cb136-41" aria-hidden="true" tabindex="-1"></a>  <span class="cf">else</span> <span class="fu">pairs</span>(x, <span class="at">gap =</span> <span class="dv">0</span>, <span class="at">lower.panel =</span> panel.smooth, <span class="at">upper.panel =</span> panel.cor, </span>
-<span id="cb136-42"><a href="#cb136-42" aria-hidden="true" tabindex="-1"></a>    ...)</span>
-<span id="cb136-43"><a href="#cb136-43" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb137"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb137-1"><a href="#cb137-1" aria-hidden="true" tabindex="-1"></a>cortrix <span class="ot">=</span> <span class="cf">function</span> (R, <span class="at">histogram =</span> <span class="cn">TRUE</span>, <span class="at">method =</span> <span class="fu">c</span>(<span class="st">"pearson"</span>, <span class="st">"kendall"</span>, </span>
+<span id="cb137-2"><a href="#cb137-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"spearman"</span>), ...) </span>
+<span id="cb137-3"><a href="#cb137-3" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb137-4"><a href="#cb137-4" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">=</span> <span class="fu">as.matrix</span>(R, <span class="at">method =</span> <span class="st">"matrix"</span>)</span>
+<span id="cb137-5"><a href="#cb137-5" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">missing</span>(method)) </span>
+<span id="cb137-6"><a href="#cb137-6" aria-hidden="true" tabindex="-1"></a>    method <span class="ot">=</span> method[<span class="dv">1</span>]</span>
+<span id="cb137-7"><a href="#cb137-7" aria-hidden="true" tabindex="-1"></a>  cormeth <span class="ot">&lt;-</span> method</span>
+<span id="cb137-8"><a href="#cb137-8" aria-hidden="true" tabindex="-1"></a>  panel.cor <span class="ot">&lt;-</span> <span class="cf">function</span>(x, y, <span class="at">digits =</span> <span class="dv">2</span>, <span class="at">prefix =</span> <span class="st">""</span>, <span class="at">use =</span> <span class="st">"pairwise.complete.obs"</span>, </span>
+<span id="cb137-9"><a href="#cb137-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">method =</span> cormeth, cex.cor, ...) {</span>
+<span id="cb137-10"><a href="#cb137-10" aria-hidden="true" tabindex="-1"></a>    usr <span class="ot">&lt;-</span> <span class="fu">par</span>(<span class="st">"usr"</span>)</span>
+<span id="cb137-11"><a href="#cb137-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">on.exit</span>(<span class="fu">par</span>(usr))</span>
+<span id="cb137-12"><a href="#cb137-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">par</span>(<span class="at">usr =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>))</span>
+<span id="cb137-13"><a href="#cb137-13" aria-hidden="true" tabindex="-1"></a>    r <span class="ot">&lt;-</span> <span class="fu">cor</span>(x, y, <span class="at">use =</span> use, <span class="at">method =</span> method)</span>
+<span id="cb137-14"><a href="#cb137-14" aria-hidden="true" tabindex="-1"></a>    txt <span class="ot">&lt;-</span> <span class="fu">format</span>(<span class="fu">c</span>(r, <span class="fl">0.123456789</span>), <span class="at">digits =</span> digits)[<span class="dv">1</span>]</span>
+<span id="cb137-15"><a href="#cb137-15" aria-hidden="true" tabindex="-1"></a>    txt <span class="ot">&lt;-</span> <span class="fu">paste</span>(prefix, txt, <span class="at">sep =</span> <span class="st">""</span>)</span>
+<span id="cb137-16"><a href="#cb137-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">missing</span>(cex.cor)) </span>
+<span id="cb137-17"><a href="#cb137-17" aria-hidden="true" tabindex="-1"></a>      cex <span class="ot">&lt;-</span> <span class="dv">2</span></span>
+<span id="cb137-18"><a href="#cb137-18" aria-hidden="true" tabindex="-1"></a>    test <span class="ot">&lt;-</span> <span class="fu">cor.test</span>(<span class="fu">as.numeric</span>(x), <span class="fu">as.numeric</span>(y), <span class="at">method =</span> method)</span>
+<span id="cb137-19"><a href="#cb137-19" aria-hidden="true" tabindex="-1"></a>    Signif <span class="ot">&lt;-</span> <span class="fu">symnum</span>(test<span class="sc">$</span>p.value, <span class="at">corr =</span> <span class="cn">FALSE</span>, <span class="at">na =</span> <span class="cn">FALSE</span>, </span>
+<span id="cb137-20"><a href="#cb137-20" aria-hidden="true" tabindex="-1"></a>      <span class="at">cutpoints =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.001</span>, <span class="fl">0.01</span>, <span class="fl">0.05</span>, <span class="fl">0.1</span>, <span class="dv">1</span>), <span class="at">symbols =</span> <span class="fu">c</span>(<span class="st">"***"</span>, </span>
+<span id="cb137-21"><a href="#cb137-21" aria-hidden="true" tabindex="-1"></a>        <span class="st">"**"</span>, <span class="st">"*"</span>, <span class="st">"."</span>, <span class="st">" "</span>))</span>
+<span id="cb137-22"><a href="#cb137-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">text</span>(<span class="fl">0.5</span>, <span class="fl">0.5</span>, txt, <span class="at">cex =</span> cex)</span>
+<span id="cb137-23"><a href="#cb137-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">text</span>(<span class="fl">0.8</span>, <span class="fl">0.8</span>, Signif, <span class="at">cex =</span> <span class="dv">2</span>, <span class="at">col =</span> <span class="dv">2</span>)</span>
+<span id="cb137-24"><a href="#cb137-24" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb137-25"><a href="#cb137-25" aria-hidden="true" tabindex="-1"></a>  f <span class="ot">&lt;-</span> <span class="cf">function</span>(t) {</span>
+<span id="cb137-26"><a href="#cb137-26" aria-hidden="true" tabindex="-1"></a>    <span class="fu">dnorm</span>(t, <span class="at">mean =</span> <span class="fu">mean</span>(x), <span class="at">sd =</span> <span class="fu">sd.xts</span>(x))</span>
+<span id="cb137-27"><a href="#cb137-27" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb137-28"><a href="#cb137-28" aria-hidden="true" tabindex="-1"></a>  dotargs <span class="ot">&lt;-</span> <span class="fu">list</span>(...)</span>
+<span id="cb137-29"><a href="#cb137-29" aria-hidden="true" tabindex="-1"></a>  dotargs<span class="sc">$</span>method <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
+<span id="cb137-30"><a href="#cb137-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rm</span>(method)</span>
+<span id="cb137-31"><a href="#cb137-31" aria-hidden="true" tabindex="-1"></a>  hist.panel <span class="ot">=</span> <span class="cf">function</span>(x, <span class="at">... =</span> <span class="cn">NULL</span>) {</span>
+<span id="cb137-32"><a href="#cb137-32" aria-hidden="true" tabindex="-1"></a>    <span class="fu">par</span>(<span class="at">new =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb137-33"><a href="#cb137-33" aria-hidden="true" tabindex="-1"></a>    <span class="fu">hist</span>(x, <span class="at">col =</span> <span class="st">"light blue"</span>, <span class="at">probability =</span> <span class="cn">TRUE</span>, <span class="at">axes =</span> <span class="cn">FALSE</span>, </span>
+<span id="cb137-34"><a href="#cb137-34" aria-hidden="true" tabindex="-1"></a>      <span class="at">main =</span> <span class="st">""</span>, <span class="at">breaks =</span> <span class="st">"FD"</span>)</span>
+<span id="cb137-35"><a href="#cb137-35" aria-hidden="true" tabindex="-1"></a>    <span class="fu">lines</span>(<span class="fu">density</span>(x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="at">col =</span> <span class="st">"red"</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
+<span id="cb137-36"><a href="#cb137-36" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rug</span>(x)</span>
+<span id="cb137-37"><a href="#cb137-37" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb137-38"><a href="#cb137-38" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (histogram) </span>
+<span id="cb137-39"><a href="#cb137-39" aria-hidden="true" tabindex="-1"></a>    <span class="fu">pairs</span>(x, <span class="at">gap =</span> <span class="dv">0</span>, <span class="at">lower.panel =</span> panel.smooth, <span class="at">upper.panel =</span> panel.cor, </span>
+<span id="cb137-40"><a href="#cb137-40" aria-hidden="true" tabindex="-1"></a>      <span class="at">diag.panel =</span> hist.panel, ...)</span>
+<span id="cb137-41"><a href="#cb137-41" aria-hidden="true" tabindex="-1"></a>  <span class="cf">else</span> <span class="fu">pairs</span>(x, <span class="at">gap =</span> <span class="dv">0</span>, <span class="at">lower.panel =</span> panel.smooth, <span class="at">upper.panel =</span> panel.cor, </span>
+<span id="cb137-42"><a href="#cb137-42" aria-hidden="true" tabindex="-1"></a>    ...)</span>
+<span id="cb137-43"><a href="#cb137-43" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <div class="cell" data-layout-align="center">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb137"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb137-1"><a href="#cb137-1" aria-hidden="true" tabindex="-1"></a>correlation_total <span class="sc">%&gt;%</span> </span>
-<span id="cb137-2"><a href="#cb137-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cortrix</span>(<span class="at">histogram=</span>F)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb138"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb138-1"><a href="#cb138-1" aria-hidden="true" tabindex="-1"></a>correlation_total <span class="sc">%&gt;%</span> </span>
+<span id="cb138-2"><a href="#cb138-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cortrix</span>(<span class="at">histogram=</span>F)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="Vnr_analysis_files/figure-html/unnamed-chunk-103-1.png" class="img-fluid figure-img" style="width:150.0%"></p>
+<p><img src="Vnr_analysis_files/figure-html/unnamed-chunk-104-1.png" class="img-fluid figure-img" style="width:150.0%"></p>
 </figure>
 </div>
 </div>
@@ -4568,65 +4610,65 @@ n words.</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb138"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb138-1"><a href="#cb138-1" aria-hidden="true" tabindex="-1"></a>korea_string <span class="ot">&lt;-</span> korea <span class="sc">%&gt;%</span> </span>
-<span id="cb138-2"><a href="#cb138-2" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb138-3"><a href="#cb138-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">unlist</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb138-4"><a href="#cb138-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">as.vector</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb138-5"><a href="#cb138-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_c</span>(.,<span class="at">collapse =</span> <span class="st">" "</span>) </span>
-<span id="cb138-6"><a href="#cb138-6" aria-hidden="true" tabindex="-1"></a>germany_string <span class="ot">&lt;-</span> germany <span class="sc">%&gt;%</span> </span>
-<span id="cb138-7"><a href="#cb138-7" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb138-8"><a href="#cb138-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">unlist</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb138-9"><a href="#cb138-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">as.vector</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb138-10"><a href="#cb138-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_c</span>(.,<span class="at">collapse =</span> <span class="st">" "</span>) </span>
-<span id="cb138-11"><a href="#cb138-11" aria-hidden="true" tabindex="-1"></a>finland_string <span class="ot">&lt;-</span> finland <span class="sc">%&gt;%</span> </span>
-<span id="cb138-12"><a href="#cb138-12" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb138-13"><a href="#cb138-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">unlist</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb138-14"><a href="#cb138-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">as.vector</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb138-15"><a href="#cb138-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_c</span>(.,<span class="at">collapse =</span> <span class="st">" "</span>) </span>
-<span id="cb138-16"><a href="#cb138-16" aria-hidden="true" tabindex="-1"></a>japan_string <span class="ot">&lt;-</span> japan <span class="sc">%&gt;%</span> </span>
-<span id="cb138-17"><a href="#cb138-17" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb138-18"><a href="#cb138-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">unlist</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb138-19"><a href="#cb138-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">as.vector</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb138-20"><a href="#cb138-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_c</span>(.,<span class="at">collapse =</span> <span class="st">" "</span>) </span>
-<span id="cb138-21"><a href="#cb138-21" aria-hidden="true" tabindex="-1"></a>uk_string <span class="ot">&lt;-</span> uk <span class="sc">%&gt;%</span> </span>
-<span id="cb138-22"><a href="#cb138-22" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb138-23"><a href="#cb138-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">unlist</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb138-24"><a href="#cb138-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">as.vector</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb138-25"><a href="#cb138-25" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_c</span>(.,<span class="at">collapse =</span> <span class="st">" "</span>) </span>
-<span id="cb138-26"><a href="#cb138-26" aria-hidden="true" tabindex="-1"></a>austrailia_string <span class="ot">&lt;-</span> austrailia <span class="sc">%&gt;%</span> </span>
-<span id="cb138-27"><a href="#cb138-27" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb138-28"><a href="#cb138-28" aria-hidden="true" tabindex="-1"></a>    <span class="fu">unlist</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb138-29"><a href="#cb138-29" aria-hidden="true" tabindex="-1"></a>    <span class="fu">as.vector</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb138-30"><a href="#cb138-30" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_c</span>(.,<span class="at">collapse =</span> <span class="st">" "</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb139"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb139-1"><a href="#cb139-1" aria-hidden="true" tabindex="-1"></a>korea_string <span class="ot">&lt;-</span> korea <span class="sc">%&gt;%</span> </span>
+<span id="cb139-2"><a href="#cb139-2" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb139-3"><a href="#cb139-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">unlist</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb139-4"><a href="#cb139-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">as.vector</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb139-5"><a href="#cb139-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_c</span>(.,<span class="at">collapse =</span> <span class="st">" "</span>) </span>
+<span id="cb139-6"><a href="#cb139-6" aria-hidden="true" tabindex="-1"></a>germany_string <span class="ot">&lt;-</span> germany <span class="sc">%&gt;%</span> </span>
+<span id="cb139-7"><a href="#cb139-7" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb139-8"><a href="#cb139-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">unlist</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb139-9"><a href="#cb139-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">as.vector</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb139-10"><a href="#cb139-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_c</span>(.,<span class="at">collapse =</span> <span class="st">" "</span>) </span>
+<span id="cb139-11"><a href="#cb139-11" aria-hidden="true" tabindex="-1"></a>finland_string <span class="ot">&lt;-</span> finland <span class="sc">%&gt;%</span> </span>
+<span id="cb139-12"><a href="#cb139-12" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb139-13"><a href="#cb139-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">unlist</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb139-14"><a href="#cb139-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">as.vector</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb139-15"><a href="#cb139-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_c</span>(.,<span class="at">collapse =</span> <span class="st">" "</span>) </span>
+<span id="cb139-16"><a href="#cb139-16" aria-hidden="true" tabindex="-1"></a>japan_string <span class="ot">&lt;-</span> japan <span class="sc">%&gt;%</span> </span>
+<span id="cb139-17"><a href="#cb139-17" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb139-18"><a href="#cb139-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">unlist</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb139-19"><a href="#cb139-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">as.vector</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb139-20"><a href="#cb139-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_c</span>(.,<span class="at">collapse =</span> <span class="st">" "</span>) </span>
+<span id="cb139-21"><a href="#cb139-21" aria-hidden="true" tabindex="-1"></a>uk_string <span class="ot">&lt;-</span> uk <span class="sc">%&gt;%</span> </span>
+<span id="cb139-22"><a href="#cb139-22" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb139-23"><a href="#cb139-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">unlist</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb139-24"><a href="#cb139-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">as.vector</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb139-25"><a href="#cb139-25" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_c</span>(.,<span class="at">collapse =</span> <span class="st">" "</span>) </span>
+<span id="cb139-26"><a href="#cb139-26" aria-hidden="true" tabindex="-1"></a>austrailia_string <span class="ot">&lt;-</span> austrailia <span class="sc">%&gt;%</span> </span>
+<span id="cb139-27"><a href="#cb139-27" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb139-28"><a href="#cb139-28" aria-hidden="true" tabindex="-1"></a>    <span class="fu">unlist</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb139-29"><a href="#cb139-29" aria-hidden="true" tabindex="-1"></a>    <span class="fu">as.vector</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb139-30"><a href="#cb139-30" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_c</span>(.,<span class="at">collapse =</span> <span class="st">" "</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb139"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb139-1"><a href="#cb139-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pylab <span class="im">as</span> plt </span>
-<span id="cb139-2"><a href="#cb139-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib <span class="im">as</span> mpl</span>
-<span id="cb139-3"><a href="#cb139-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
-<span id="cb139-4"><a href="#cb139-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb139-5"><a href="#cb139-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb139-6"><a href="#cb139-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.display <span class="im">import</span> display, Markdown</span>
-<span id="cb139-7"><a href="#cb139-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> tabulate <span class="im">import</span> tabulate</span>
-<span id="cb139-8"><a href="#cb139-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.feature_extraction.text <span class="im">import</span> TfidfVectorizer</span>
-<span id="cb139-9"><a href="#cb139-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.cluster <span class="im">import</span> KMeans</span>
-<span id="cb139-10"><a href="#cb139-10" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> warnings</span>
-<span id="cb139-11"><a href="#cb139-11" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> nltk.stem <span class="im">import</span> WordNetLemmatizer</span>
-<span id="cb139-12"><a href="#cb139-12" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> nltk</span>
-<span id="cb139-13"><a href="#cb139-13" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> string</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb140"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb140-1"><a href="#cb140-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pylab <span class="im">as</span> plt </span>
+<span id="cb140-2"><a href="#cb140-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib <span class="im">as</span> mpl</span>
+<span id="cb140-3"><a href="#cb140-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
+<span id="cb140-4"><a href="#cb140-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb140-5"><a href="#cb140-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb140-6"><a href="#cb140-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.display <span class="im">import</span> display, Markdown</span>
+<span id="cb140-7"><a href="#cb140-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> tabulate <span class="im">import</span> tabulate</span>
+<span id="cb140-8"><a href="#cb140-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.feature_extraction.text <span class="im">import</span> TfidfVectorizer</span>
+<span id="cb140-9"><a href="#cb140-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.cluster <span class="im">import</span> KMeans</span>
+<span id="cb140-10"><a href="#cb140-10" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> warnings</span>
+<span id="cb140-11"><a href="#cb140-11" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> nltk.stem <span class="im">import</span> WordNetLemmatizer</span>
+<span id="cb140-12"><a href="#cb140-12" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> nltk</span>
+<span id="cb140-13"><a href="#cb140-13" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> string</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb140"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb140-1"><a href="#cb140-1" aria-hidden="true" tabindex="-1"></a>mpl.rc(<span class="st">'font'</span>, family<span class="op">=</span><span class="st">'NanumGothic'</span>) <span class="co"># 폰트 설정</span></span>
-<span id="cb140-2"><a href="#cb140-2" aria-hidden="true" tabindex="-1"></a>mpl.rc(<span class="st">'axes'</span>, unicode_minus<span class="op">=</span><span class="va">False</span>) <span class="co"># 유니코드에서 음수 부호 설정</span></span>
-<span id="cb140-3"><a href="#cb140-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb140-4"><a href="#cb140-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 차트 스타일 설정</span></span>
-<span id="cb140-5"><a href="#cb140-5" aria-hidden="true" tabindex="-1"></a>sns.<span class="bu">set</span>(font<span class="op">=</span><span class="st">"NanumGothic"</span>, rc<span class="op">=</span>{<span class="st">"axes.unicode_minus"</span>:<span class="va">False</span>}, style<span class="op">=</span><span class="st">'white'</span>)</span>
-<span id="cb140-6"><a href="#cb140-6" aria-hidden="true" tabindex="-1"></a>warnings.filterwarnings(<span class="st">"ignore"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb141"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb141-1"><a href="#cb141-1" aria-hidden="true" tabindex="-1"></a>mpl.rc(<span class="st">'font'</span>, family<span class="op">=</span><span class="st">'NanumGothic'</span>) <span class="co"># 폰트 설정</span></span>
+<span id="cb141-2"><a href="#cb141-2" aria-hidden="true" tabindex="-1"></a>mpl.rc(<span class="st">'axes'</span>, unicode_minus<span class="op">=</span><span class="va">False</span>) <span class="co"># 유니코드에서 음수 부호 설정</span></span>
+<span id="cb141-3"><a href="#cb141-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb141-4"><a href="#cb141-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 차트 스타일 설정</span></span>
+<span id="cb141-5"><a href="#cb141-5" aria-hidden="true" tabindex="-1"></a>sns.<span class="bu">set</span>(font<span class="op">=</span><span class="st">"NanumGothic"</span>, rc<span class="op">=</span>{<span class="st">"axes.unicode_minus"</span>:<span class="va">False</span>}, style<span class="op">=</span><span class="st">'white'</span>)</span>
+<span id="cb141-6"><a href="#cb141-6" aria-hidden="true" tabindex="-1"></a>warnings.filterwarnings(<span class="st">"ignore"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <section id="convert-data-from-r-objects" class="level3">
@@ -4634,10 +4676,10 @@ n words.</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb141"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb141-1"><a href="#cb141-1" aria-hidden="true" tabindex="-1"></a>document_df <span class="op">=</span> pd.DataFrame.from_dict(</span>
-<span id="cb141-2"><a href="#cb141-2" aria-hidden="true" tabindex="-1"></a>    {<span class="st">'filename'</span>: [<span class="st">"Korea"</span>, <span class="st">"Germany"</span>, <span class="st">"Finland"</span>, <span class="st">"Japan"</span>, <span class="st">"UK"</span>, <span class="st">"Austrailia"</span>],</span>
-<span id="cb141-3"><a href="#cb141-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">'opinion_text'</span>:[r.korea_string, r.germany_string, r.finland_string, </span>
-<span id="cb141-4"><a href="#cb141-4" aria-hidden="true" tabindex="-1"></a>    r.japan_string, r.uk_string, r.austrailia_string]})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb142"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb142-1"><a href="#cb142-1" aria-hidden="true" tabindex="-1"></a>document_df <span class="op">=</span> pd.DataFrame.from_dict(</span>
+<span id="cb142-2"><a href="#cb142-2" aria-hidden="true" tabindex="-1"></a>    {<span class="st">'filename'</span>: [<span class="st">"Korea"</span>, <span class="st">"Germany"</span>, <span class="st">"Finland"</span>, <span class="st">"Japan"</span>, <span class="st">"UK"</span>, <span class="st">"Austrailia"</span>],</span>
+<span id="cb142-3"><a href="#cb142-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">'opinion_text'</span>:[r.korea_string, r.germany_string, r.finland_string, </span>
+<span id="cb142-4"><a href="#cb142-4" aria-hidden="true" tabindex="-1"></a>    r.japan_string, r.uk_string, r.austrailia_string]})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
@@ -4646,29 +4688,29 @@ n words.</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb142"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb142-1"><a href="#cb142-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 단어 원형 추출 함수</span></span>
-<span id="cb142-2"><a href="#cb142-2" aria-hidden="true" tabindex="-1"></a>lemmar <span class="op">=</span> WordNetLemmatizer()</span>
-<span id="cb142-3"><a href="#cb142-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb142-4"><a href="#cb142-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> LemTokens(tokens):</span>
-<span id="cb142-5"><a href="#cb142-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [lemmar.lemmatize(token) <span class="cf">for</span> token <span class="kw">in</span> tokens]</span>
-<span id="cb142-6"><a href="#cb142-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb142-7"><a href="#cb142-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 특수 문자 사전 생성: {33: None ...}</span></span>
-<span id="cb142-8"><a href="#cb142-8" aria-hidden="true" tabindex="-1"></a><span class="co"># ord(): 아스키 코드 생성</span></span>
-<span id="cb142-9"><a href="#cb142-9" aria-hidden="true" tabindex="-1"></a>remove_punct_dict <span class="op">=</span> <span class="bu">dict</span>((<span class="bu">ord</span>(punct), <span class="va">None</span>) <span class="cf">for</span> punct <span class="kw">in</span> string.punctuation)</span>
-<span id="cb142-10"><a href="#cb142-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb142-11"><a href="#cb142-11" aria-hidden="true" tabindex="-1"></a><span class="co"># 특수 문자 제거 및 단어 원형 추출</span></span>
-<span id="cb142-12"><a href="#cb142-12" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> LemNormalize(text):</span>
-<span id="cb142-13"><a href="#cb142-13" aria-hidden="true" tabindex="-1"></a>    text_new <span class="op">=</span> text.lower().translate(remove_punct_dict)</span>
-<span id="cb142-14"><a href="#cb142-14" aria-hidden="true" tabindex="-1"></a>    word_tokens <span class="op">=</span> nltk.word_tokenize(text_new)</span>
-<span id="cb142-15"><a href="#cb142-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> LemTokens(word_tokens)</span>
-<span id="cb142-16"><a href="#cb142-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb142-17"><a href="#cb142-17" aria-hidden="true" tabindex="-1"></a><span class="co"># nltk.download('punkt')</span></span>
-<span id="cb142-18"><a href="#cb142-18" aria-hidden="true" tabindex="-1"></a><span class="co"># nltk.download('wordnet')</span></span>
-<span id="cb142-19"><a href="#cb142-19" aria-hidden="true" tabindex="-1"></a><span class="co"># nltk.download('omw-1.4')</span></span>
-<span id="cb142-20"><a href="#cb142-20" aria-hidden="true" tabindex="-1"></a>tfidf_vect <span class="op">=</span> TfidfVectorizer(stop_words<span class="op">=</span><span class="st">'english'</span> , ngram_range<span class="op">=</span>(<span class="dv">1</span>,<span class="dv">2</span>), </span>
-<span id="cb142-21"><a href="#cb142-21" aria-hidden="true" tabindex="-1"></a>                             tokenizer <span class="op">=</span> LemNormalize, min_df<span class="op">=</span><span class="fl">0.05</span>, max_df<span class="op">=</span><span class="fl">0.85</span>)</span>
-<span id="cb142-22"><a href="#cb142-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb142-23"><a href="#cb142-23" aria-hidden="true" tabindex="-1"></a>feature_vect <span class="op">=</span> tfidf_vect.fit_transform(document_df[<span class="st">'opinion_text'</span>])    </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb143"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb143-1"><a href="#cb143-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 단어 원형 추출 함수</span></span>
+<span id="cb143-2"><a href="#cb143-2" aria-hidden="true" tabindex="-1"></a>lemmar <span class="op">=</span> WordNetLemmatizer()</span>
+<span id="cb143-3"><a href="#cb143-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb143-4"><a href="#cb143-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> LemTokens(tokens):</span>
+<span id="cb143-5"><a href="#cb143-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [lemmar.lemmatize(token) <span class="cf">for</span> token <span class="kw">in</span> tokens]</span>
+<span id="cb143-6"><a href="#cb143-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb143-7"><a href="#cb143-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 특수 문자 사전 생성: {33: None ...}</span></span>
+<span id="cb143-8"><a href="#cb143-8" aria-hidden="true" tabindex="-1"></a><span class="co"># ord(): 아스키 코드 생성</span></span>
+<span id="cb143-9"><a href="#cb143-9" aria-hidden="true" tabindex="-1"></a>remove_punct_dict <span class="op">=</span> <span class="bu">dict</span>((<span class="bu">ord</span>(punct), <span class="va">None</span>) <span class="cf">for</span> punct <span class="kw">in</span> string.punctuation)</span>
+<span id="cb143-10"><a href="#cb143-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb143-11"><a href="#cb143-11" aria-hidden="true" tabindex="-1"></a><span class="co"># 특수 문자 제거 및 단어 원형 추출</span></span>
+<span id="cb143-12"><a href="#cb143-12" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> LemNormalize(text):</span>
+<span id="cb143-13"><a href="#cb143-13" aria-hidden="true" tabindex="-1"></a>    text_new <span class="op">=</span> text.lower().translate(remove_punct_dict)</span>
+<span id="cb143-14"><a href="#cb143-14" aria-hidden="true" tabindex="-1"></a>    word_tokens <span class="op">=</span> nltk.word_tokenize(text_new)</span>
+<span id="cb143-15"><a href="#cb143-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> LemTokens(word_tokens)</span>
+<span id="cb143-16"><a href="#cb143-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb143-17"><a href="#cb143-17" aria-hidden="true" tabindex="-1"></a><span class="co"># nltk.download('punkt')</span></span>
+<span id="cb143-18"><a href="#cb143-18" aria-hidden="true" tabindex="-1"></a><span class="co"># nltk.download('wordnet')</span></span>
+<span id="cb143-19"><a href="#cb143-19" aria-hidden="true" tabindex="-1"></a><span class="co"># nltk.download('omw-1.4')</span></span>
+<span id="cb143-20"><a href="#cb143-20" aria-hidden="true" tabindex="-1"></a>tfidf_vect <span class="op">=</span> TfidfVectorizer(stop_words<span class="op">=</span><span class="st">'english'</span> , ngram_range<span class="op">=</span>(<span class="dv">1</span>,<span class="dv">2</span>), </span>
+<span id="cb143-21"><a href="#cb143-21" aria-hidden="true" tabindex="-1"></a>                             tokenizer <span class="op">=</span> LemNormalize, min_df<span class="op">=</span><span class="fl">0.05</span>, max_df<span class="op">=</span><span class="fl">0.85</span>)</span>
+<span id="cb143-22"><a href="#cb143-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb143-23"><a href="#cb143-23" aria-hidden="true" tabindex="-1"></a>feature_vect <span class="op">=</span> tfidf_vect.fit_transform(document_df[<span class="st">'opinion_text'</span>])    </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
@@ -4677,10 +4719,10 @@ n words.</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb143"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb143-1"><a href="#cb143-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics.pairwise <span class="im">import</span> cosine_similarity</span>
-<span id="cb143-2"><a href="#cb143-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb143-3"><a href="#cb143-3" aria-hidden="true" tabindex="-1"></a>similarity_pair <span class="op">=</span> cosine_similarity(feature_vect[<span class="dv">0</span>] , feature_vect)</span>
-<span id="cb143-4"><a href="#cb143-4" aria-hidden="true" tabindex="-1"></a>document_df[<span class="st">"similarity"</span>] <span class="op">=</span> similarity_pair.reshape(<span class="op">-</span><span class="dv">1</span>,<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb144"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb144-1"><a href="#cb144-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics.pairwise <span class="im">import</span> cosine_similarity</span>
+<span id="cb144-2"><a href="#cb144-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb144-3"><a href="#cb144-3" aria-hidden="true" tabindex="-1"></a>similarity_pair <span class="op">=</span> cosine_similarity(feature_vect[<span class="dv">0</span>] , feature_vect)</span>
+<span id="cb144-4"><a href="#cb144-4" aria-hidden="true" tabindex="-1"></a>document_df[<span class="st">"similarity"</span>] <span class="op">=</span> similarity_pair.reshape(<span class="op">-</span><span class="dv">1</span>,<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
@@ -4689,17 +4731,17 @@ n words.</p>
 <div class="cell page-columns page-full" data-layout-align="center">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb144"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb144-1"><a href="#cb144-1" aria-hidden="true" tabindex="-1"></a>plt.clf()</span>
-<span id="cb144-2"><a href="#cb144-2" aria-hidden="true" tabindex="-1"></a>vis<span class="op">=</span>document_df.iloc[<span class="dv">1</span>:].sort_values(by<span class="op">=</span><span class="st">"similarity"</span>,ascending<span class="op">=</span><span class="va">False</span>).reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb144-3"><a href="#cb144-3" aria-hidden="true" tabindex="-1"></a>sns.set_style(<span class="st">"white"</span>)</span>
-<span id="cb144-4"><a href="#cb144-4" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize <span class="op">=</span> (<span class="dv">10</span>,<span class="dv">7</span>))</span>
-<span id="cb144-5"><a href="#cb144-5" aria-hidden="true" tabindex="-1"></a>sns.barplot(x<span class="op">=</span><span class="st">"similarity"</span>, y<span class="op">=</span><span class="st">"filename"</span>, data<span class="op">=</span>vis)</span>
-<span id="cb144-6"><a href="#cb144-6" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Korea'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb145"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb145-1"><a href="#cb145-1" aria-hidden="true" tabindex="-1"></a>plt.clf()</span>
+<span id="cb145-2"><a href="#cb145-2" aria-hidden="true" tabindex="-1"></a>vis<span class="op">=</span>document_df.iloc[<span class="dv">1</span>:].sort_values(by<span class="op">=</span><span class="st">"similarity"</span>,ascending<span class="op">=</span><span class="va">False</span>).reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb145-3"><a href="#cb145-3" aria-hidden="true" tabindex="-1"></a>sns.set_style(<span class="st">"white"</span>)</span>
+<span id="cb145-4"><a href="#cb145-4" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize <span class="op">=</span> (<span class="dv">10</span>,<span class="dv">7</span>))</span>
+<span id="cb145-5"><a href="#cb145-5" aria-hidden="true" tabindex="-1"></a>sns.barplot(x<span class="op">=</span><span class="st">"similarity"</span>, y<span class="op">=</span><span class="st">"filename"</span>, data<span class="op">=</span>vis)</span>
+<span id="cb145-6"><a href="#cb145-6" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Korea'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display column-page">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="Vnr_analysis_files/figure-html/unnamed-chunk-110-1.png" class="img-fluid figure-img" width="960"></p>
+<p><img src="Vnr_analysis_files/figure-html/unnamed-chunk-111-1.png" class="img-fluid figure-img" width="960"></p>
 </figure>
 </div>
 </div>
