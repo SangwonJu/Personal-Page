@@ -8,17 +8,21 @@
 
 ## Working Papers
 
-i.  Societal Impacts of Information Systems
+i.  Evidence-Based Policy and Management
 
-    -   **Ju, S.W.** (2023), How does public information systems affect improving internet accessibility of students? (Literature Review)
+    -   **Ju, S.W.** & Lee, J., Kim, B.J. (2022), Evidence-Based Policy in Asian Countries: A Comparative Analysis of Evidence-Based Practice Implementation in Myanmar, Indonesia, Hong Kong, and Japan \[in Korean\], Korean Journal of Public Administration, Under Review
+        -   Abstract:
 
-ii. Evidence-Based Policy and Management
+            The purpose of this research is to theorize evidence-based policy(EBP) in Asian countries by comparing 4 EBP cases in Hong Kong, Indonesia, Japan, and Myanmar under consistent comparative framework. EBP in Asian countries were not mature enough in that each case only achieved 0.3 to 2 out of 4 stages based on The Model of Evidence-Based Practice Implementation (Aaron et al., 2011). The current research has the following significance as an exploratory comparative research of EBP in Asian countries. First, it is one of the first studies to compare and analyze the maturity of evidence-based policies at the national level. Second, by exploring potential characteristics that may influence the formation and implementation of EBPs, the current research identified the need for further research on the role of political-institutional characteristics. Third, the advantages and disadvantages of The Model of Evidence-Based Practice Implementation were verified and theoretical relevance of the model was identified. Subsequent research on developing an analytic framework that encompasses overall phases in evidence-based policy process from the formulation to implementation and on empirically validating the role of political contexts by expanding the scope of policy cases and nations in Asia is needed.
 
-    -   **Ju, S.W.** & Lee, J., Kim, B.J. (2022), Evidence-Based Policy in Asian Countries: Applying Model of Evidence-Based Practice Implementation for Maturation Stage Analysis \[in Korean\]. (Analysis / Writing Finished, Target Journal: Korean Journal of Public Administration)
+ii. Organizational Decision-making
 
-iii. Organizational Decision-making
+    -   **Ju, S.W.** (2023), Evidence-based decision-making, problemistic search and blame avoidance : decomposing the evidence utilization contexts and mechanisms in Korean public organizations
+        -   Master's thesis at Seoul National University (2023)
 
-     -   **Ju, S.W.** (2023), Blame Avoidance and Research Utilization: Evidence From Korean Public Enterprises (Literature Review)
+iii. Management Information Systems
+
+     -   TBD
 
 ## Academic Presentations
 

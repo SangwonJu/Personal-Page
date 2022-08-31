@@ -4,32 +4,40 @@ title: "Research Interests"
 
 ```{=html}
 <p align="justify">
-<b> My research interests </b> lie at the intersection of public policy analysis and management information systems. Toward better public-sector decision-making, my interests are  
+<b> My research interests </b> lie at the intersection of public policy analysis and information systems. Toward better public-sector decision-making, my interests are  
 </p>
 ```
-**1. Management information systems**
 
--   public value in IT
+**1. Policy analysis and program evaluation**
 
--   quantifying societal impact of information systems
+- experimental and quasi-experimental policy evaluation
 
-**2. Policy analysis and program evaluation**
+- specifically, information policy or social policy 
 
--   experimental and quasi-experimental policy evaluation
-
-**3. Organization theory and behavior**
+**2. Organization theory and behavior**
 
 -   strategic decision-making
 
 -   human-machine cooperation in organizational decision-making
 
-**4. Evidence-based public policy and management (EBPPM)**
+**3. Computational Social Science**
+
+**4. Evidence-based Decision-Making in public policy and management (EBPPM)**
 
 -   being evidence-based is being data-driven?
 
 -   what is the difference between evidence-based approach and contemporary policy analysis? (such as discourse policy analysis)
 
 -   positivism vs. constructivism in research utilization
+
+**5. Management information systems**
+
+- public value in IT
+
+- quantifying societal impact of information systems
+
+
+    
 
 ```{=html}
 <p align="justify">

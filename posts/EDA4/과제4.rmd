@@ -1,0 +1,597 @@
+---
+title: "EDA Assignment 4: Chapter 6"
+author: "Sangwon Ju, Yonsei Public Administration"
+date: 'apr/23/2021'
+page-layout: full
+format: 
+    html
+categories: 
+    "Exploratory Data Analysis (2021 Spring) [in Korean]"
+image: "image.png"
+---
+
+6장. 확률 플롯의 활용
+
+# 추가숙제
+
+## 1번)
+
+```{r}
+# rivers data
+
+data(rivers)
+stem(rivers)
+rivers.sort <- sort(rivers)
+(n.rivers <- length(rivers))
+i <- 1:n.rivers
+
+hist(rivers,breaks=20,probability = T,col="pink")
+lines(density(rivers),col="red",lwd=2)
+
+# 평균과 왜도,첨도 확인
+boxplot(rivers)
+
+(mean.rivers <- mean(rivers))
+(var.rivers <- var(rivers))
+(shape.rivers <- mean.rivers^2/var.rivers)
+(scale.rivers <- mean.rivers/var.rivers)
+q.gamma.rivers <- qgamma((i-0.5)/n.rivers, shape.rivers, scale.rivers)
+
+plot(q.gamma.rivers, rivers.sort, main="Gamma prob plot")
+
+# clutter near the lower left part --> HOMEWORK
+# 3승근변환
+plot(q.gamma.rivers^(1/3), rivers.sort^(1/3), main="Gamma prob plot",sub="reexpression; power=1/3")
+# 3승근 변환을 하기 전의 자료가 왼쪽 아래에 직선으로 몰려있는 것 처럼 보였으나 3승근 변환을 하고 나니 대각선 직선에서 멀어져 실제로는 감마분포로부터 데이터가 오히려 멀어 진 것으로 보인다.
+# 따라서 Rivers Data는 감마분포를 따르고 있지 않다.
+
+```
+
+## 2번)
+
+```{r}
+# Try to fit a theoretical distribution to log(rivers) data 
+logrivers=log(rivers)
+
+logrivers.sort <- sort(logrivers)
+(n.logrivers <- length(logrivers))
+i <- 1:n.logrivers
+
+# skewed to the right
+stem(logrivers)
+hist(logrivers.sort,breaks=20,probability = T , col="pink",main="Histogram of Log(rivers)")
+lines(density(logrivers),col="red",lwd=2)
+
+boxplot(logrivers.sort,main="Boxplot of log(rivers)")
+
+# 지수분포
+q.exp.logrivers <- -log(1-(i-0.5)/n.logrivers)
+plot(q.exp.logrivers, logrivers.sort, main="Exponential prob plot")
+abline(5.5,0.7,col="orange",lwd=2)
+abline(5.5,0.65,col="blue",lwd=2)
+abline(5.5,0.6,col="red",lwd=2)
+line(qqplot(q.exp.logrivers,logrivers.sort))[2]
+
+# 왼쪽 아래에 데이터가 몰려있어서 정확하게 파악이 어려움 / 삼승근 변환 사용
+#
+plot(q.exp.logrivers^(1/3), logrivers.sort^(1/3), main="Exponential prob plot",
+     sub="reexpression; power=1/3")
+abline(1.6786397,0.1698099, col="red",lwd=2)
+line(qqplot(q.exp.logrivers^(1/3),logrivers.sort^(1/3)))[2]
+
+# 데이터들이 직선 위에 잘 존재하는 것으로 보인다.
+
+# 와이블 분포
+q.weibull.logrivers <- log(q.exp.logrivers)
+plot(q.weibull.logrivers, log(logrivers.sort), main="Weibull prob plot")
+abline(1.84728968, 0.07871442,col="red",lwd=2)
+line(qqplot(q.weibull.logrivers,log(logrivers.sort)))[2]
+
+# 빨간 선을 따르고 있는 것처럼 보이지는 않는다. 데이터들이 곡선의 형태를 가지고 있기 때문에 와이블 분포를 따르고 있다고 보기 어렵다.
+# 점들이 직선에 분포하고 있지 않지만 와이블 분포의 shape를 나타내는 a와 scale을 나타내는 b의 값은 빨간 선을 기준으로 a=e^(intercept*(-b)),b=1/slope 이다.
+(b=1/0.7871442)
+(a=exp(1.84728968*(-b)))
+
+
+# 감마분포
+(mean.logrivers <- mean(logrivers))
+(var.logrivers <- var(logrivers))
+(shape.logrivers <- mean.logrivers^2/var.logrivers)
+(scale.logrivers <- mean.logrivers/var.logrivers)
+q.gamma.logrivers <- qgamma((i-0.5)/n.logrivers, shape.logrivers, scale.logrivers)
+plot(q.gamma.logrivers, logrivers.sort, main="Gamma prob plot")
+abline(a=0.14058180, b=0.9718083,col="blue",lwd=1)
+abline(a=0,b=1,col="red",lwd=2)
+
+line(qqplot(q.gamma.logrivers, logrivers.sort))[2]
+
+# 감마분포에 log(rivers)데이터는 Fitting 되어지는 것으로 보인다. 
+# 북아메리카의 강의 길이에 로그를 취한 데이터는 감마분포를 따르고 있는 것으로 보인다. 
+# 비록 양 끝의 데이터가 다소 대각선에서 떨어져 있는 것으로 보이기는 하지만 대다수의 데이터가 직선 위에 존재하므로 그렇게 가정한다.
+
+```
+
+# 1번
+
+다음 자료는 어느 한 장소에서 자동차가 지나가는 시각을 시:분:초 단위로 기록한 것이다. Vehicle 1은 22:34:38에 지나갔고, Vehicle 2는 22:34:50에 지나간 것을 표시한다. 자동차가 지나간 시각 차이(각 구간 시간)가 지수분포를 하는지 분석하여 Poisson Process를 하는지 확인하여라.
+
+![pois](https://raw.githubusercontent.com/SangwonJu/data/main/pois.png){fig-align="center"}
+
+```{r}
+library(xts)
+Vehicle=c(1:41)
+Time=c("22:34:38","22:34:50","22:34:52","22:34:58","22:35:00","22:35:19","22:35:24","22:35:58","22:36:02","22:36:03",
+       "22:36:07","22:36:15","22:36:22","22:36:23","22:36:44","22:36:50","22:37:01","22:37:09","22:37:37",
+       "22:37:43","22:37:47","22:37:52","22:37:53","22:38:11","22:38:20","22:38:25","22:38:26","22:38:47","22:38:48",
+       "22:38:49","22:38:54","22:38:57","22:39:11","22:39:16","22:39:19","22:39:23","22:39:28","22:39:29","22:39:32",
+       "22:39:48","22:39:50")
+Time2=strptime(Time,format="%H:%M:%OS")
+Pois=data.frame(as.factor(Vehicle),Time2)
+names(Pois)=c("Vehicle","Time")
+Pois
+
+# 시간 차이 추가
+diffs <-Time2[-1] - Time2[-length(Time2)]
+diffs=as.numeric(diffs) # 단위는 Second
+
+
+# 지수분포 Fitting 여부 확인
+stem(diffs,1)
+diffs.sort <- sort(diffs)
+(n.diffs <- length(diffs))
+i <- 1:n.diffs
+q.exp.diffs <- -log(1-(i-0.5)/n.diffs)
+plot(q.exp.diffs, diffs.sort, main="Exponential prob plot")
+abline(-0.376822,8.692628,col="red",lwd=2)
+line(qqplot(q.exp.diffs, diffs.sort))[2]
+
+# 어느정도 직선을 따르고 있는 것이 확인되고 있다. 왼쪽아래에 데이터가 몰려있는 것으로 보아 3승근을 취해 데이터들의 분포를 재확인하고자 한다. 
+plot(q.exp.diffs^(1/3), diffs.sort^(1/3), main="Exponential prob plot",
+     sub="reexpression; power=1/3")
+abline(-0.1186582,2.1298139,col="blue",lwd=2)
+line(qqplot(q.exp.diffs^(1/3), diffs.sort^(1/3)))[2]
+
+
+#왼쪽 아래의 2개정도의 데이터를 제외하면 대부분의 데이터가 직선 위에 존재한다는 점에서 자동차가 지나간 시각차이가 지수분포를 따르는 것으로 볼 수 있다.
+#3승근을 취한 데이터들이 지수분포를 따른다면 취하지 않은 데이터들도 지수 분포를 따른다고 볼 수 있다. 
+
+hist(diffs,10,probability = T, main="Histogram of differece between car arrival")
+sum(ifelse(diffs<=5,1,0))/length(diffs)
+# 약 57%의 자동차들이 5초 내의 간격 안에서 도착하는 것으로 보아 해당 도로에는 차가 많이 지나가고 있음을 확인할 수 있다. 
+# 해당도로에 차와 차 사이의 간격이 늘어날 수 록 일어날 확률이 줄어든다 / Memoryless Property 를 가짐.
+```
+
+```{r}
+# 포아송 분포는 단위시간 혹은 단위 공간 안에서 발생하는 어떤 사건의 횟수를 확률 변수로 하는 확률 분포 (람다가 모수)
+# 연속적으로 발생하는 두 사건 사이의 경과시간을 확률변수 X로 볼 떄 그 확률변수 X가 지수분포를 따르는 것은 포아송 과정을 따른다고 한다. 
+# 자동차가 도착하는 것은 연속적으로 발생하는 것이고 도착하는 사건사이의 시간(구간차이)를 X로 보았을 때 지수분포를 따르므로 자동차의 운행이 포와송 과정을 하는 것이 확인된다.
+
+mean(diffs) # Sample mean
+# 평균적으로 7.8초에 한대씩 차가 도착한다. 
+
+# 확률변수 X가 지수분포를 따른다고 하였을 때 모수 람다를 계산하기
+# MLE로 모수 추정
+nloglik<- function(x,lamda) {sum(-dexp(x=x,rate=lamda,log=T))}
+optimize(f=nloglik,x=diffs,interval = c(0.01,40))
+
+library(MASS)
+fitdistr(diffs,"exponential")$estimate
+
+# 모수인 람다는 0.1282078
+# 평균은 람다의 역수
+popmean=1/0.1282078
+popmean
+
+like_lambda_0.1282078<- function(x){
+  exp(length(x) * log(0.1282078) - 0.1282078*length(x)*mean(x))
+}
+
+# 재확인
+k=c()
+for (i in seq(0.001,40,0.01)){k=append(k,like_lambda_0.1282078(x=i),after=length(k))}
+k
+
+hist(diffs,breaks=20,freq =F, main="Histogram of differece between car arrival")
+```
+
+# 2번
+
+피트 단위를 사용하고 있던 나라에서 새로이 미터 단위를 도입하였고 어느 정도 적응이 되는지 알아 보려고 자료를 수집하였다. 어느 강의실에서 44명의 학생들에게 강의실 폭을 미터 단위로 맞추어 보라고 하였다. 같은 강의실에서 다른 66명의 학생들에게는 피트 단위로 강의실 폭을 맞추어 보라고 하였다. 실제 강의실 폭은 13.1미터(43.0피트) 였다.
+
+## 1)
+
+미터와 피트 단위로 예상한 거리가 각각 정규분포를 따르는지 검토하여라.
+
+```{r}
+real_metre_mean=13.1
+real_feet_mean=43.0
+
+# 극단값의 영향을 줄이기 위해 Pseudosigma값과 Median값을 활용하여 정규분포와 데이터의 분포를 비교하여 본다.
+```
+
+```{r}
+# 미터기준 측정
+metre=c(8,9,10,10,10,10,10,10,11,11,11,11,12,12,13,13,13,14,14,14,15,15,15,15,15,15,15,15,16,16,16,17,17,17,17,18,18,20,22,25,27,35,38,40)
+length(metre)
+
+stem(metre)
+hist(metre,breaks=10,probability = T)
+lines(density(metre),lwd=2,col="orange")
+k=seq(-100,100,0.01)
+(x=fivenum(metre))
+(pseudosigmam = (x[4]-x[2])/1.34)
+
+t=dnorm(k,mean=fivenum(metre)[3],sd=pseudosigmam) #normal density
+lines(t~k,type='l',col="red",lwd=3)
+# 극단값을 고려하지 않는다면 데이터의 미디안 근처의 값들은 정규분포를 잘 따르고 있는 것으로 보인다.
+boxplot(metre, main="Boxplot of metre estimation") # 이상치 위에서 4개
+```
+
+```{r}
+# 피트 기준 측정
+feet=c(24,25,27,30,30,30,30,30,30,32,32,33,34,34,34,35,35,36,36,36,37,37,40,40,40,40,40,40,40,40,40,41,41,42,42,42,42,43,43,44,44,44,45,45,45,45,45,
+45,46,46,47,48,48,50,50,50,51,54,54,54,55,55,60,60,63,70,75,80,94)
+length(feet)
+
+stem(feet)
+hist(feet,breaks=10,probability = T)
+lines(density(feet),lwd=2,col="brown")
+(y=fivenum(feet))
+(pseudosigmaf = (y[4]-y[2])/1.34)
+
+t2=dnorm(k,mean=fivenum(feet)[3],sd=pseudosigmaf) #normal density
+lines(t2~k,type='l',col="darkgreen",lwd=3)
+# 극단값을 고려하지 않는다면 데이터의 미디안 근처의 값들은 정규분포를 잘 따르고 있는 것으로 보인다.
+boxplot(feet,main="Boxplot of feet estimation")  # 이상치 위에서 4개
+```
+
+```{r}
+# metre
+stem(metre)
+
+qqnorm(metre,ylab="metre Qunatiles",sub="red: actual qqline, blue= estimation by pseudosigma")
+qqline(metre,col="red",lwd=1,lty=2)
+x=fivenum(metre)
+(pseudosigmam = (x[4]-x[2])/1.34)
+abline(x[3],pseudosigmam,col="blue",lwd=1,lty=2)
+
+# feet
+stem(feet)
+
+qqnorm(feet,ylab="Feet Qunatiles",sub="red: actual qqline, blue= estimation by pseudosigma")
+qqline(feet,col="red",lwd=1,lty=2)
+y=fivenum(feet)
+(pseudosigmaf = (y[4]-y[2])/1.34)
+abline(y[3],pseudosigmaf,col="blue",lwd=1,lty=2)
+```
+
+중앙지점의 점들은 미터측정이나 피트측정이나 정규분포를 잘 따르고 있는 것으로 보이나 양끝으로 갈수록 정규분포에서 벗어나고 있는 것으로 보인다. 따라서, 두 측정방식 모두 대각 직선에서 과도하게 벗어난 것으로 보이는 극단값들을 제외하고 다시 Plot을 그려보고자 한다.
+
+```{r}
+# metre 측정방식은 위에서 4개 제외
+adjusted_metre=metre[1:(length(metre)-4)]
+
+qqnorm(adjusted_metre,ylab="adjusted metre Qunatiles",sub="red: actual qqline, blue= estimation by pseudosigma")
+qqline(adjusted_metre,col="red",lwd=1,lty=2)
+(x1=fivenum(adjusted_metre))
+(pseudosigmaam= (x1[4]-x1[2])/1.34); (sd(adjusted_metre))
+abline(x1[3],pseudosigmaam,col="blue",lwd=1,lty=2)
+
+# 4개를 제외한 데이터들을 기준으로 qqplot을 그렸을 때, 대부분의 데이터가 직선위에 있는 것으로 확인된다.
+# 
+q=c(0,0.25,0.5,0.75)
+qnorm(q,mean(adjusted_metre),sd(adjusted_metre))
+x1
+# 1분위수, Median, 3분위수가 실제 평균과 분산을 활용한 정규분포의 값과 비슷하다는 점에서 이상치를 제외한 데이터들은 정규분포를 따르고 있다고 볼 수 있다.
+
+# Feet 측정방식도 위에서 4개 제외
+adjusted_feet=feet[1:(length(feet)-4)]
+
+qqnorm(adjusted_feet,ylab="adjusted feet Qunatiles",sub="red: actual qqline, blue= estimation by pseudosigma")
+qqline(adjusted_feet,col="red",lwd=1,lty=2)
+(x2=fivenum(adjusted_feet))
+(pseudosigmaaf= (x2[4]-x2[2])/1.34); (sd(adjusted_feet))
+abline(x2[3],pseudosigmaaf,col="blue",lwd=1,lty=2)
+
+# 5개를 제외한 데이터들을 기준으로 qqplot을 그렸을 때, 대부분의 데이터가 직선위에 있는 것으로 확인된다.
+q=c(0,0.25,0.5,0.75)
+qnorm(q,mean(adjusted_feet),sd(adjusted_feet))
+x2
+
+# 1분위수, Median, 3분위수가 실제 평균과 분산을 활용한 정규분포의 값과 비슷하다는 점에서 이상치를 제외한 데이터들은 정규분포를 따르고 있다고 볼 수 있다.
+
+# 다만 이상치를 제외한 분석은 자료를 전부 사용하지는 못한다는 점에서 한계가 있다. 데이터 분석에 있어서 이상치를 제외하지 말고 분석하는 법을 고민해야 한다. 
+
+(length(metre)-4)/length(metre)
+(length(feet)-4)/length(feet)
+```
+
+두 데이터들을 전부 활용하지는 못했지만 metre측정의 경우 90%, feet측정의 경우 94%에 해당하는 자료들을 활용해 분석할 경우 정규분포를 따르고 있는 것을 확인할 수 있다.
+
+## 2)
+
+두 자료가 같은 분포를 하는지 검토하여라. 만약 같다면 각각의 평균과 분산을 qq plot과 표본에서 구하여라.
+
+```{r}
+# qqplot with original data
+qqplot(metre,feet,xlab="metre estimation",ylab="feet estimation",
+       main="Q-Q P3lot with original data");
+
+# Trial Error 과정을 거쳐 적절한 직선을 예측해보자
+abline(14,2)
+abline(15,1.7)
+abline(15,1.5)
+
+# Tukey's robust line estimation
+# qqline 식을 그릴경우 대부분의 데이터는 직선위에 있으나 위에서부터 5개의 데이터는 직선위에서 과도하게 벗어나 있다. 따라서 이 5개의 데이터는 이상치라고 보는 것이 적절해 보인다. 
+abline(line(qqplot(metre,feet,xlab="metre estimation",ylab="feet estimation",
+                   main="Q-Q Plot with original data")),col="blue",lwd=2)
+abline(14,2)
+abline(15,1.7)
+abline(15,1.5)
+
+# Tukey's robust line estimation이 가장 정확해보인다.
+
+par(mfrow=c(1,2))
+hist(feet,breaks=10,probability = T)
+lines(density(feet),col="yellow",lwd=2)
+hist(metre,breaks=10,probability = T)
+lines(density(metre),col="green",lwd=2)
+```
+
+두 자료 모두 정규분포를 따르고 있지는 않은 것으로 보인다. Skewed to the right 되어 있기 때문에 상당히 퍼져있다.다른말로 하면 두 분포 모두 이상치로 인해서 분포가 왜곡되어있을 가능성이 상당히 높다. 실제로 Stem and leaf plot을 통해 확인할 경우 이상치의 가능성이 확인되고 있다. (두 데이터들은 Discrete한 데이터이기 때문에 density를 나타낸 곡선은 참고만 한다.)
+
+```{r}
+stem(feet)
+stem(metre)
+
+
+boxplot(metre,main="metre boxplot")
+boxplot(feet,main="feet boxplot")
+par(mfrow=c(1,1))
+# Box plot을 통해 확인할 경우 Outer-Fence범위를 벗어난 극단치가 각각 4개씩 발견되고 있다. 
+
+# 그렇다면 feet 데이터를 metre데이터로 변환하고 두 데이터를 합친 qqplot을 그린다면 어떨까?
+# install.packages("measurements")
+library(measurements)
+feet_to_metre=conv_unit(feet,"feet","m")
+leng=c(metre,feet_to_metre)
+qqnorm(leng);qqline(leng,col="red",lwd=2)
+# 혼합분포를 따른다고 보기 어렵다. 교과서 114pg를 참고할 경우 혼합집단으로 생성된 자료의 경우 직선식을 만들기보다는 s자 곡선 혹은 역 s자 곡선을 만드는 경우가 많은데 해당 자료는 이상치들을 제외할경우 대부분의 자료들이 직선식 위에 있다고 볼수 있다.
+# 그러므로 두 자료 모두 동일한 정규분포에서 추출된 자료라고 보는 것이 타당하다.
+```
+
+```{r}
+# Skewed to the right 되어 있음 / Outlier을 전부 포함한 분석이 진행된다면 두 데이터 모두 정규분포를 따른다고 보기 힘듦
+hist(leng,breaks=20,probability=T)
+lines(density(leng),col="darkgreen",lwd=2)
+```
+
+```{r}
+# qqplot with adjusted data
+length(adjusted_metre);length(adjusted_feet)
+qqplot(adjusted_metre,adjusted_feet,xlab="metre estimation",ylab="feet estimation",
+       main="Q-Q Plot with adjusted data");
+abline(line(qqplot(adjusted_metre,adjusted_feet,xlab="metre estimation",ylab="feet estimation",
+                   main="Q-Q Plot with adjusted data")),col="#900020",lwd=2)
+# outlier을 제외한 경우 모든 데이터가 직선식 위에 존재하는 것으로 보인다.
+
+par(mfrow=c(1,2))
+hist(adjusted_feet,breaks=10,probability = T)
+lines(density(adjusted_feet),col="yellow",lwd=2)
+hist(adjusted_metre,breaks=10,probability = T)
+lines(density(adjusted_metre),col="green",lwd=2)
+
+# 피트로 측정된 데이터는 Skewedness가 상당히 개선되었고, 미터의 경우에도 대칭성이 어느정도 확보되었다.
+
+# 피트로 측정된 데이터를 미터로 Conversion하고 데이터를 합친 후 정규 분포 QQplot위로 올려보았다.
+adjusted_feet_to_metre=conv_unit(adjusted_feet,"feet","m")
+leng2=c(adjusted_metre,adjusted_feet_to_metre)
+par(mfrow=c(1,1))
+qqnorm(leng2);qqline(leng2,col="red",lwd=2)
+# QQplot 하에서 양 극단의 일부 데이터를 제외한 나머지 데이터들은 전부 qqline위에 있다는 점에서 두 데이터는 동일한 정규분포에서 나타난 것을 확인할 수 있다.
+# 두 데이터는 동일한 모수를 가진 정규분포라고 추정할 수 있다. 그러나 눈대중으로 판단하는 것은 한계가 있기 때문에 이 판단을 재확인하기 위해서는 Tuckey의 Mean-Difference Plot을 활용해야한다. 
+
+library(lattice)
+
+# Outlier를 제외한 데이터를 Tuckey_Mean_Difference_Plot 위로 올려보고자 한다. 
+
+qqplot(metre, feet_to_metre,xlim=c(min(metre, feet_to_metre),max(metre, feet_to_metre)),
+       ylim=c(min(metre, feet_to_metre),max(metre, feet_to_metre))
+       ,main="QQ_plot of metre and feet(conversion to metre) estimation")
+abline(0,1,lty=2,col="#00BFFF",lwd=2)
+# 초반의 일부 데이터들을 제외하면 대부분이 주대각선 밑에 존재한다. 따라서 두 Estimation의 평균은 같다고 보기 힘들다.
+
+(qqplot(metre, feet_to_metre))
+qq.x <- qqplot(metre, feet_to_metre)$x
+qq.y <- qqplot(metre, feet_to_metre)$y
+
+plot((qq.x+qq.y)/2, qq.y-qq.x, main="Tukey mean difference plot", 
+     ylab="feet_to_metre - metre", xlab="mean")
+abline(0,0)
+
+# Outlier를 제외한 데이터를 Tuckey_Mean_Difference_Plot 위로 올려보고자 한다. 
+
+qqplot(adjusted_metre, adjusted_feet_to_metre,xlim=c(min(adjusted_metre,adjusted_feet_to_metre),max(adjusted_metre,adjusted_feet_to_metre)),
+       ylim=c(min(adjusted_metre,adjusted_feet_to_metre),max(adjusted_metre,adjusted_feet_to_metre))
+       ,main="QQ_plot of metre and feet(conversion to metre) estimation")
+abline(0,1,lty=2,col="#00BFFF",lwd=2)
+# 일부 데이터들을 제외하면 대부분의 데이터들이 주대각선 밑에 존재한다. 따라서 두 Estimation의 평균은 같다고 보기 힘들다.
+
+(qqplot(adjusted_metre,adjusted_feet_to_metre))
+qq.x1 <- qqplot(adjusted_metre,adjusted_feet_to_metre)$x
+qq.y1 <- qqplot(adjusted_metre,adjusted_feet_to_metre)$y
+
+plot((qq.x1+qq.y1)/2, qq.y1-qq.x1, main="Tukey mean difference plot", 
+     ylab="adjusted_feet_to_metre - adjusted_metre", xlab="mean")
+abline(0,0)
+```
+
+정리하면 feet로 측정한 강의실 폭의 길이가 metre로 측정한 길이가 보다 더 길다. Mean difference Plot상으로 보았을 때 Outlier을 고려하건 고려하진 않건 대다수가 0 미만에 존재한다는 점에서 Feet로 측정하였을 때 강의실 길이를 더 길게 측정하게 된다. 앞의 QQPLOT 상으로는 두 데이터가 동일한 모수를 가진 정규분포에서 추출되어진 것으로 보였지만 실제로는 미미한 차이지만 서로 다른 모수를 가진 정규분포에서 표본추출되었음을 확인할 수 있다.
+
+두 데이터 모두 정규분포를 따르는 것이 확인되었기 때문에 Meidan과 Psudosigma를 활용해 평균과 표준편차를 계산할 수 있다.
+
+```{r}
+real_metre_mean=13.1
+
+# qqplot에서 미터 표본평균 분산 
+qqnorm(metre, ylab="metre quantiles",sub="Orange: 절편: 15 (median); 기울기: 4.477612 (pseudosigma)") 
+qqline(metre, col='Blue')
+(q1=fivenum(metre))
+(pseudosigma = (q1[4]-q1[2])/1.34)
+abline(q1[3],pseudosigma,col="Orange")
+q1[3]; pseudosigma^2
+mean(metre);var(metre)
+
+
+qqnorm(adjusted_metre, ylab="adjusted_metre quantiles",sub="Orange: 절편: 14.5 (median); 기울기: 3.731343 (pseudosigma)") 
+qqline(adjusted_metre, col='Blue')
+(q2=fivenum(adjusted_metre))
+(pseudosigma2 = (q2[4]-q2[2])/1.34)
+abline(q2[3],pseudosigma2,col="Orange")
+q2[3];pseudosigma2^2
+mean(adjusted_metre);var(adjusted_metre)
+# 매우 근접
+
+# 피트 표본평균 분산 
+real_feet_mean=43.0
+
+# qqplot에서 피트 표본평균 분산 
+qqnorm(feet, ylab="feet quantiles",sub="Orange: 절편: 42 (median); 기울기: 8.955224 (pseudosigma)") 
+qqline(feet, col='Blue')
+(q3=fivenum(feet))
+(pseudosigma3 = (q3[4]-q3[2])/1.34)
+abline(q3[3],pseudosigma3,col="Orange")
+q3[3]; pseudosigma3^2
+mean(feet);var(feet)
+
+qqnorm(adjusted_feet, ylab="adjusted_feet quantiles",sub="Orange: 절편: 41 (median); 기울기: 8.208955 (pseudosigma)") 
+qqline(adjusted_feet, col='Blue')
+(q4=fivenum(adjusted_feet))
+(pseudosigma4 = (q4[4]-q4[2])/1.34)
+abline(q4[3],pseudosigma4,col="Orange")
+q4[3]; pseudosigma4^2
+mean(adjusted_feet);var(adjusted_feet)
+
+
+ 
+```
+
+### 이유를 추측해보고자 한다.
+
+![](https://github.com/SangwonJu/data/blob/main/MF.jpg?raw=true){fig-align="center"}
+
+1m가 1ft보다 더 길다. metre로 측정하나 feet로 측정하나 어차피 정수부분까지만 Estimation이 이루어지기 때문에 소수부분에 해당하는 정보가 측정에 반영되지 않는다. 소수점 이하에 해당하는 정보들이 반올림 혹은 버림 등의 수단을 통해서 측정에서 제외되기 때문에 metre를 활용해 강의실 폭을 측정하였을 경우 Feet로 측정하였을 때보다 반영되어지지 못하는 정보가 많아지게 된다. 따라서 metre의 예측치들이 feet의 예측치들에 비해서 작은 값을 가지게 될 수 밖에 없다. Metre 단위를 도입하면서 혼란을 최소화하기 위한 해결책으로는 소숫점 미만의 숫자를 포함한 자료들를 Conversion할 때에는 반드시 소숫점 미만의 값들도 변환에 반영하는 것, metre로 변경하더라도 feet형식의 자료를 도입 후 일정기간동안 병기하는 것 등이 있다.
+
+```{r}
+# 참고
+tmd(qqmath(adjusted_metre,adjusted_feet_to_metre))
+tmd(qqmath(metre, feet_to_metre))
+```
+
+#3번 \[airplane data\] 비행기의 유리창이 깨질 때까지의 사간 자료이다. 지수분포, 와이블분포, 감마분포에 적합하는지 검토하여라. 가장 적합한 분포를 찾았다면 모수를 추정값을 제시하여라.
+
+```{r}
+library(readxl)
+airplane=c(18.83, 20.8, 21.657, 23.03, 23.23, 24.05, 24.321, 25.5, 25.52, 25.8, 26.69, 26.77, 26.78, 27.05, 27.67, 29.9, 31.11, 33.2, 33.73, 33.76, 33.89, 34.76, 35.75, 35.91, 36.98, 37.08, 37.09, 39.58, 44.045, 45.29, 45.381)
+
+
+stem(airplane) 
+# 어느정도 정규 분포를 따르고 있는 것으로 보인다. 하지만, QQPLOT에서 확인하기 전까지는 가정일 뿐이다.
+
+hist(airplane,probability = T,col="Pink")
+lines(density(airplane),col="Red",lwd=2)
+
+
+boxplot(airplane,main="Boxplot of Airplane Crash Data") # 이상치 없음
+```
+
+## 지수분포
+
+```{r}
+airplane.sort <- sort(airplane)
+(n.airplane <- length(airplane))
+i <- 1:n.airplane
+
+q.exp.airplane <- -log(1-(i-0.5)/n.airplane)
+plot(q.exp.airplane, airplane.sort, main="Exponential prob plot")
+abline(line(q.exp.airplane, airplane.sort),col="#B24040",lwd=2)
+# 3승근 변환 전에는 데이터들이 잘 피팅하고 있지 않은 것으로 보인다. 
+
+plot(q.exp.airplane^(1/3), airplane.sort^(1/3), main="Exponential prob plot",sub="reexpression; power=1/3")
+abline(line(q.exp.airplane^(1/3), airplane.sort^(1/3)),col="#B24040",lwd=1) 
+
+# 3승근 변환을 진행 한 이후에는 데이터들이 분포를 잘 따르고 있다고 본다.
+# qqline을 통해 추정된 직선이 데이터들을 잘 피팅하고 있다고 보인다. 데이터들이 곡선을 이루고 Outlier도 다소 존재하는 것으로 보임에도 불구하고 대체적으로는 직 선위에 데이터들이 존재하는 것으로 보인다.  
+# 다만 변환이 요구된다는 점에서 감마분포에 비해서 한계가 있다.
+```
+
+## 와이블 분포
+
+```{r}
+q.weibull.airplane <- log(q.exp.airplane)
+plot(q.weibull.airplane, log(airplane.sort), main="Weibull prob plot")
+abline(line(q.weibull.airplane, log(airplane.sort)),col="#B24040",lwd=1) 
+
+# qqline을 통해 추정된 직선이 데이터들을 잘 피팅하고 있다고 보이지는 않는다. 데이터들이 곡선을 이루고 있고 직선에서 벗어난 경우도 많다.
+```
+
+## 감마 분포
+
+```{r}
+(mean.airplane <- mean(airplane))
+(var.airplane <- var(airplane))
+(shape.airplane <- mean.airplane^2/var.airplane)
+(scale.airplane <- mean.airplane/var.airplane)
+q.gamma.airplane <- qgamma((i-0.5)/n.airplane, shape.airplane, scale.airplane)
+plot(q.gamma.airplane, airplane.sort, main="Gamma prob plot")
+abline(line(q.gamma.airplane, airplane.sort),col="#B24040",lwd=1) 
+# qqline을 통해 추정된 직선이 데이터들을 잘 피팅하고 있다고 보인다. 데이터들이 곡선을 이루고 Outlier도 다소 존재하는 것으로 보임에도 불구하고 대체적으로는 직 선위에 데이터들이 존재하는 것으로 보인다.  
+# 따라서 해당 데이터는 감마분포에 가장 잘 적합된다고 본다.
+
+# 감마분포의 parameter는 alpha,beta이며 alpha은 shape parameter, beta는 scale parameter이다.
+
+(shape.airplane); (scale.airplane)
+```
+
+## 추정1 Method of moments
+
+원래 추정방식
+
+```{r}
+
+gamma <- function(x){ x_bar <- mean(x) 
+                    x2_bar <- mean(x^2)
+                    beta <- (x2_bar - x_bar^2) / x_bar
+                    alpha <- x_bar / beta 
+                    return(c(alpha,1/beta))
+                    }
+
+gamma(airplane)
+
+q.gamma.airplane <- qgamma((i-0.5)/n.airplane, gamma(airplane)[1] , gamma(airplane)[2])
+plot(q.gamma.airplane, airplane.sort, main="Gamma prob plot")
+abline(line(q.gamma.airplane, airplane.sort),col="#B24040",lwd=1)
+```
+
+## 추정2 MLE
+
+데이터가 감마분포에서 왔다는 전제하에 모수 alpha, beta를 추정해본다.
+
+```{r}
+
+library(MASS)
+a=fitdistr(airplane, dgamma, start=list(shape=gamma(airplane)[1], rate=gamma(airplane)[2]))$estimate
+# MLE
+(alpha_hat=as.numeric(a[1]));(beta_hat=as.numeric(a[2]))
+
+q.gamma.airplane <- qgamma((i-0.5)/n.airplane, alpha_hat , beta_hat)
+plot(q.gamma.airplane, airplane.sort, main="Gamma prob plot")
+abline(line(q.gamma.airplane, airplane.sort),col="#C21141",lwd=1)
+
+# robust
+(shape.airplane); (scale.airplane)
+# robust하게 추정했던 모수값이랑 크게 차이가 나지 않는 것으로 보인다. 
+
+
+```

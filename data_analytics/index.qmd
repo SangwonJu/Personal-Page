@@ -1,5 +1,0 @@
----
-title: "Exploratory Data Analysis (2021-1) [in Korean]"
----
-
-"Exploratory Data Analysis (2021-1) \[in Korean\]"

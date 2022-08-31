@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-0.9.649">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Sangwon Ju, Yonsei Public Administration">
+<meta name="dcterms.date" content="2021-03-30">
+
+<title>Sangwon Ju’s Personal Page - EDA Assignment 2: Chapter 4</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme">
+<link href="../../site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-md navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <a class="navbar-brand" href="../../index.html">
+    <img src="../.././logo/policy.png" alt="">
+    <span class="navbar-title">Sangwon Ju’s Personal Page</span>
+  </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html">About Me</a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-research" role="button" data-bs-toggle="dropdown" aria-expanded="false">Research</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-research">    
+        <li>
+    <a class="dropdown-item" href="../../research_interests.html">
+ <span class="dropdown-text">Research Interests</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../publication.html">
+ <span class="dropdown-text">Publications / Working Papers</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../../data_analytics.html">Data Analytics</a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../CV.html">CV (as of July 2022)</a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="mailto: sangwon.ju@snu.ac.kr"><i class="bi bi-mailbox2" role="img" aria-label="E-mail">
+</i> 
+ </a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/SangwonJu"><i class="bi bi-github" role="img" aria-label="Github">
+</i> 
+ </a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://www.linkedin.com/in/sangwon-ju-37a6b0216/"><i class="bi bi-linkedin" role="img" aria-label="Linkedin">
+</i> 
+ </a>
+  </li>  
+</ul>
+              <div class="quarto-toggle-container">
+                  <a href="" class="quarto-color-scheme-toggle nav-link" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+              </div>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#번" id="toc-번" class="nav-link active" data-scroll-target="#번">1번</a>
+  <ul class="collapse">
+  <li><a href="#inner-fence와-outer-fence값들을-구하여라." id="toc-inner-fence와-outer-fence값들을-구하여라." class="nav-link" data-scroll-target="#inner-fence와-outer-fence값들을-구하여라.">(1) inner fence와 outer fence값들을 구하여라.</a></li>
+  <li><a href="#letter-value-display와-boxplot을-만들고-자료의-특성을-요약하여라." id="toc-letter-value-display와-boxplot을-만들고-자료의-특성을-요약하여라." class="nav-link" data-scroll-target="#letter-value-display와-boxplot을-만들고-자료의-특성을-요약하여라.">(2) letter value display와 boxplot을 만들고 자료의 특성을 요약하여라.</a></li>
+  </ul></li>
+  <li><a href="#번-1" id="toc-번-1" class="nav-link" data-scroll-target="#번-1">2번</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content column-page-left" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">EDA Assignment 2: Chapter 4</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">Exploratory Data Analysis (2021 Spring) [in Korean]</div>
+  </div>
+  </div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Sangwon Ju, Yonsei Public Administration </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">March 30, 2021</p>
+    </div>
+  </div>
+    
+  </div>
+  
+
+</header>
+
+<p>4장. 수치요약과 상자그림, 여러 그룹의 비교</p>
+<p>자료를 분석할 때 모든 부분을 R로 할 수도 없는 경우도 있다. R에서 이용할 수 있는 것들은 이용하되 수작업이 필요한 부분은 수작업으로 하여야 한다. 곱하기 나누기 등 간단한 계산은 계산기를 사용할 수도 있다.</p>
+<section id="번" class="level1">
+<h1>1번</h1>
+<p>Islands 자료</p>
+<section id="inner-fence와-outer-fence값들을-구하여라." class="level2">
+<h2 class="anchored" data-anchor-id="inner-fence와-outer-fence값들을-구하여라.">(1) inner fence와 outer fence값들을 구하여라.</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(islands)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(islands)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      Africa   Antarctica         Asia    Australia Axel Heiberg       Baffin 
+       11506         5500        16988         2968           16          184 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>f<span class="ot">=</span><span class="fu">fivenum</span>(islands)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>Hl<span class="ot">=</span><span class="fu">as.numeric</span>(f[<span class="dv">2</span>])</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>M<span class="ot">=</span><span class="fu">as.numeric</span>(f[<span class="dv">3</span>])</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>Hu<span class="ot">=</span><span class="fu">as.numeric</span>(f[<span class="dv">4</span>])</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>hspread<span class="ot">=</span><span class="fu">as.numeric</span>(Hu<span class="sc">-</span>Hl)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>hspread</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 163.5</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Inner Fence</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>IF<span class="ot">=</span><span class="fu">c</span>(Hl<span class="fl">-1.5</span><span class="sc">*</span>hspread,Hu<span class="fl">+1.5</span><span class="sc">*</span>hspread)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>IF</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] -225.25  428.75</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Outer Fence</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>OF<span class="ot">=</span><span class="fu">c</span>(Hl<span class="dv">-3</span><span class="sc">*</span>hspread,Hu<span class="sc">+</span><span class="dv">3</span><span class="sc">*</span>hspread)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>OF</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] -470.5  674.0</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>SKEW<span class="ot">=</span>((Hu<span class="sc">-</span>M)<span class="sc">-</span>(M<span class="sc">-</span>Hl))<span class="sc">/</span>((Hu<span class="sc">-</span>M)<span class="sc">+</span>(M<span class="sc">-</span>Hl))</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>SKEW <span class="co"># +이기에 Skewed to the right</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.7431193</code></pre>
+</div>
+</div>
+</section>
+<section id="letter-value-display와-boxplot을-만들고-자료의-특성을-요약하여라." class="level2">
+<h2 class="anchored" data-anchor-id="letter-value-display와-boxplot을-만들고-자료의-특성을-요약하여라.">(2) letter value display와 boxplot을 만들고 자료의 특성을 요약하여라.</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># letter value display</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"http://mgimond.github.io/ES218/es218.R"</span>)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>lvd<span class="ot">=</span><span class="fu">lsum</span>(islands)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>lvd</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                 letter depth lower     mid   upper  spread
+Iceland               M  24.5  41.0   41.00    41.0     0.0
+Tierra del Fuego      H  12.5  20.0  101.75   183.5   163.5
+Taiwan                E   6.5  14.5 1685.50  3356.5  3342.0
+Prince of Wales       D   3.5  13.0 4052.75  8092.5  8079.5
+Hainan                C   2.0  13.0 5759.50 11506.0 11493.0</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>lvd[,<span class="dv">4</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1]   41.00  101.75 1685.50 4052.75 5759.50</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># boxplot</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">boxplot</span>(islands,<span class="at">horizontal=</span>T,<span class="at">main=</span><span class="st">"Boxplot of islands data"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="과제2_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">boxplot</span>(<span class="fu">log</span>(islands))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="과제2_files/figure-html/unnamed-chunk-2-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<ul>
+<li>letter value display median의 값은 41, Upper Hinge의 값은 183.5, Lower Hinge의 값은 20으로 확인 됨. depth가 24.5까지 들어가고 있다. H-Spread의 값은 163.5이고 이를 통해 계산한 Pseudo Variance값은 163.5/1.35=121.11 로 계산된다. mid 값이 41, 101.75, 1685.50, 4052.75, 5759.50 순으로 증가하고 있기 때문에 이 자료의 분포는 Skewed to the right이라고 생각하면 좋다.</li>
+<li>box plot Symmetric하지 않고, Skewed to the right 하여 극단적으로 큰 값들이 존재한다는 것을 존재한다는 것은 Box Plot을 통해 재확인할 수 있다. Median의 위치는 매우 작아서 확인이 불가능하다. Spread는 약 11000 정도인 것으로 보이며 Whisker의 크기도 거의 확인할 수가 없다. 위의 문제에서 계산한 Outer Fence의 값은 -470과 674인데 Outer Fence밖의 Far Out(Outliers)값이 8개 존재하는 것을 확인 할 수 있다. 로그변환이나 지수변환을 통해서 데이터들을 Symmetric하게 만들고 Spread를 확인할 수 있게 만들어 데이터를 조금 더 해석하기 용이하게 해야 한다.</li>
+</ul>
+</section>
+</section>
+<section id="번-1" class="level1">
+<h1>2번</h1>
+<p>Ozone 자료</p>
+<p>바람이 세게 불 때와 그렇지 않을 때로 자료를 나누어 오존량의 letter value display를 각각 만들고 mid와 spread 칼럼의 값과 stem-and-leaf display와 boxplot의 notch등을 이용하여 두 집단의 오존량을 비교하여라.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"airquality"</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(airquality)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  Ozone Solar.R Wind Temp Month Day
+1    41     190  7.4   67     5   1
+2    36     118  8.0   72     5   2
+3    12     149 12.6   74     5   3
+4    18     313 11.5   62     5   4
+5    NA      NA 14.3   56     5   5
+6    28      NA 14.9   66     5   6</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>airquality<span class="ot">&lt;-</span><span class="fu">as.data.frame</span>(airquality)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(airquality)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "data.frame"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 자료 요약 / Five Numbers / Boxplot</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(airquality<span class="sc">$</span>Ozone)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+   1.00   18.00   31.50   42.13   63.25  168.00      37 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fivenum</span>(airquality<span class="sc">$</span>Ozone)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1]   1.0  18.0  31.5  63.5 168.0</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">boxplot</span>(airquality<span class="sc">$</span>Ozone,<span class="at">title=</span><span class="st">"Boxplot of Ozone Variable"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="과제2_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Median 값에서 Upper Hinge나 Lower Hinge 까지의 거리에 비해서 최대값까지의 거리가 길다는 것을 확인할 수 있다. 따라서 주어진 자료의 분포는 Skewed to the right이라는 것을 확인할 수 있다. Boxplot상 Outer Hinge 밖의 Outlier가 2개 정도 존재하고 있음을 확인할 수 있다.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 바람이 세게 부는 집단과 그렇지 않은 집단의 분류</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Wind: Average wind speed in miles per hour at 0700 and 1000 hours at LaGuardia Airport</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Ozone: Mean ozone in parts per billion from 1300 to 1500 hours at Roosevelt Island</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>w_med<span class="ot">=</span><span class="fu">median</span>(airquality<span class="sc">$</span>Wind)</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(airquality<span class="sc">$</span>Wind,<span class="at">main=</span><span class="st">"Histogram of Windspeed(mph)"</span>,<span class="at">xlab=</span><span class="st">"Windspeed"</span>,<span class="at">breaks=</span><span class="dv">20</span>)</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v=</span>w_med,<span class="at">col=</span><span class="st">"red"</span>,<span class="at">lty=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="과제2_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>higherwind<span class="ot">=</span>airquality<span class="sc">$</span>Wind<span class="sc">&gt;=</span>w_med</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ncol</span>(airquality[airquality<span class="sc">$</span>Wind<span class="sc">==</span>w_med,]) <span class="co"># Median Value를 갖는 관측치의 수 </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 6</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co">#정의: 바람이 세게 부는 집단은 Median값보다 바람이 세게 부는 집단, 바람이 약하게 부는 집단은 Median값보다 바람이 약하게 부는 집단</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>strongwind<span class="ot">=</span>airquality[higherwind,] <span class="co">#바람이 세게부는 집단</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>weakwind<span class="ot">=</span>airquality[<span class="sc">!</span>higherwind,] <span class="co">#바람이 약하게 부는 집단 </span></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(strongwind); <span class="fu">nrow</span>(weakwind) <span class="co">#Windspeed의 Median Value를 Strongwind에 포함시킴</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 83</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 70</code></pre>
+</div>
+</div>
+<p>강한 바람의 그룹은 83개의 데이터를 가지고 있는 것에 비해, 약한 바람의 그룹은 70개의 데이터를 가지고있는데 여기서의 차이는 바람속도가 Median에 속하는 Observation들이 강한 바람을 가진 그룹으로 분류되었기 때문이다.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Letter Value Display</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"http://mgimond.github.io/ES218/es218.R"</span>)</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a><span class="fu">lsum</span>(strongwind<span class="sc">$</span>Ozone)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  letter depth lower   mid upper spread
+1      M  32.0    21 21.00  21.0    0.0
+2      H  16.5    13 23.75  34.5   21.5
+3      E   8.5     9 26.75  44.5   35.5
+4      D   4.5     7 35.50  64.0   57.0
+5      C   2.5     5 39.25  73.5   68.5</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">lsum</span>(weakwind<span class="sc">$</span>Ozone)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  letter depth lower   mid upper spread
+1      M  27.0  59.0 59.00  59.0    0.0
+2      H  14.0  30.0 57.00  84.0   54.0
+3      E   7.5  20.0 61.25 102.5   82.5
+4      D   4.0  16.0 67.00 118.0  102.0
+5      C   2.5  13.5 71.00 128.5  115.0</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">lsum</span>(weakwind<span class="sc">$</span>Ozone)[<span class="dv">2</span>,<span class="dv">5</span>]<span class="sc">-</span><span class="fu">lsum</span>(weakwind<span class="sc">$</span>Ozone)[<span class="dv">2</span>,<span class="dv">3</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 54</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">lsum</span>(strongwind<span class="sc">$</span>Ozone)[<span class="dv">2</span>,<span class="dv">5</span>]<span class="sc">-</span><span class="fu">lsum</span>(strongwind<span class="sc">$</span>Ozone)[<span class="dv">2</span>,<span class="dv">3</span>] <span class="co">#spread</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 21.5</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co">#kurtosis</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="fl">82.5</span><span class="sc">/</span><span class="dv">54</span><span class="fl">-1.705</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] -0.1772222</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fl">35.5</span><span class="sc">/</span><span class="fl">21.5-1.705</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] -0.05383721</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co">#skewedness</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a><span class="fu">lsum</span>(weakwind<span class="sc">$</span>Ozone)[,<span class="dv">4</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 59.00 57.00 61.25 67.00 71.00</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">lsum</span>(strongwind<span class="sc">$</span>Ozone)[,<span class="dv">4</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 21.00 23.75 26.75 35.50 39.25</code></pre>
+</div>
+</div>
+<p>바람 세기가 약한그룹의 H-Spread는 54인 반면 바람세기가 강한 그룹의 H-Spread는 21.5이므로 바람세기가 약한 그룹의 데이터가 조금 더 변동성이 큰 것으로 확인된다. Median 값의 경우 바람세기가 강한 그룹은 21, 바람세기가 약한그룹은 59이므로 바람세기가 약한 그룹에 속하는 Observation들의 오존측정량이 더 높은 경향성을 보인다는 것을 확인 할 수 있다. (바람에 의해서 오존들이 흩어지게 되면서 측정치가 상대적으로 낮게 나타나는 것으로 보인다.)</p>
+<p>Kurtosis: E-spread/H-spread-1.705 바람세기가 약한 그룹: (82.5/(54))-1.705=-0.1772222 바람세기가 강한 그룹: 35.5/21.5-1.705=-0.05383721 첨도가 두 집단에서 모두 음수이기 때문에 정규분포보다 평평한 성질을 가지고 있음이 확인되어 진다.</p>
+<p>Skewedness: 두 그룹의 Display에서 mid 값이 점차 커지고 있는 상황이므로 두 그룹 자료의 분포들은 Skewed to the right되어 있다고 볼 수 있다.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="co"># stem and leaf </span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages("aplpack")</span></span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a><span class="fu">stem</span>(strongwind<span class="sc">$</span>Ozone)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+  The decimal point is 1 digit(s) to the right of the |
+
+  0 | 146778999
+  1 | 011223333444468889
+  2 | 001111233447889
+  3 | 012245679
+  4 | 044455
+  5 | 2
+  6 | 35
+  7 | 16
+  8 | 9</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">stem</span>(weakwind<span class="sc">$</span>Ozone)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+  The decimal point is 1 digit(s) to the right of the |
+
+   0 | 716668
+   2 | 0033338025679
+   4 | 16789099
+   6 | 1446337889
+   8 | 024551677
+  10 | 8058
+  12 | 25
+  14 | 
+  16 | 8</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(aplpack)</span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a><span class="fu">stem.leaf</span>(strongwind<span class="sc">$</span>Ozone,<span class="at">rule.line =</span> <span class="st">"Dixon"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>1 | 2: represents 12
+ leaf unit: 1
+            n: 63
+    2    0* | 14
+    9    0. | 6778999
+   22    1* | 0112233334444
+   27    1. | 68889
+  (11)   2* | 00111123344
+   25    2. | 7889
+   21    3* | 01224
+   16    3. | 5679
+   12    4* | 0444
+    8    4. | 55
+    6    5* | 2
+         5. | 
+    5    6* | 3
+    4    6. | 5
+    3    7* | 1
+HI: 76 89
+NA's: 20</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="fu">stem.leaf</span>(weakwind<span class="sc">$</span>Ozone,<span class="at">rule.line =</span> <span class="st">"Dixon"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>1 | 2: represents 12
+ leaf unit: 1
+            n: 53
+   1     0 | 7
+   6     1 | 16668
+  13     2 | 0033338
+  19     3 | 025679
+  24     4 | 16789
+  (3)    5 | 099
+  26     6 | 1446
+  22     7 | 337889
+  16     8 | 02455
+  11     9 | 1677
+   7    10 | 8
+   6    11 | 058
+   3    12 | 2
+   2    13 | 5
+HI: 168
+NA's: 17</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="fu">stem.leaf.backback</span>(strongwind<span class="sc">$</span>Ozone,weakwind<span class="sc">$</span>Ozone,<span class="at">rule.line =</span> <span class="st">"Dixon"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>_________________________________________________________
+  1 | 2: represents 12, leaf unit: 1 
+          strongwind$Ozone      weakwind$Ozone        
+_________________________________________________________
+    9            999877641|  0 |7                    1   
+   27   988864444333322110|  1 |16668                6   
+  (15)     988744332111100|  2 |0033338             13   
+   21            976542210|  3 |025679              19   
+   12               554440|  4 |16789               24   
+    6                    2|  5 |099                 (3)  
+    5                   53|  6 |1446                26   
+    3                   61|  7 |337889              22   
+    1                    9|  8 |02455               16   
+                          |  9 |1677                11   
+                          | 10 |8                    7   
+                          | 11 |058                  6   
+                          | 12 |2                    3   
+                          | 13 |5                    2   
+_________________________________________________________
+                                HI: 168                   
+n:                      83      70                    
+NAs:                    20      17                    
+_________________________________________________________</code></pre>
+</div>
+</div>
+<p>맨 마지막의 Stem and leaf plot을 기준으로 설명하고자 한다. 강한 바람 집단과 약한 바람 집단의 분포를 간단하게 살펴보면 강한 바람 집단의 경우 한개의 봉우리로 이루어져 있는데 반해 약한 바람 집단은 두개의 봉우리를 이루고 잇는 것을 확인할 수 있다. 강한 바람 집단은 Stem 1을 기준으로 leaf들이 Cluster 되어있는데 반해 약한 바람 집단은 Stem 2와 Stem 7의 두개의 Cluster로 이루어져 있으므로 조금 더 자료들이 넓게 퍼져있는 것이 확인되어진다. 중간에 Blank된 부분은 없는 것으로 보이며 Stem 12,13의 Leaf들의 존재는 Outlier의 존재 가능성을 확인하여 준다. 실제로 Boxplot을 그려 Outer Fence내에 자료값들이 존재하는지 여부를 확인하고자 한다.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Boxplot</span></span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>airquality<span class="sc">$</span>Group<span class="ot">&lt;-</span><span class="fu">ifelse</span>(airquality<span class="sc">$</span>Wind<span class="sc">&gt;=</span>w_med,<span class="st">"Faster"</span>,<span class="st">"Slower"</span>)</span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a><span class="fu">boxplot</span>(airquality<span class="sc">$</span>Ozone<span class="sc">~</span>airquality<span class="sc">$</span>Group,<span class="at">main=</span><span class="st">"Comparison b/w Different Windspeed Groups"</span>,<span class="at">col=</span><span class="fu">c</span>(<span class="st">"Red"</span>,<span class="st">"Blue"</span>),<span class="at">notch=</span>T)</span>
+<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="과제2_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>airquality,<span class="fu">aes</span>(<span class="at">x=</span>Group,<span class="at">y=</span>Ozone,<span class="at">fill=</span>Group))<span class="sc">+</span></span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">notch=</span>T)<span class="sc">+</span> </span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span><span class="st">"Comparison b/w Different Windspeed Groups"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 37 rows containing non-finite values (stat_boxplot).</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="과제2_files/figure-html/unnamed-chunk-7-2.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="fu">median</span>(strongwind<span class="sc">$</span>Ozone,<span class="at">na.rm=</span>T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 21</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="dv">21</span><span class="sc">-</span>(<span class="fl">21.5</span><span class="sc">*</span><span class="fl">1.58</span><span class="sc">/</span><span class="fu">sqrt</span>(<span class="dv">83</span>)),<span class="dv">21</span><span class="sc">+</span>(<span class="fl">21.5</span><span class="sc">*</span><span class="fl">1.58</span><span class="sc">/</span><span class="fu">sqrt</span>(<span class="dv">83</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 17.27131 24.72869</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="fu">median</span>(weakwind<span class="sc">$</span>Ozone,<span class="at">na.rm=</span>T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 59</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="dv">59</span><span class="sc">-</span>(<span class="dv">54</span><span class="sc">*</span><span class="fl">1.58</span><span class="sc">/</span><span class="fu">sqrt</span>(<span class="dv">70</span>)),<span class="dv">59</span><span class="sc">+</span>(<span class="dv">54</span><span class="sc">*</span><span class="fl">1.58</span><span class="sc">/</span><span class="fu">sqrt</span>(<span class="dv">70</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 48.80231 69.19769</code></pre>
+</div>
+</div>
+<p>두 집단의 Notched Interval이 서로 겹치지 않기 때문에 두 Median은 신뢰수준 5% 수준에서 서로 유의미하게 차이를 보인다고 볼 수 있다. 바람이 더 센 그룹의 오존량이 더 적다고 보는 것은 따라서 타당하다. 바람 속도가 빠른집단에서는 Outlier가 세개, 느린집단에서는 두개가 발견되었으며 위에서 확인하였던 것 처럼 두 그룹 모두 오존량의 데이터들은 Skewed to the right되어 있다. (Whisker의 길이는 바람속도가 느린 집단에서 더 긴것으로 확인되어진다. )</p>
+<ul>
+<li>바람속도가 빠른 집단과 느린집단을 분류하는 기준이 조금 더 명확해야 한다. 히스토그램을 그려 두 집단을 분류해보고자 하였다. 하지만, Median값이 6개로 여러개가 관측되는 상황이기 때문에 Median값에 해당하는 관측치들을 어떤 집단에 분류하느냐에 따라 분석결과가 달라지게 되는 문제가 존재하므로 바람속도와 오존량의 관계에 대한 사전지식을 가지고 분석을 진행하는 것이 더 의미있는 분석결과를 도출할 수 있을 것이라고 생각한다. (데이터의 수가 서로 동일하지 않다는 문제가 존재)</li>
+</ul>
+<p>#3번 통계청 자료 싸이트에서 교과서 4.6절의 자료를 최신 것으로 얻어 교과서에서의 분석을 따라하고 달라진 점들을 보고하라.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a><span class="co"># 교과서 자료 활용</span></span>
+<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a>pop2000<span class="ot">&lt;-</span><span class="fu">read.csv</span>(<span class="st">"https://raw.githubusercontent.com/SangwonJu/data/0676d5a195bc0198085765d26b646351a858db74/%EA%B4%91%EC%97%AD%EC%8B%9C-%EA%B5%AC%20%EC%9D%B8%EA%B5%AC.csv"</span>,<span class="at">header=</span>T)</span>
+<span id="cb69-4"><a href="#cb69-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-5"><a href="#cb69-5" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(pop2000)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>'data.frame':   74 obs. of  4 variables:
+ $ 지역코드: int  1 1 1 1 1 1 1 1 1 1 ...
+ $ 지역명  : chr  "서울" "서울" "서울" "서울" ...
+ $ 구      : chr  "종로구" "중구" "용산구" "성동구" ...
+ $ 인구    : int  168879 130370 226540 322990 380164 366282 440018 459011 340327 352098 ...</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1) 광역시별로 상자그림을 그린다음 나란히 늘여놓은 그래프</span></span>
+<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a><span class="fu">boxplot</span>(pop2000<span class="sc">$</span>인구<span class="sc">~</span>pop2000<span class="sc">$</span>지역명)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="과제2_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>pop2000,<span class="fu">aes</span>(<span class="at">x=</span>지역명,<span class="at">y=</span>인구,<span class="at">fill=</span>지역명))<span class="sc">+</span></span>
+<span id="cb72-2"><a href="#cb72-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>()<span class="sc">+</span></span>
+<span id="cb72-3"><a href="#cb72-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span>comma)<span class="sc">+</span></span>
+<span id="cb72-4"><a href="#cb72-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette=</span><span class="st">"Pastel1"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="과제2_files/figure-html/unnamed-chunk-8-2.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 2) 가나다 순에서 지역코드 순으로</span></span>
+<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a>pop2000<span class="sc">$</span>시<span class="ot">=</span><span class="fu">ordered</span>(<span class="fu">reorder</span>(pop2000<span class="sc">$</span>지역명,pop2000<span class="sc">$</span>지역코드))</span>
+<span id="cb73-3"><a href="#cb73-3" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(pop2000)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>'data.frame':   74 obs. of  5 variables:
+ $ 지역코드: int  1 1 1 1 1 1 1 1 1 1 ...
+ $ 지역명  : chr  "서울" "서울" "서울" "서울" ...
+ $ 구      : chr  "종로구" "중구" "용산구" "성동구" ...
+ $ 인구    : int  168879 130370 226540 322990 380164 366282 440018 459011 340327 352098 ...
+ $ 시      : Ord.factor w/ 7 levels "서울"&lt;"부산"&lt;..: 1 1 1 1 1 1 1 1 1 1 ...</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="fu">boxplot</span>(pop2000<span class="sc">$</span>인구<span class="sc">~</span>pop2000<span class="sc">$</span>시)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="과제2_files/figure-html/unnamed-chunk-8-3.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>pop2000,<span class="fu">aes</span>(<span class="at">x=</span>시,<span class="at">y=</span>인구,<span class="at">fill=</span>시))<span class="sc">+</span></span>
+<span id="cb76-2"><a href="#cb76-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>()<span class="sc">+</span></span>
+<span id="cb76-3"><a href="#cb76-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span>comma)<span class="sc">+</span></span>
+<span id="cb76-4"><a href="#cb76-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette=</span><span class="st">"Pastel1"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="과제2_files/figure-html/unnamed-chunk-8-4.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 3)상자의 폭을 각 광역시의 구 수에 비례하게 표현한 그래프</span></span>
+<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a><span class="fu">boxplot</span>(pop2000<span class="sc">$</span>인구<span class="sc">~</span>pop2000<span class="sc">$</span>시,<span class="at">width=</span><span class="fu">table</span>(pop2000<span class="sc">$</span>시))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="과제2_files/figure-html/unnamed-chunk-8-5.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb78"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a>my_xlab<span class="ot">&lt;-</span><span class="fu">paste</span>(<span class="fu">levels</span>(pop2000<span class="sc">$</span>시),<span class="st">"</span><span class="sc">\n</span><span class="st">(N="</span>,<span class="fu">table</span>(pop2000<span class="sc">$</span>시),<span class="st">")"</span>,<span class="at">sep=</span><span class="st">""</span>)</span>
+<span id="cb78-2"><a href="#cb78-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>pop2000,<span class="fu">aes</span>(<span class="at">x=</span>시,<span class="at">y=</span>인구,<span class="at">fill=</span>시))<span class="sc">+</span></span>
+<span id="cb78-3"><a href="#cb78-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">varwidth=</span>T)<span class="sc">+</span></span>
+<span id="cb78-4"><a href="#cb78-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span>comma)<span class="sc">+</span></span>
+<span id="cb78-5"><a href="#cb78-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette=</span><span class="st">"Pastel1"</span>)<span class="sc">+</span></span>
+<span id="cb78-6"><a href="#cb78-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_discrete</span>(<span class="at">labels=</span>my_xlab)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="과제2_files/figure-html/unnamed-chunk-8-6.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 2021년 2월 통계청 인구자료</span></span>
+<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a>pop2021<span class="ot">&lt;-</span><span class="fu">read.csv</span>(<span class="st">"https://raw.githubusercontent.com/SangwonJu/data/main/2021.02%20pop.csv"</span>,<span class="at">header=</span>T)</span>
+<span id="cb79-3"><a href="#cb79-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb79-4"><a href="#cb79-4" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(pop2021)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>'data.frame':   75 obs. of  6 variables:
+ $ 지역코드: int  1 1 1 1 1 1 1 1 1 1 ...
+ $ 지역명  : chr  "서울" "서울" "서울" "서울" ...
+ $ 구      : chr  "종로구" "중구" "용산구" "성동구" ...
+ $ 인구    : int  148884 124836 230113 292537 345248 341756 393933 437961 306639 323431 ...
+ $ 남자인구: int  72372 61018 110646 142904 166535 169139 194665 211283 149427 157603 ...
+ $ 여자인구: int  76512 63818 119467 149633 178713 172617 199268 226678 157212 165828 ...</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1) 광역시별로 상자그림을 그린다음 나란히 늘여놓은 그래프</span></span>
+<span id="cb81-2"><a href="#cb81-2" aria-hidden="true" tabindex="-1"></a><span class="fu">boxplot</span>(pop2021<span class="sc">$</span>인구<span class="sc">~</span>pop2021<span class="sc">$</span>지역명)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="과제2_files/figure-html/unnamed-chunk-8-7.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb82"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb82-1"><a href="#cb82-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>pop2021,<span class="fu">aes</span>(<span class="at">x=</span>지역명,<span class="at">y=</span>인구,<span class="at">fill=</span>지역명))<span class="sc">+</span></span>
+<span id="cb82-2"><a href="#cb82-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>()<span class="sc">+</span></span>
+<span id="cb82-3"><a href="#cb82-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span>comma)<span class="sc">+</span></span>
+<span id="cb82-4"><a href="#cb82-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette=</span><span class="st">"Pastel1"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="과제2_files/figure-html/unnamed-chunk-8-8.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 2) 가나다 순에서 지역코드 순으로</span></span>
+<span id="cb83-2"><a href="#cb83-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb83-3"><a href="#cb83-3" aria-hidden="true" tabindex="-1"></a>pop2021<span class="sc">$</span>시<span class="ot">=</span><span class="fu">ordered</span>(<span class="fu">reorder</span>(pop2021<span class="sc">$</span>지역명,pop2021<span class="sc">$</span>지역코드))</span>
+<span id="cb83-4"><a href="#cb83-4" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(pop2021)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>'data.frame':   75 obs. of  7 variables:
+ $ 지역코드: int  1 1 1 1 1 1 1 1 1 1 ...
+ $ 지역명  : chr  "서울" "서울" "서울" "서울" ...
+ $ 구      : chr  "종로구" "중구" "용산구" "성동구" ...
+ $ 인구    : int  148884 124836 230113 292537 345248 341756 393933 437961 306639 323431 ...
+ $ 남자인구: int  72372 61018 110646 142904 166535 169139 194665 211283 149427 157603 ...
+ $ 여자인구: int  76512 63818 119467 149633 178713 172617 199268 226678 157212 165828 ...
+ $ 시      : Ord.factor w/ 8 levels "서울"&lt;"부산"&lt;..: 1 1 1 1 1 1 1 1 1 1 ...</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb85"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a><span class="fu">boxplot</span>(pop2021<span class="sc">$</span>인구<span class="sc">~</span>pop2021<span class="sc">$</span>시)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="과제2_files/figure-html/unnamed-chunk-8-9.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb86"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb86-1"><a href="#cb86-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>pop2021,<span class="fu">aes</span>(<span class="at">x=</span>시,<span class="at">y=</span>인구,<span class="at">fill=</span>시))<span class="sc">+</span></span>
+<span id="cb86-2"><a href="#cb86-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>()<span class="sc">+</span></span>
+<span id="cb86-3"><a href="#cb86-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span>comma)<span class="sc">+</span></span>
+<span id="cb86-4"><a href="#cb86-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette=</span><span class="st">"Pastel1"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="과제2_files/figure-html/unnamed-chunk-8-10.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb87"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 3)상자의 폭을 각 광역시의 구 수에 비례하게 표현한 그래프</span></span>
+<span id="cb87-2"><a href="#cb87-2" aria-hidden="true" tabindex="-1"></a><span class="fu">boxplot</span>(pop2021<span class="sc">$</span>인구<span class="sc">~</span>pop2021<span class="sc">$</span>시,<span class="at">width=</span><span class="fu">table</span>(pop2021<span class="sc">$</span>시))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="과제2_files/figure-html/unnamed-chunk-8-11.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb88"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb88-1"><a href="#cb88-1" aria-hidden="true" tabindex="-1"></a>my_xlab<span class="ot">&lt;-</span><span class="fu">paste</span>(<span class="fu">levels</span>(pop2021<span class="sc">$</span>시),<span class="st">"</span><span class="sc">\n</span><span class="st">(N="</span>,<span class="fu">table</span>(pop2021<span class="sc">$</span>시),<span class="st">")"</span>,<span class="at">sep=</span><span class="st">""</span>)</span>
+<span id="cb88-2"><a href="#cb88-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>pop2021,<span class="fu">aes</span>(<span class="at">x=</span>시,<span class="at">y=</span>인구,<span class="at">fill=</span>시))<span class="sc">+</span></span>
+<span id="cb88-3"><a href="#cb88-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">varwidth=</span>T)<span class="sc">+</span></span>
+<span id="cb88-4"><a href="#cb88-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span>comma)<span class="sc">+</span></span>
+<span id="cb88-5"><a href="#cb88-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette=</span><span class="st">"Pastel1"</span>)<span class="sc">+</span></span>
+<span id="cb88-6"><a href="#cb88-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_discrete</span>(<span class="at">labels=</span>my_xlab)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="과제2_files/figure-html/unnamed-chunk-8-12.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb89"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb89-1"><a href="#cb89-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Comparison</span></span>
+<span id="cb89-2"><a href="#cb89-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb89-3"><a href="#cb89-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb89-4"><a href="#cb89-4" aria-hidden="true" tabindex="-1"></a>pop2021<span class="ot">&lt;-</span>pop2021[<span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>,<span class="dv">7</span>)]</span>
+<span id="cb89-5"><a href="#cb89-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb89-6"><a href="#cb89-6" aria-hidden="true" tabindex="-1"></a>pop2021<span class="sc">$</span>년도<span class="ot">&lt;-</span><span class="fu">rep</span>(<span class="dv">2021</span>,<span class="fu">nrow</span>(pop2021))</span>
+<span id="cb89-7"><a href="#cb89-7" aria-hidden="true" tabindex="-1"></a>pop2000<span class="sc">$</span>년도<span class="ot">&lt;-</span><span class="fu">rep</span>(<span class="dv">2000</span>,<span class="fu">nrow</span>(pop2000))</span>
+<span id="cb89-8"><a href="#cb89-8" aria-hidden="true" tabindex="-1"></a>new<span class="ot">&lt;-</span><span class="fu">rbind</span>(pop2000,pop2021)</span>
+<span id="cb89-9"><a href="#cb89-9" aria-hidden="true" tabindex="-1"></a>new<span class="sc">$</span>년도<span class="ot">&lt;-</span><span class="fu">as.factor</span>(new<span class="sc">$</span>년도)</span>
+<span id="cb89-10"><a href="#cb89-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb89-11"><a href="#cb89-11" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>new,<span class="fu">aes</span>(<span class="at">x=</span>시,<span class="at">y=</span>인구))<span class="sc">+</span></span>
+<span id="cb89-12"><a href="#cb89-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="fu">aes</span>(<span class="at">fill=</span>년도),<span class="at">varwidth=</span>T)<span class="sc">+</span></span>
+<span id="cb89-13"><a href="#cb89-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span>comma)<span class="sc">+</span></span>
+<span id="cb89-14"><a href="#cb89-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette=</span><span class="st">"Pastel1"</span>)<span class="sc">+</span></span>
+<span id="cb89-15"><a href="#cb89-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_discrete</span>(<span class="at">labels=</span>my_xlab)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="과제2_files/figure-html/unnamed-chunk-8-13.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+    } else {
+      disableStylesheet(alternateStylesheets);
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  let localAlternateSentinel = 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } 
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      let href = ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+      <div class="nav-footer-center">
+        <ul class="footer-items list-unstyled">
+    <li class="nav-item">
+ © 2022 Sangwon Ju
+  </li>  
+</ul>
+      </div>
+  </div>
+</footer>
+
+
+
+</body></html>
