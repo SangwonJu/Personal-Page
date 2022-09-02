@@ -276,7 +276,7 @@ korea_dtm <- korea_dtm.old[rowTotals> 0, ] # Remove all docs without words
 The perplexity is the geometric mean of word likelihood. In 5-fold CV, we first estimate the model, usually called training model, for a given number of topics using 4 folds of the data and then use the left one fold of the data to calculate the perplexity. In calculating the perplexity, we set the model in LDA or CTM to be the training model and not to estimate the beta parameters.
 
 ```{r warning = FALSE, message = FALSE, results='hide', fig.align='center',fig.width=10,fig.height=7}
-#| column: page
+
 korea_split <- initial_split(korea_tfidf, prop = 0.8)
 
 # Train
@@ -367,7 +367,8 @@ korea_tp_6 %>%
     theme(plot.title = element_text(size=20),
           text=element_text(family="Nanum Gothic",size=40),
           axis.text.x = element_text(size = 20),
-          axis.title.y=element_blank()) + 
+          axis.title.y=element_blank(),
+        strip.text = element_text(size = 20)) + 
     ghibli::scale_fill_ghibli_d("PonyoLight", direction = 1)
 ```
 
@@ -428,7 +429,7 @@ korea_g %>%
     theme_graph(base_family="Nanum Gothic") +
     theme(text=element_text(family="Nanum Gothic", size=30)) +
     guides(size="none",
-           color = guide_legend(title="Topic 명",
+           color = guide_legend(title="Topic",
                                 override.aes = list(size=5))) +
     ghibli::scale_color_ghibli_d("PonyoLight", direction = 1)
 ```
@@ -453,7 +454,7 @@ korea_g %>%
           strip.text = element_text(size = 20),
           panel.border = element_rect(color = "black", fill = NA, size = 1)) +
     guides(size="none",
-           color = guide_legend(title="Topic 명",
+           color = guide_legend(title="Topic",
                                 override.aes = list(size=5))) +
     ghibli::scale_color_ghibli_d("PonyoLight", direction = 1) +
     facet_nodes(~ community, ncol=3, scales = "free")
@@ -725,7 +726,8 @@ germany_tp_6 %>%
     theme(plot.title = element_text(size=20),
           text=element_text(family="Nanum Gothic",size=40),
           axis.text.x = element_text(size = 20),
-          axis.title.y=element_blank()) + 
+          axis.title.y=element_blank(),
+        strip.text = element_text(size = 20)) + 
     ghibli::scale_fill_ghibli_d("PonyoLight", direction = 1)
 ```
 
@@ -783,7 +785,7 @@ germany_g %>%
     theme_graph(base_family="Nanum Gothic") +
     theme(text=element_text(family="Nanum Gothic", size=30)) +
     guides(size="none",
-           color = guide_legend(title="Topic 명",
+           color = guide_legend(title="Topic",
                                 override.aes = list(size=5))) +
     ghibli::scale_color_ghibli_d("PonyoLight", direction = 1)
 ```
@@ -808,7 +810,7 @@ germany_g %>%
           strip.text = element_text(size = 20),
           panel.border = element_rect(color = "black", fill = NA, size = 1)) +
     guides(size="none",
-           color = guide_legend(title="Topic 명",
+           color = guide_legend(title="Topic",
                                 override.aes = list(size=5))) +
     ghibli::scale_color_ghibli_d("PonyoLight", direction = 1) +
     facet_nodes(~ community, ncol=3, scales = "free")
@@ -1032,7 +1034,8 @@ finland_tp_6 %>%
     theme(plot.title = element_text(size=20),
           text=element_text(family="Nanum Gothic",size=40),
           axis.text.x = element_text(size = 20),
-          axis.title.y=element_blank()) + 
+          axis.title.y=element_blank(),
+        strip.text = element_text(size = 20)) + 
     ghibli::scale_fill_ghibli_d("PonyoLight", direction = 1)
 ```
 
@@ -1096,7 +1099,7 @@ finland_g %>%
     theme_graph(base_family="Nanum Gothic") +
     theme(text=element_text(family="Nanum Gothic", size=30)) +
     guides(size="none",
-           color = guide_legend(title="Topic 명",
+           color = guide_legend(title="Topic",
                                 override.aes = list(size=5))) +
     ghibli::scale_color_ghibli_d("PonyoLight", direction = 1)
 ```
@@ -1121,7 +1124,7 @@ finland_g %>%
           strip.text = element_text(size = 20),
           panel.border = element_rect(color = "black", fill = NA, size = 1)) +
     guides(size="none",
-           color = guide_legend(title="Topic 명",
+           color = guide_legend(title="Topic",
                                 override.aes = list(size=5))) +
     ghibli::scale_color_ghibli_d("PonyoLight", direction = 1) +
     facet_nodes(~ community, ncol=3, scales = "free")
@@ -1388,7 +1391,7 @@ japan_tp_10 %>%
           text=element_text(family="Nanum Gothic",size=20),
           axis.text.x = element_text(size = 25),
           axis.title.y=element_blank(),
-          strip.text = element_text(size = 30)) + 
+          strip.text = element_text(size = 18)) + 
     scale_fill_manual( values = colorRampPalette(ghibli::ghibli_palette("PonyoLight"))(10))
 
 ```
@@ -1450,7 +1453,7 @@ japan_g %>%
     theme_graph(base_family="Nanum Gothic") +
     theme(text=element_text(family="Nanum Gothic", size=30)) +
     guides(size="none",
-           color = guide_legend(title="Topic 명",
+           color = guide_legend(title="Topic",
                                 override.aes = list(size=5))) +
     scale_color_manual(values = colorRampPalette(ghibli::ghibli_palette("PonyoLight"))(10)[-8])
 ```
@@ -1475,7 +1478,7 @@ japan_g %>%
           strip.text = element_text(size = 20),
           panel.border = element_rect(color = "black", fill = NA, size = 1)) +
     guides(size="none",
-           color = guide_legend(title="Topic 명",
+           color = guide_legend(title="Topic",
                                 override.aes = list(size=5))) +
     facet_nodes(~ community, ncol=5, scales = "free") +
     scale_color_manual(values = colorRampPalette(ghibli::ghibli_palette("PonyoLight"))(10)[-8])
@@ -1764,7 +1767,8 @@ uk_tp_6 %>%
     theme(plot.title = element_text(size=20),
           text=element_text(family="Nanum Gothic",size=40),
           axis.text.x = element_text(size = 20),
-          axis.title.y=element_blank()) + 
+          axis.title.y=element_blank(),
+        strip.text = element_text(size = 20)) + 
     ghibli::scale_fill_ghibli_d("PonyoLight", direction = 1)
 ```
 
@@ -1829,7 +1833,7 @@ uk_g %>%
     theme_graph(base_family="Nanum Gothic") +
     theme(text=element_text(family="Nanum Gothic", size=30)) +
     guides(size="none",
-           color = guide_legend(title="Topic 명",
+           color = guide_legend(title="Topic",
                                 override.aes = list(size=5))) +
     ghibli::scale_color_ghibli_d("PonyoLight", direction = 1)
 ```
@@ -1854,7 +1858,7 @@ uk_g %>%
           strip.text = element_text(size = 20),
           panel.border = element_rect(color = "black", fill = NA, size = 1)) +
     guides(size="none",
-           color = guide_legend(title="Topic 명",
+           color = guide_legend(title="Topic",
                                 override.aes = list(size=5))) +
     ghibli::scale_color_ghibli_d("PonyoLight", direction = 1) +
     facet_nodes(~ community, ncol=3, scales = "free")
@@ -2126,7 +2130,8 @@ austrailia_tp_6 %>%
     theme(plot.title = element_text(size=20),
           text=element_text(family="Nanum Gothic",size=40),
           axis.text.x = element_text(size = 20),
-          axis.title.y=element_blank()) + 
+          axis.title.y=element_blank(),
+        strip.text = element_text(size = 20)) + 
     ghibli::scale_fill_ghibli_d("PonyoLight", direction = 1)
 ```
 
@@ -2187,7 +2192,7 @@ austrailia_g %>%
     theme_graph(base_family="Nanum Gothic") +
     theme(text=element_text(family="Nanum Gothic", size=30)) +
     guides(size="none",
-           color = guide_legend(title="Topic 명",
+           color = guide_legend(title="Topic",
                                 override.aes = list(size=5))) +
     ghibli::scale_color_ghibli_d("PonyoLight", direction = 1)
 ```
@@ -2212,7 +2217,7 @@ austrailia_g %>%
           strip.text = element_text(size = 20),
           panel.border = element_rect(color = "black", fill = NA, size = 1)) +
     guides(size="none",
-           color = guide_legend(title="Topic 명",
+           color = guide_legend(title="Topic",
                                 override.aes = list(size=5))) +
     ghibli::scale_color_ghibli_d("PonyoLight", direction = 1) +
     facet_nodes(~ community, ncol=3, scales = "free")
