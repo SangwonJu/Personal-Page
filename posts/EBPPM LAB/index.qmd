@@ -1,0 +1,2578 @@
+---
+title: "Textmining on UN SDG Voluntary National Review: 6 Countries"
+author: "Sangwon Ju, SNU GSPA" 
+knitr:
+  opts_knit:
+    verbose: false
+jupyter: python3
+page-layout: full
+format: 
+    html:
+        code-fold: true
+categories: 
+    "Evidence-Based Research Lab-PPM Projects"
+execute:
+  freeze: auto 
+date: 2022/08/06
+image: "image.png"
+---
+
+In conclusion, while maintaining the mediating and organizing role of the centralized government, it is necessary to diverge from the current SDGs structure in which all detailed topics are converges to the one centalized entity. Instead, promoting policy development in the direction of strengthening cooperation outward with other countries and strengthening connectivity inward with local communities is the most effective and efficient way to achieve sustainable development goals.
+
+# 1. Analysis of Voluntary National Review
+
+## Goal
+
+-   According to the annual ranking of SDGs released by the UN, Republic of Korea ranked 28th as of 2021, lower than other developed countries.
+-   Accordingly, this section presents the strategic direction of environmental policy to achieve and promote SDGs.
+-   To achieve this goal, this section analyzes VNRs of five developed countries to verify the characteristics of 17 SDGs directed policies and to present the direction in which SDGs-related environmental policies should be developed in the future through comparative analysis with the Republic of Korea VNR.
+
+## Voluntary National Review (VNR)
+
+-   The United Nations (UN) member states are required to report their SDGs objectives and implementation plans to the United Nations High-Level Political Forum (HLPF) and the material submitted at the forum is a 'Voluntary National Review'.
+
+-   The purpose of VNRs is to present a snapshot of where the country stands in the implementation of the Sustainable Development Goals, with a view to help accelerate progress through experience sharing, peer-learning, identifying gaps and good practices, and mobilizing partnerships. (UN, 2021)
+
+-   Each member (54 countries) started submitting VNRs to the UN's 'Sustainable Development Knowledge Platform' since 2016 and was recommended to submit them at least once every four years
+
+-   The report contains voluntary assessment of the objectives and performance of each member countries SDGs and follows no uniform form
+
+## Countries of analysis
+
+Republic of Korea, Germany, Finland, United Kingdom, Japan, Australia
+
+-   In this chapter, Korea, Germany, Finland, the United Kingdom, Japan, and Australia were selected as target countries
+-   Selected based on the [rankings of Sustainable Development Goals index announced by the UN](https://dashboards.sdgindex.org/rankings), and the rest of the countries tried to select evenly by continent, starting with Finland, which ranked first
+-   Identifying global trends on SDGs can be achieved through this analysis
+
+# 2. Analysis: Topic Modelling
+
+-   The analysis was conducted in three steps.
+    -   First, the text was preprocessed. The original data of the report were organized based on the original form of the word by normalizing it through lemmatization, excluding unnecessary parts for the analysis
+
+    -   Next, LDA was applied to the input of the DTM (Document and Word) to determine the probability matrix representing the association of key keywords for each topic, and the number of topic clusters (k) which best summarize the contents of the report was determined
+
+    -   Finally, the keyword was selected. By closely examining the analysis result - combination of beta (β), which is the probability that the topic will be included in the topic, and gamma (γ), which is the probability that the topic will be included in each country's report -, topic and major keywords were determined.
+
+:::{.column-body}
+![](https://www.tidytextmining.com/images/tmwr_0601.png)
+Figure: A flowchart of a text analysis that incorporates topic modeling  (Silge & Robinson, 2017)
+:::
+
+## Loading Package & Setting Working Directory
+
+```{r warning = FALSE, message = FALSE, result="hide"}
+pacman::p_load("reticulate","tidyverse","tidymodels",
+               "tidytext","lda","readr","igraph","forcats",
+               "sna","ergm","network","stringr","magrittr","showtext",
+               "tokenizers","janeaustenr","forcats","RColorBrewer",
+               "viridis","stopwords","purrr","widyr","textmineR","stm",
+               "ggraph","tidygraph","ggfortify","ggthemes","cowplot","fs",
+               "knitr","kableExtra","ggrepel","grid","gridExtra",
+               "topicmodels","scales","ggpattern",
+               "magick","corrplot")
+
+# Font Setting
+font_add_google(name="Nanum Gothic")
+showtext_auto()
+
+
+ger_path = "https://raw.githubusercontent.com/SangwonJu/data/main/germany.txt"
+fin_path = "https://raw.githubusercontent.com/SangwonJu/data/main/finland.txt"
+kor_path = "https://raw.githubusercontent.com/SangwonJu/data/main/korea.txt"
+jp_path = "https://raw.githubusercontent.com/SangwonJu/data/main/japan.txt"
+uk_path = "https://raw.githubusercontent.com/SangwonJu/data/main/uk.txt"
+astl_path = "https://raw.githubusercontent.com/SangwonJu/data/main/austrailia.txt"
+```
+
+## Tokening custom functions
+
+```{r warning = FALSE, message = FALSE}
+sentence_word1=function(x){
+  x=as.character(x)
+  a=tibble(words=tokenize_sentences(x) %>%
+             unlist() %>% tibble(words=.),
+    sentence=1:nrow(words))
+  return(a)}
+
+sentence_word2=function(x){
+  x=as.character(x)
+  a=tibble(words=textstem::lemmatize_strings(x) %>% 
+               tokenize_words(stopwords =  as.vector(stop_words$word),
+                                strip_numeric = T) %>%  
+               unlist())
+  return(a)}
+
+sentence_word3=function(x){
+  x=as.character(x)
+  a=tibble(words=textstem::lemmatize_strings(x) %>% 
+               tokenize_ngrams(.,n = 2, n_min = 2,
+               stopwords = as.vector(stop_words$word)) %>%
+               unlist())
+  return(a)}
+```
+
+# 3. Korea VNR
+
+## Preprocess
+
+```{r}
+korea <-  readLines(kor_path) %>%
+    str_flatten(collapse = " ") %>%
+    str_replace_all(pattern="//", " // ") %>%
+    str_split(pattern="//") %>%
+    unlist() %>%
+    str_squish() %>%
+    str_remove_all("ABC*\\w*") %>%
+    tibble(text=.) %>% 
+    filter(trimws(text) != "") %>% 
+    mutate(paragraph=1:n(),.before=text)
+```
+
+## Tokenizing words
+
+Break the text into individual tokens (a process called tokenization) and transform it to a tidy data structure.
+
+```{r}
+korea_tokenized <- korea %>% 
+    mutate(words=map(text, sentence_word1)) %>%
+    dplyr::select(-text) %>%
+    unnest(words) %>% 
+    transmute(paragraph,sentence,words) %>%
+    mutate(words=map(words, sentence_word2)) %>%
+    unnest(words) 
+```
+
+## n-grams
+
+An n-gram (sometimes written "ngram") is a term in linguistics for a contiguous sequence of\
+n items from a given sequence of text or speech. The item can be phonemes, syllables, letters, or words depending on the application, but when most people talk about n-grams, they mean a group of\
+n words.
+
+```{r}
+korea_ngram  <-  korea %>% 
+   mutate(words=map(text, sentence_word1)) %>%
+   dplyr::select(-text) %>%
+   unnest(words) %>% 
+   transmute(paragraph,sentence,words) %>%
+   mutate(words=map(words, sentence_word3)) %>%
+   unnest(words) 
+```
+
+## Remove inadequate words for analysis
+
+```{r}
+korea_tokenized <- korea_tokenized  %>% 
+    filter(!str_detect(words,pattern="[0-9]")) %>%  
+    filter(!str_detect(words,pattern="\\d+[a-z]*")) %>% 
+    filter(!str_detect(words,pattern="[a-z]*\\d+")) %>% 
+    filter(!str_detect(words,pattern="kor[a-z]*")) %>%
+    filter(!str_detect(words,pattern="rok[a-z]*")) %>% 
+    filter(!str_detect(words,pattern="key")) %>%
+    filter(!str_detect(words,pattern="sdg*")) %>% 
+    filter(!str_detect(words,pattern="progra*")) %>%
+    filter(!str_detect(words,pattern="agend*")) %>% 
+    filter(!str_detect(words,pattern="billi*")) %>% 
+    filter(!str_detect(words,pattern="milli*")) %>% 
+    filter(!str_detect(words,pattern="datum*")) %>% 
+    filter(!str_detect(words,pattern="support*")) %>%
+    filter(!str_detect(words,pattern="progra*"))
+    
+
+korea_ngram <- korea_ngram  %>% 
+    filter(!str_detect(words,pattern="[0-9]")) %>%  
+    filter(!str_detect(words,pattern="\\d+[a-z]*")) %>% 
+    filter(!str_detect(words,pattern="[a-z]*\\d+")) %>% 
+    filter(!str_detect(words,pattern="kor[a-z]*")) %>%
+    filter(!str_detect(words,pattern="rok[a-z]*")) %>% 
+    filter(!str_detect(words,pattern="key")) %>%
+    filter(!str_detect(words,pattern="sdg*")) %>% 
+    filter(!str_detect(words,pattern="progra*")) %>%
+    filter(!str_detect(words,pattern="agend*")) %>% 
+    filter(!str_detect(words,pattern="billi*")) %>% 
+    filter(!str_detect(words,pattern="milli*")) %>% 
+    filter(!str_detect(words,pattern="datum*")) %>% 
+    filter(!str_detect(words,pattern="support*")) %>%
+    filter(!str_detect(words,pattern="progra*")) 
+```
+
+## Frequency table
+
+The frequency of specific words and n-grams in each paragraphs.
+
+```{r, fig.align='center',fig.width=6,fig.height=4}
+(korea_tokenized %>%
+    count(words) %>% 
+    arrange(desc(n)) %>% 
+    top_n(30) %>%
+    mutate(word = fct_reorder(words, n, .desc = F)) %>%
+    ggplot(aes(x=n, y=word)) +
+    geom_col_pattern(
+    colour = "white",
+    pattern = 'gradient',
+    pattern_fill2 = '#CD313A',
+    pattern_fill = '#0047A0',
+    pattern_orientation='horizontal',
+    pattern_alpha=1)+
+    scale_fill_hue() +
+    geom_text(aes(label=n),hjust=-0.1,size=7,family="Nanum Gothic")+
+    labs(y = NULL, title="Republic of Korea") +
+    theme_bw()+
+    theme(plot.title = element_text(size=40),
+        text=element_text(family="Nanum Gothic",size=25)) -> a)
+
+(korea_ngram %>%
+    count(words) %>% 
+    arrange(desc(n)) %>% 
+    top_n(20) %>%
+    mutate(word = fct_reorder(words, n, .desc = F)) %>%
+    ggplot(aes(x=n, y=word)) +
+    geom_col_pattern(
+    colour = "white",
+    pattern = 'gradient',
+    pattern_fill2 = '#CD313A',
+    pattern_fill = '#0047A0',
+    pattern_orientation='horizontal',
+    pattern_alpha=1)+
+    scale_fill_hue() +
+    geom_text(aes(label=n),hjust=-0.1,size=7,family="Nanum Gothic")+
+    labs(y = NULL, title="Republic of Korea") +
+    theme_bw()+
+    theme(plot.title =  element_text(size=40),
+        text=element_text(family="Nanum Gothic",size=25)) -> a1) 
+```
+
+## TF-IDF per paragraph
+
+```{r, fig.align='center',fig.width=10,fig.height=10}
+korea_tfidf <- korea_tokenized %>%
+    mutate(id=glue::glue("{paragraph}-{sentence}")) %>% 
+    group_by(paragraph) %>%
+    count(paragraph,words) %>% 
+    bind_tf_idf(words, paragraph, n) %>% 
+    arrange(desc(tf_idf)) %>% 
+    relocate(words,.before=paragraph) 
+      
+korea_tfidf %>% 
+    filter(n>=2)%>% 
+    head(20) %>% 
+    kbl() %>% 
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
+
+## Topic modeling
+
+```{r}
+set.seed(2022)
+korea_tfidf  %>%
+  cast_dtm(paragraph, words, n) -> korea_dtm.old
+
+rowTotals <- apply(korea_dtm.old, 1, sum) # Find the sum of words in each Document
+korea_dtm <- korea_dtm.old[rowTotals> 0, ] # Remove all docs without words
+```
+
+### Using perplexity for hold out set
+
+The perplexity is the geometric mean of word likelihood. In 5-fold CV, we first estimate the model, usually called training model, for a given number of topics using 4 folds of the data and then use the left one fold of the data to calculate the perplexity. In calculating the perplexity, we set the model in LDA or CTM to be the training model and not to estimate the beta parameters.
+
+```{r warning = FALSE, message = FALSE, results='hide', fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+korea_split <- initial_split(korea_tfidf, prop = 0.8)
+
+# Train
+korea_split_train <- training(korea_split)
+korea_split_train  %>%
+    cast_dtm(paragraph, words, n) -> korea_train_dtm.old
+rowTotals <- apply(korea_train_dtm.old, 1, sum) # Find the sum of words in each Document
+korea_train_dtm <- korea_train_dtm.old[rowTotals> 0, ] # Remove all docs without words
+
+# Test
+korea_split_test <- testing(korea_split)
+korea_split_test  %>%
+    cast_dtm(paragraph, words, n) -> korea_valid_dtm.old
+rowTotals <- apply(korea_valid_dtm.old, 1, sum) # Find the sum of words in each Document
+korea_valid_dtm <- korea_valid_dtm.old[rowTotals> 0, ] # Remove all docs without words
+
+loglik_v     <- vector("numeric", 20)
+perplexity_v <- vector("numeric", 20)
+
+for (i in 2:20) {
+    cat("... ", i, "\n")
+    tmp_mod  <- LDA(korea_train_dtm, k=i, method="Gibbs", control=list(alpha=0.5, iter=1000, seed=2020, thin=3))
+    loglik_v[i] <- logLik(tmp_mod)
+    perplexity_v[i] <- perplexity(tmp_mod, newdata = korea_valid_dtm)
+}
+
+korea_topic_k_df <- tibble(
+    topic_k = 1:20,
+    loglik = loglik_v,
+    perplexity = perplexity_v)
+
+korea_topic_k_df %>%
+    filter(topic_k != 1) %>%
+    gather(metric, value, -topic_k) %>%
+    ggplot(aes(x=topic_k, y=value)) +
+    geom_line() +
+    geom_point() +
+    facet_wrap(~metric, scales = "free")+
+    theme_bw() +
+    theme(plot.title = element_text(size=20),
+        text=element_text(family="Nanum Gothic",size=40))
+```
+
+### Cast LDA (k=6)
+
+```{r}
+korea_topic="
+government, implementation, policy, international, establish, national, framework, ministry, stakeholder, oda, cooperation, humanitarian, assistance, project, strategy, saemual,  undong, partnership, global,
+disability, sector, service, increase, public, act, person, welfare, strengthen, promote, ensure,
+economic, social, plan, goal, target, integrate, environmental, society, relate,
+sustainable, development, create, environment, organization, civil, report,
+girl, country, initiative, life, education, develop, health, quality, school, capacity"
+korea_topic_update <- korea_topic %>% 
+    str_squish() %>% 
+    str_split(pattern=", ",simplify =T) 
+korea_topic_names=data.frame(
+  stringsAsFactors = FALSE,
+                topic = c(1L, 2L, 3L, 4L, 5L, 6L),
+                topic2= c("Government Policy", "International Cooperation", "Welfare", "Integrated Goal", "Sustainable Development", "Local Community"))
+```
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+korea_lda <-  LDA(korea_dtm, k = 6,
+              method="Gibbs",
+              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
+
+korea_tp_6 <- korea_lda %>%
+    tidy(matrix = "beta") %>%
+    group_by(term) %>%
+    slice_max(beta) %>%
+    dplyr::left_join(korea_topic_names,by="topic") %>% 
+    ungroup() %>% 
+    select(-topic) %>% 
+    rename(topic="topic2")
+
+korea_tp_6 %>% 
+    group_by(topic) %>%
+    slice_max(beta,n=10) %>%
+    filter(term %in% as.vector(korea_topic_update)) %>% 
+    arrange(topic)  %>% 
+    mutate(term = reorder_within(term, beta, topic)) %>%
+    ggplot(aes(beta, term, fill = topic)) +
+    geom_col(show.legend = FALSE) +
+    facet_wrap(~ topic, scales = "free",ncol=3) +
+    scale_y_reordered() +
+    theme_bw()+ 
+    theme(plot.title = element_text(size=20),
+          text=element_text(family="Nanum Gothic",size=40),
+          axis.text.x = element_text(size = 20),
+          axis.title.y=element_blank()) + 
+    ghibli::scale_fill_ghibli_d("PonyoLight", direction = 1)
+```
+
+-   Clustered into 6 topics: 'government policy', 'international cooperation', 'welfare', 'integrated goal setting', 'sustainable development', and 'human rights'
+-   Looking at the first topic, 'government policy' and its main keywords, it can be seen that the government is taking the lead in setting and implementing goals of sustainable development
+-   The implementation of Sustainable Development in Korea is centered on topics such as "international cooperation", "welfare", and "human rights". For Sustainable Development, the international community is trying to promote cooperation with other countries as well as guaranteeing human rights at home and abroad
+-   In order to achieve sustainable development, Korea is striving to set an integrated goal, which is usually intended to achieve social and environmental development as well as economic development
+-   Frequency of the words is listed in the order of occurrence frequencies, words such as 'conflict', 'governmental', 'institutional', 'saemaul', and 'undong' are at the top, so it can be deduced that the Korea is pursuing policies led by the government
+
+## Network Graph
+
+### Pairwise Count
+
+```{r warning = FALSE, message = FALSE}
+korea_coocur <- korea_tfidf  %>%
+    ungroup() %>% 
+    arrange(desc(n)) %>%
+    rename(term=words) %>%
+    pairwise_count(term, paragraph, sort = TRUE,upper = F) 
+```
+
+### Building links and nodes
+
+```{r}
+links <- korea_coocur %>%
+    top_n(100) %>%
+    rename(source="item1",target="item2",weight="n")
+
+nodes <- tibble(term=union(links$source,links$target)) %>%
+    left_join(y=korea_tp_6,by="term") %>%
+    dplyr::select(nodes="term",topic)
+```
+
+### Building networks
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+korea_network <- graph_from_data_frame(d = links, vertices = nodes, directed = F)
+korea_g <- as_tbl_graph(korea_network)
+
+```
+
+### Network graph of inter-topic
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+korea_g %>%
+    activate("nodes") %>%
+    mutate(degree = centrality_degree(),
+             community = as.factor(topic)) %>%
+    ggraph(layout = 'kk') +
+    geom_edge_link(aes(alpha = weight,width=weight),
+                   colour = "black", show.legend = FALSE) +
+    scale_edge_width(range = c(0.05,1.5)) +
+    scale_edge_alpha(range = c(0.3,1)) +
+    scale_size(range = c(5,20)) + 
+    geom_node_point(aes(colour = community, size = degree)) +
+    geom_node_text(aes(label = name, size=degree),size=8, repel = TRUE,family="Nanum Gothic") +
+    theme_graph(base_family="Nanum Gothic") +
+    theme(text=element_text(family="Nanum Gothic", size=30)) +
+    guides(size="none",
+           color = guide_legend(title="Topic 명",
+                                override.aes = list(size=5))) +
+    ghibli::scale_color_ghibli_d("PonyoLight", direction = 1)
+```
+
+### Network graph within topic
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+korea_g %>%
+    activate("nodes") %>%
+    mutate(degree = centrality_degree(),
+             community = as.factor(topic)) %>%
+    ggraph(layout = 'kk') +
+    geom_edge_link(aes(alpha = weight,width=weight),
+                   colour = "black", show.legend = FALSE) +
+    scale_edge_width(range = c(0.05,1)) +
+    scale_edge_alpha(range = c(0.05,1)) + 
+    geom_node_point(aes(colour = community, size = degree)) +
+    geom_node_text(aes(label = name),size=8, repel = TRUE,family="Nanum Gothic") +
+    theme_graph(base_family="Nanum Gothic") +
+    theme(text=element_text(family="Nanum Gothic", size=30),
+          strip.text = element_text(size = 20),
+          panel.border = element_rect(color = "black", fill = NA, size = 1)) +
+    guides(size="none",
+           color = guide_legend(title="Topic 명",
+                                override.aes = list(size=5))) +
+    ghibli::scale_color_ghibli_d("PonyoLight", direction = 1) +
+    facet_nodes(~ community, ncol=3, scales = "free")
+```
+
+-   Looking at the Network graph within topic, words of 'government policy' and 'integrated goal setting' has major connections to other words, which means that various discussions on the subject have been dealt with densely
+-   Sustainable and development in Sustainable Development show the strongest connectivity in the entire network, central to the overall network structure, and 'international cooperation'. Considering that 'welfare' and 'human rights' are not seem to be a major factor in the sustainable development of the Republic of Korea
+-   Looking at the Network graph by topic, 'sustainable development', 'government policy', and 'integrated goal setting' had a majority of connection between words within and outside the topic, wheres in the case of 'Welfare', 'Human Rights', International Cooperation', the connection was relatively weak.
+-   Sustainable development topics have high connectivity with other topics, especially government policy topics ('government', 'implementation' and 'policy'). Sustainable development in Korea is mainly based on government-led integrated goals
+
+# 4. Germany VNR
+
+## Preprocess
+
+```{r}
+germany<-readLines(ger_path) %>%
+    str_flatten(collapse = " ") %>%
+    str_replace_all(pattern="//", " // ") %>%
+    str_split(pattern="//") %>%
+    unlist() %>%
+    str_squish() %>%
+    str_remove_all("ABC*\\w*") %>%
+    tibble(text=.) %>% 
+    filter(trimws(text) != "") %>% 
+    mutate(paragraph=1:n(),.before=text)
+```
+
+## Tokenizing words
+
+break the text into individual tokens (a process called tokenization) and transform it to a tidy data structure.
+
+```{r}
+germany_tokenized <- germany %>% 
+   mutate(words=map(text, sentence_word1)) %>%
+   dplyr::select(-text) %>%
+   unnest(words) %>% 
+   transmute(paragraph,sentence,words) %>%
+   mutate(words=map(words, sentence_word2)) %>%
+   unnest(words) 
+```
+
+## n-grams
+
+An n-gram (sometimes written "ngram") is a term in linguistics for a contiguous sequence of\
+n items from a given sequence of text or speech. The item can be phonemes, syllables, letters, or words depending on the application, but when most people talk about n-grams, they mean a group of\
+n words.
+
+```{r}
+germany_ngram  <-  germany %>% 
+   mutate(words=map(text, sentence_word1)) %>%
+   dplyr::select(-text) %>%
+   unnest(words) %>% 
+   transmute(paragraph,sentence,words) %>%
+   mutate(words=map(words, sentence_word3)) %>%
+   unnest(words) 
+```
+
+## Remove inadequate words for analysis
+
+```{r}
+germany_tokenized <- germany_tokenized  %>% 
+    filter(!str_detect(words,pattern="[0-9]")) %>%  
+    filter(!str_detect(words,pattern="germa[a-z]*")) %>%
+    filter(!str_detect(words,pattern="eur[a-z]*")) %>% 
+    filter(!str_detect(words,pattern="key")) %>%
+    filter(!str_detect(words,pattern="sdg*")) %>% 
+    filter(!str_detect(words,pattern="eu*")) %>%
+    filter(!str_detect(words,pattern="billi*")) %>% 
+    filter(!str_detect(words,pattern="milli*")) %>%
+    filter(!str_detect(words,pattern="progra*")) %>%
+    filter(!str_detect(words,pattern="inwh*")) %>%
+    filter(!str_detect(words,pattern="agend*")) %>% 
+    filter(!str_detect(words,pattern="billi*")) %>% 
+    filter(!str_detect(words,pattern="datum*")) %>% 
+    filter(!str_detect(words,pattern="support*")) %>%
+    filter(!str_detect(words,pattern="progra*"))
+
+
+germany_ngram <- germany_ngram  %>% 
+    filter(!str_detect(words,pattern="[0-9]")) %>%  
+    filter(!str_detect(words,pattern="germa[a-z]*")) %>%
+    filter(!str_detect(words,pattern="eur[a-z]*")) %>% 
+    filter(!str_detect(words,pattern="key")) %>%
+    filter(!str_detect(words,pattern="sdg*")) %>% 
+    filter(!str_detect(words,pattern="eu*")) %>%
+    filter(!str_detect(words,pattern="milli*")) %>%
+    filter(!str_detect(words,pattern="progra*")) %>%
+    filter(!str_detect(words,pattern="inwh*")) %>%
+    filter(!str_detect(words,pattern="agend*")) %>% 
+    filter(!str_detect(words,pattern="billi*")) %>% 
+    filter(!str_detect(words,pattern="datum*")) %>% 
+    filter(!str_detect(words,pattern="support*")) %>%
+    filter(!str_detect(words,pattern="progra*"))
+```
+
+## Frequency table
+
+The frequency of specific words and n-grams in each paragraphs.
+
+```{r, fig.align='center',fig.width=6,fig.height=4}
+(germany_tokenized %>%
+    count(words) %>% 
+    arrange(desc(n)) %>% 
+    top_n(30) %>%
+    mutate(word = fct_reorder(words, n, .desc = F)) %>%
+    ggplot(aes(x=n, y=word)) +
+    geom_col_pattern(
+    colour = "white",
+    pattern = 'gradient',
+    pattern_fill2 = '#FF0000',
+    pattern_fill = '#FFCC00',
+    pattern_orientation='horizontal',
+    pattern_alpha=1)+
+    scale_fill_hue() +
+    geom_text(aes(label=n),hjust=-0.1,size=7,family="Nanum Gothic")+
+    labs(y = NULL, title="Germany") +
+    theme_bw()+
+    theme(plot.title = element_text(size=40),
+        text=element_text(family="Nanum Gothic",size=25)) -> b)
+
+(germany_ngram %>%
+    count(words) %>% 
+    arrange(desc(n)) %>% 
+    top_n(20) %>%
+    mutate(word = fct_reorder(words, n, .desc = F)) %>%
+    ggplot(aes(x=n, y=word)) +
+    geom_col_pattern(
+    colour = "white",
+    pattern = 'gradient',
+    pattern_fill2 = '#FF0000',
+    pattern_fill = '#FFCC00',
+    pattern_orientation='horizontal',
+    pattern_alpha=1)+
+    scale_fill_hue() +
+    geom_text(aes(label=n),hjust=-0.1,size=7,family="Nanum Gothic")+
+    labs(y = NULL, title="Germany") +
+    theme_bw()+
+    theme(plot.title =  element_text(size=40),
+        text=element_text(family="Nanum Gothic",size=25)) -> b1) 
+```
+
+## TF-IDF per paragraph
+
+```{r, fig.align='center',fig.width=10,fig.height=10}
+germany_tfidf <- germany_tokenized %>%
+    mutate(id=glue::glue("{paragraph}-{sentence}")) %>% 
+    group_by(paragraph) %>%
+    count(paragraph,words) %>% 
+    bind_tf_idf(words, paragraph, n) %>% 
+    arrange(desc(tf_idf)) %>% 
+    relocate(words,.before=paragraph) 
+      
+germany_tfidf %>% 
+    filter(n>=2)%>% 
+    head(20) %>% 
+    kbl() %>% 
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
+
+## Topic modeling
+
+```{r}
+set.seed(2022)
+
+germany_tfidf  %>%
+  cast_dtm(paragraph, words, n) -> germany_dtm.old
+
+rowTotals <- apply(germany_dtm.old, 1, sum) # Find the sum of words in each Document
+germany_dtm <- germany_dtm.old[rowTotals> 0, ] # Remove all docs without words
+
+```
+
+### Using perplexity for hold out set
+
+The perplexity is the geometric mean of word likelihood. In 5-fold CV, we first estimate the model, usually called training model, for a given number of topics using 4 folds of the data and then use the left one fold of the data to calculate the perplexity. In calculating the perplexity, we set the model in LDA or CTM to be the training model and not to estimate the beta parameters.
+
+```{r warning = FALSE, message = FALSE, results='hide', fig.align='center',fig.width=10,fig.height=7}
+germany_split <- initial_split(germany_tfidf, prop = 0.8)
+
+# Train
+germany_split_train <- training(germany_split)
+germany_split_train  %>%
+    cast_dtm(paragraph, words, n) -> germany_train_dtm.old
+
+rowTotals <- apply(germany_train_dtm.old, 1, sum) # Find the sum of words in each Document
+germany_train_dtm <- germany_train_dtm.old[rowTotals> 0, ] # Remove all docs without words
+
+# Test
+germany_split_test <- testing(germany_split)
+germany_split_test  %>%
+    cast_dtm(paragraph, words, n) -> germany_test_dtm.old
+
+rowTotals <- apply(germany_test_dtm.old, 1, sum) # Find the sum of words in each Document
+germany_test_dtm <- germany_test_dtm.old[rowTotals> 0, ] # Remove all docs without words
+
+loglik_v     <- vector("numeric", 20)
+perplexity_v <- vector("numeric", 20)
+
+
+for (i in 2:20) {
+    cat("... ", i, "\n")
+    tmp_mod  <- LDA(germany_train_dtm, k=i, method="Gibbs", control=list(alpha=0.5, iter=1000, seed=2020, thin=3))
+    loglik_v[i] <- logLik(tmp_mod)
+    perplexity_v[i] <- perplexity(tmp_mod, newdata = germany_test_dtm)
+}
+
+germany_topic_k_df <- tibble(
+    topic_k = 1:20,
+    loglik = loglik_v,
+    perplexity = perplexity_v)
+
+germany_topic_k_df %>%
+    filter(topic_k != 1) %>%
+    gather(metric, value, -topic_k) %>%
+    ggplot(aes(x=topic_k, y=value)) +
+    geom_line() +
+    geom_point() +
+    facet_wrap(~metric, scales = "free")+
+    theme_bw() +
+    theme(plot.title = element_text(size=20),
+        text=element_text(family="Nanum Gothic",size=40))
+```
+
+### Cast LDA (k=6)
+
+```{r}
+germany_topic="
+action, indicator, policy, plan, goal, gas, basis. ministry, assign, provision, conflict, body,
+sustainability, city, urban, supply, chain, national, human, local, adopt community,
+woman, train, social, act, opportunity, child, labour, vocational, law,
+food, quality, farm, land, agricultural, natural, population, organic,
+consumption, transition, public, innovation, focus, transport, build, 
+country, global, fund, world, financial, condition, covid, contribution"
+germany_topic_update <- germany_topic %>% 
+    str_squish() %>% 
+    str_split(pattern=", ",simplify =T) 
+germany_topic_names=data.frame(
+  stringsAsFactors = FALSE,
+                topic = c(1L, 2L, 3L, 4L, 5L, 6L),
+                topic2= c("Government Policy", "Local Community", "Human Rights", "Food Resources", "Social Innovation", "International Cooperation"))
+```
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+germany_lda <-  LDA(germany_dtm, k = 6,
+              method="Gibbs",
+              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
+
+germany_tp_6 <- germany_lda %>%
+    tidy(matrix = "beta") %>%
+    group_by(term) %>%
+    slice_max(beta) %>%
+    dplyr::left_join(germany_topic_names,by="topic") %>% 
+    ungroup() %>% 
+    select(-topic) %>% 
+    rename(topic="topic2")
+
+germany_tp_6 %>% 
+    group_by(topic) %>%
+    slice_max(beta,n=10) %>%
+    filter(term %in% as.vector(germany_topic_update)) %>% 
+    arrange(topic)  %>% 
+    mutate(term = reorder_within(term, beta, topic)) %>%
+    ggplot(aes(beta, term, fill = topic)) +
+    geom_col(show.legend = FALSE) +
+    facet_wrap(~ topic, scales = "free",ncol=3) +
+    scale_y_reordered() +
+    theme_bw()+ 
+    theme(plot.title = element_text(size=20),
+          text=element_text(family="Nanum Gothic",size=40),
+          axis.text.x = element_text(size = 20),
+          axis.title.y=element_blank()) + 
+    ghibli::scale_fill_ghibli_d("PonyoLight", direction = 1)
+```
+
+-   Clustered into 6 topics: 'Government Policy', Local Community', 'Human Rights', 'Food Resources', 'Social Innovation', 'International Cooperation'
+-   In the case of Germany, in that 'Government Policy', Local Community' topic are formed, it can be deduced that goals related to sustainable development are being achieved not only by government-led policies but also by local communities
+-   In addition, Germany covers various topics related to sustainable development, such as 'Human Rights', 'Food Resources', 'Social Innovation'
+
+## Network Graph
+
+### Pairwise Count
+
+```{r}
+germany_coocur <- germany_tfidf  %>%
+    ungroup() %>% 
+    arrange(desc(n)) %>%
+    rename(term=words) %>%
+    pairwise_count(term, paragraph, sort = TRUE,upper = F) 
+```
+
+### Building links and nodes
+
+```{r}
+links <- germany_coocur %>%
+    top_n(100) %>%
+    rename(source="item1",target="item2",weight="n") 
+
+nodes <- tibble(term=union(links$source,links$target)) %>%
+    left_join(y=germany_tp_6,by="term") %>%
+    dplyr::select(nodes="term",topic)
+```
+
+### Building networks
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+germany_network <- graph_from_data_frame(d = links, vertices = nodes, directed = F)
+germany_g <- as_tbl_graph(germany_network)
+```
+
+### Network graph of inter-topic
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+germany_g %>%
+    activate("nodes") %>%
+    mutate(degree = centrality_degree(),
+             community = as.factor(topic)) %>%
+    ggraph(layout = 'kk') +
+    geom_edge_link(aes(alpha = weight,width=weight),
+                   colour = "black", show.legend = FALSE) +
+    scale_edge_width(range = c(0.05,1.5)) +
+    scale_edge_alpha(range = c(0.3,1)) +
+    scale_size(range = c(5,20)) + 
+    geom_node_point(aes(colour = community, size = degree)) +
+    geom_node_text(aes(label = name, size=degree),size=8, repel = TRUE,family="Nanum Gothic") +
+    theme_graph(base_family="Nanum Gothic") +
+    theme(text=element_text(family="Nanum Gothic", size=30)) +
+    guides(size="none",
+           color = guide_legend(title="Topic 명",
+                                override.aes = list(size=5))) +
+    ghibli::scale_color_ghibli_d("PonyoLight", direction = 1)
+```
+
+### Network graph within topic
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+germany_g %>%
+    activate("nodes") %>%
+    mutate(degree = centrality_degree(),
+             community = as.factor(topic)) %>%
+    ggraph(layout = 'kk') +
+    geom_edge_link(aes(alpha = weight,width=weight),
+                   colour = "black", show.legend = FALSE) +
+    scale_edge_width(range = c(0.05,1)) +
+    scale_edge_alpha(range = c(0.05,1)) + 
+    geom_node_point(aes(colour = community, size = degree)) +
+    geom_node_text(aes(label = name),size=8, repel = TRUE,family="Nanum Gothic") +
+    theme_graph(base_family="Nanum Gothic") +
+    theme(text=element_text(family="Nanum Gothic", size=30),
+          strip.text = element_text(size = 20),
+          panel.border = element_rect(color = "black", fill = NA, size = 1)) +
+    guides(size="none",
+           color = guide_legend(title="Topic 명",
+                                override.aes = list(size=5))) +
+    ghibli::scale_color_ghibli_d("PonyoLight", direction = 1) +
+    facet_nodes(~ community, ncol=3, scales = "free")
+```
+
+-   Looking at the Network graph within topic, in the case of 'International Cooperation', 'Local Community', and 'Human Rights' topics, the connection between words is stronger than that of other topics
+-   In particular, keywords such as 'global' and 'country' show the strongest connection in the 'International Cooperation' topic, indicating that Germany is promoting sustainable development through cooperation with other countries around the world
+-   Looking at the Network graph of inter-topic, topics such as 'International cooperation', 'Human rights', and 'Local Community' showed strong connectivity between the keywords
+-   In particular, Germany's sustainable development is being planned and implemented based on international cooperation, as keywords such as "global" and "country" of "International Cooperation" show strong connectivity
+
+# 5. Finland VNR
+
+## Preprocess
+
+```{r}
+finland <-  readLines(fin_path) %>%
+    str_flatten(collapse = " ") %>%
+    str_replace_all(pattern="//", " // ") %>%
+    str_split(pattern="//") %>%
+    unlist() %>%
+    str_squish() %>%
+    str_remove_all("ABC*\\w*") %>%
+    tibble(text=.) %>% 
+    filter(trimws(text) != "") %>% 
+    mutate(paragraph=1:n(),.before=text)
+```
+
+## Tokenizing words
+
+break the text into individual tokens (a process called tokenization) and transform it to a tidy data structure.
+
+```{r}
+finland_tokenized <- finland %>% 
+   mutate(words=map(text, sentence_word1)) %>%
+   dplyr::select(-text) %>%
+   unnest(words) %>% 
+   transmute(paragraph,sentence,words) %>%
+   mutate(words=map(words, sentence_word2)) %>%
+   unnest(words) 
+```
+
+## n-grams
+
+An n-gram (sometimes written "ngram") is a term in linguistics for a contiguous sequence of\
+n items from a given sequence of text or speech. The item can be phonemes, syllables, letters, or words depending on the application, but when most people talk about n-grams, they mean a group of\
+n words.
+
+```{r}
+finland_ngram  <-  finland %>% 
+   mutate(words=map(text, sentence_word1)) %>%
+   dplyr::select(-text) %>%
+   unnest(words) %>% 
+   transmute(paragraph,sentence,words) %>%
+   mutate(words=map(words, sentence_word3)) %>%
+   unnest(words) 
+```
+
+## Remove inadequate words for analysis
+
+```{r}
+finland_tokenized <-finland_tokenized  %>%
+    filter(!str_detect(words,pattern="[0-9]")) %>%  
+    filter(!str_detect(words,pattern="finl[a-z]*")) %>%
+    filter(!str_detect(words,pattern="finn[a-z]*")) %>% 
+    filter(!str_detect(words,pattern="eur*")) %>%
+    filter(!str_detect(words,pattern="sdg*")) %>% 
+    filter(!str_detect(words,pattern="million")) %>% 
+    filter(!str_detect(words,pattern="billion")) %>% 
+    filter(!str_detect(words,pattern="line")) %>% 
+    filter(!str_detect(words,pattern="progra*")) %>%
+    filter(!str_detect(words,pattern="agend*")) %>% 
+    filter(!str_detect(words,pattern="datum*")) %>% 
+    filter(!str_detect(words,pattern="support*")) %>% 
+    filter(!str_detect(words,pattern="datum*"))  %>%
+    filter(!str_detect(words,pattern="progra*"))
+
+finland_ngram <- finland_ngram  %>% 
+    filter(!str_detect(words,pattern="[0-9]")) %>%  
+    filter(!str_detect(words,pattern="finl[a-z]*")) %>%
+    filter(!str_detect(words,pattern="finn[a-z]*")) %>% 
+    filter(!str_detect(words,pattern="eur*")) %>%
+    filter(!str_detect(words,pattern="sdg*")) %>% 
+    filter(!str_detect(words,pattern="million")) %>% 
+    filter(!str_detect(words,pattern="billion")) %>% 
+    filter(!str_detect(words,pattern="line")) %>% 
+    filter(!str_detect(words,pattern="progra*")) %>%
+    filter(!str_detect(words,pattern="agend*")) %>% 
+    filter(!str_detect(words,pattern="datum*")) %>% 
+    filter(!str_detect(words,pattern="support*")) %>%
+    filter(!str_detect(words,pattern="progra*"))
+
+```
+
+## Frequency table
+
+The frequency of specific words and n-grams in each paragraphs.
+
+```{r, fig.align='center',fig.width=6,fig.height=4}
+(finland_tokenized %>%
+    count(words) %>% 
+    arrange(desc(n)) %>% 
+    top_n(30) %>%
+    mutate(word = fct_reorder(words, n, .desc = F)) %>%
+    ggplot(aes(x=n, y=word)) +
+    geom_col_pattern(
+    colour = "white",
+    pattern = 'gradient',
+    pattern_fill2 = '#003580',
+    pattern_fill = '#FFFFFF',
+    pattern_orientation='horizontal',
+    pattern_alpha=1)+
+    scale_fill_hue() +
+    geom_text(aes(label=n),hjust=-0.1,size=7,family="Nanum Gothic")+
+    labs(y = NULL, title="Finland") +
+    theme_bw()+
+    theme(plot.title = element_text(size=40),
+        text=element_text(family="Nanum Gothic",size=25)) -> c)
+
+(finland_ngram %>%
+    count(words) %>% 
+    arrange(desc(n)) %>% 
+    top_n(20) %>%
+    mutate(word = fct_reorder(words, n, .desc = F)) %>%
+    ggplot(aes(x=n, y=word)) +
+    geom_col_pattern(
+    colour = "white",
+    pattern = 'gradient',
+    pattern_fill2 = '#003580',
+    pattern_fill = '#FFFFFF',
+    pattern_orientation='horizontal',
+    pattern_alpha=1)+
+    scale_fill_hue() +
+    geom_text(aes(label=n),hjust=-0.1,size=7,family="Nanum Gothic")+
+    labs(y = NULL, title="Finland") +
+    theme_bw()+
+    theme(plot.title =  element_text(size=40),
+        text=element_text(family="Nanum Gothic",size=25)) -> c1) 
+```
+
+## TF-IDF per paragraph
+
+```{r, fig.align='center',fig.width=10,fig.height=10}
+finland_tfidf <- finland_tokenized %>%
+    mutate(id=glue::glue("{paragraph}-{sentence}")) %>% 
+    group_by(paragraph) %>%
+    count(paragraph,words) %>% 
+    bind_tf_idf(words, paragraph, n) %>% 
+    arrange(desc(tf_idf)) %>% 
+    relocate(words,.before=paragraph) 
+      
+finland_tfidf %>% 
+    filter(n>=2)%>% 
+    head(20) %>% 
+    kbl() %>% 
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
+
+## Topic modeling
+
+```{r}
+set.seed(2022)
+
+finland_tfidf  %>%
+  cast_dtm(paragraph, words, n) -> finland_dtm.old
+
+rowTotals <- apply(finland_dtm.old, 1, sum) # Find the sum of words in each Document
+finland_dtm <- finland_dtm.old[rowTotals> 0, ] # Remove all docs without words
+
+```
+
+### Using perplexity for hold out set
+
+The perplexity is the geometric mean of word likelihood. In 5-fold CV, we first estimate the model, usually called training model, for a given number of topics using 4 folds of the data and then use the left one fold of the data to calculate the perplexity. In calculating the perplexity, we set the model in LDA or CTM to be the training model and not to estimate the beta parameters.
+
+### Cast LDA (k=6)
+
+```{r}
+finland_topic="
+government, national, policy, report, implementation, plan, ministry, parliament, committee, commission,
+innovation, development, sustainable, society, research, commitment, company, business, public, sector,
+indicator, assessment, people, panel, union, organisation, participate, issue, include, act,
+education, increase, social, health, service, equality, woman, population, child,
+energy, water, carbon, food, emission, consumption, reduce, economy, forest,
+country, global, climate, international, cooperation, develop, promote, change"
+finland_topic_update <- finland_topic %>% 
+    str_squish() %>% 
+    str_split(pattern=", ",simplify =T) 
+finland_topic_names=data.frame(
+  stringsAsFactors = FALSE,
+                topic = c(1L, 2L, 3L, 4L, 5L, 6L),
+                topic2= c("Government Policy", "Social Innovation", "Governance", "Human Rights", "Resources Management", "International Cooperation"))
+
+```
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+finland_lda <-  LDA(finland_dtm, k = 6,
+              method="Gibbs",
+              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
+
+finland_tp_6 <- finland_lda %>%
+    tidy(matrix = "beta") %>%
+    group_by(term) %>%
+    slice_max(beta) %>%
+    dplyr::left_join(finland_topic_names,by="topic") %>% 
+    ungroup() %>% 
+    select(-topic) %>% 
+    rename(topic="topic2")
+
+finland_tp_6 %>% 
+    group_by(topic) %>%
+    slice_max(beta,n=10) %>%
+    filter(term %in% as.vector(finland_topic_update)) %>% 
+    arrange(topic)  %>% 
+    mutate(term = reorder_within(term, beta, topic)) %>%
+    ggplot(aes(beta, term, fill = topic)) +
+    geom_col(show.legend = FALSE) +
+    facet_wrap(~ topic, scales = "free",ncol=3) +
+    scale_y_reordered() +
+    theme_bw()+ 
+    theme(plot.title = element_text(size=20),
+          text=element_text(family="Nanum Gothic",size=40),
+          axis.text.x = element_text(size = 20),
+          axis.title.y=element_blank()) + 
+    ghibli::scale_fill_ghibli_d("PonyoLight", direction = 1)
+```
+
+-   Clustered into 6 topics: 'Government Policy', 'Social Innovation', 'Governance', 'Human Rights', 'Resource Management', 'International Cooperation'.
+
+-   When looking at topics of 'Government Policy', 'Governance', it can be seen that the facilitator of the Sustainable Development Policy in Finland is not only the government but also various stakeholders participating in policy decision-making process
+
+-   It can be seen that people are concerned about various topics related to society and people who have interest in 'human rights' and 'social innovation', and this contributes to attaining the sustainability of development
+
+-   Interest in 'Resource Management', which is an essential element of sustainable development, is highlighted by topics covering carbon emissions as well as water and food, indicating that Finland is paying attention to resources and the environment
+
+-   In the case of Finland, it can be deduced that cooperation with other nations is promoted in that there is topic regarding 'International Cooperation'
+
+## Network Graph
+
+### Pairwise Count
+
+```{r}
+finland_coocur <- finland_tfidf  %>%
+    ungroup() %>% 
+    arrange(desc(n)) %>%
+    rename(term=words) %>%
+    pairwise_count(term, paragraph, sort = TRUE,upper = F) 
+```
+
+### Building links and nodes
+
+```{r}
+links <- finland_coocur %>%
+    top_n(100) %>%
+    rename(source="item1",target="item2",weight="n") 
+
+nodes <- tibble(term=union(links$source,links$target)) %>%
+    left_join(y=finland_tp_6,by="term") %>%
+    dplyr::select(nodes="term",topic)
+```
+
+### Building networks
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+finland_network <- graph_from_data_frame(d = links, vertices = nodes, directed = F)
+finland_g <- as_tbl_graph(finland_network)
+```
+
+### Network Graph of inter-topic
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+finland_g %>%
+    activate("nodes") %>%
+    mutate(degree = centrality_degree(),
+             community = as.factor(topic)) %>%
+    ggraph(layout = 'kk') +
+    geom_edge_link(aes(alpha = weight,width=weight),
+                   colour = "black", show.legend = FALSE) +
+    scale_edge_width(range = c(0.05,1.5)) +
+    scale_edge_alpha(range = c(0.3,1)) +
+    scale_size(range = c(5,20)) + 
+    geom_node_point(aes(colour = community, size = degree)) +
+    geom_node_text(aes(label = name, size=degree),size=8, repel = TRUE,family="Nanum Gothic") +
+    theme_graph(base_family="Nanum Gothic") +
+    theme(text=element_text(family="Nanum Gothic", size=30)) +
+    guides(size="none",
+           color = guide_legend(title="Topic 명",
+                                override.aes = list(size=5))) +
+    ghibli::scale_color_ghibli_d("PonyoLight", direction = 1)
+```
+
+### Network Graph within topic
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+finland_g %>%
+    activate("nodes") %>%
+    mutate(degree = centrality_degree(),
+             community = as.factor(topic)) %>%
+    ggraph(layout = 'kk') +
+    geom_edge_link(aes(alpha = weight,width=weight),
+                   colour = "black", show.legend = FALSE) +
+    scale_edge_width(range = c(0.05,1)) +
+    scale_edge_alpha(range = c(0.05,1)) + 
+    geom_node_point(aes(colour = community, size = degree)) +
+    geom_node_text(aes(label = name),size=8, repel = TRUE,family="Nanum Gothic") +
+    theme_graph(base_family="Nanum Gothic") +
+    theme(text=element_text(family="Nanum Gothic", size=30),
+          strip.text = element_text(size = 20),
+          panel.border = element_rect(color = "black", fill = NA, size = 1)) +
+    guides(size="none",
+           color = guide_legend(title="Topic 명",
+                                override.aes = list(size=5))) +
+    ghibli::scale_color_ghibli_d("PonyoLight", direction = 1) +
+    facet_nodes(~ community, ncol=3, scales = "free")
+```
+
+-   Looking the Network Graph within topic, the topics of 'Social Innovation', 'Government Policy', and 'International Cooperation' show a stronger connection between words than other topics
+-   This means that Finland's efforts on achieving above three topics have been promoted relatively well
+-   In particular, keywords such as 'sustainable' and 'development' show the strongest connection in the 'Social Innovation' topic, indicating that Finland is pursuing a high level of social innovation to achieve sustainable development
+-   Looking at the Network Graph of inter-topic, the topic of 'Social Innovation', which accounts for the largest portion of the network, is frequently linked to 'government policy' keywords such as 'government' and 'policy', indicating that sustainable development based on social innovation in Finland is the governmen-driven
+
+# 6. Japan VNR
+
+## Preprocess
+
+```{r}
+japan<-readLines(jp_path) %>%
+    str_flatten(collapse = " ") %>%
+    str_replace_all(pattern="//", " // ") %>%
+    str_split(pattern="//") %>%
+    unlist() %>%
+    str_squish() %>%
+    str_remove_all("ABC*\\w*") %>%
+    tibble(text=.) %>% 
+    filter(trimws(text) != "") %>% 
+    mutate(paragraph=1:n(),.before=text)
+```
+
+## Tokenizing words
+
+break the text into individual tokens (a process called tokenization) and transform it to a tidy data structure.
+
+```{r}
+japan_tokenized <- japan %>% 
+   mutate(words=map(text, sentence_word1)) %>%
+   dplyr::select(-text) %>%
+   unnest(words) %>% 
+   transmute(paragraph,sentence,words) %>%
+   mutate(words=map(words, sentence_word2)) %>%
+   unnest(words) 
+```
+
+## n-grams
+
+An n-gram (sometimes written "ngram") is a term in linguistics for a contiguous sequence of\
+n items from a given sequence of text or speech. The item can be phonemes, syllables, letters, or words depending on the application, but when most people talk about n-grams, they mean a group of\
+n words.
+
+```{r}
+japan_ngram  <-  japan %>% 
+   mutate(words=map(text, sentence_word1)) %>%
+   dplyr::select(-text) %>%
+   unnest(words) %>% 
+   transmute(paragraph,sentence,words) %>%
+   mutate(words=map(words, sentence_word3)) %>%
+   unnest(words) 
+```
+
+## Remove inadequate words for analysis
+
+```{r}
+japan_tokenized <- japan_tokenized  %>% 
+    filter(!str_detect(words,pattern="[0-9]")) %>%  
+    filter(!str_detect(words,pattern="jap*[a-z]*")) %>%
+    filter(!str_detect(words,pattern="asia[a-z]*")) %>% 
+    filter(!str_detect(words,pattern="key")) %>%
+    filter(!str_detect(words,pattern="sdg*")) %>% 
+    filter(!str_detect(words,pattern="billi*")) %>% 
+    filter(!str_detect(words,pattern="milli*")) %>%
+    filter(!str_detect(words,pattern="progra*")) %>%
+    filter(!str_detect(words,pattern="inwh*")) %>%
+    filter(!str_detect(words,pattern="agend*")) %>% 
+    filter(!str_detect(words,pattern="billi*")) %>% 
+    filter(!str_detect(words,pattern="datum*")) %>% 
+    filter(!str_detect(words,pattern="support*")) %>%
+    filter(!str_detect(words,pattern="progra*"))
+
+
+japan_ngram <- japan_ngram  %>% 
+    filter(!str_detect(words,pattern="[0-9]")) %>%  
+    filter(!str_detect(words,pattern="jap*[a-z]*")) %>%
+    filter(!str_detect(words,pattern="asia[a-z]*")) %>% 
+    filter(!str_detect(words,pattern="key")) %>%
+    filter(!str_detect(words,pattern="sdg*")) %>% 
+    filter(!str_detect(words,pattern="billi*")) %>% 
+    filter(!str_detect(words,pattern="milli*")) %>%
+    filter(!str_detect(words,pattern="progra*")) %>%
+    filter(!str_detect(words,pattern="inwh*")) %>%
+    filter(!str_detect(words,pattern="agend*")) %>% 
+    filter(!str_detect(words,pattern="billi*")) %>% 
+    filter(!str_detect(words,pattern="datum*")) %>% 
+    filter(!str_detect(words,pattern="support*")) %>%
+    filter(!str_detect(words,pattern="progra*"))
+```
+
+## Frequency table
+
+The frequency of specific words and n-grams in each paragraphs.
+
+```{r, fig.align='center',fig.width=6,fig.height=4}
+(japan_tokenized %>%
+    count(words) %>% 
+    arrange(desc(n)) %>% 
+    top_n(30) %>%
+    mutate(word = fct_reorder(words, n, .desc = F)) %>%
+    ggplot(aes(x=n, y=word)) +
+    geom_col_pattern(
+    colour = "white",
+    pattern = 'gradient',
+    pattern_fill2 = '#BC002D',
+    pattern_fill = '#FFFFFF',
+    pattern_orientation='horizontal',
+    pattern_alpha=1)+
+    scale_fill_hue() +
+    geom_text(aes(label=n),hjust=-0.1,size=7,family="Nanum Gothic")+
+    labs(y = NULL, title="Japan") +
+    theme_bw()+
+    theme(plot.title = element_text(size=40),
+        text=element_text(family="Nanum Gothic",size=25)) -> d)
+
+(japan_ngram %>%
+    count(words) %>% 
+    arrange(desc(n)) %>% 
+    top_n(20) %>%
+    mutate(word = fct_reorder(words, n, .desc = F)) %>%
+    ggplot(aes(x=n, y=word)) +
+    geom_col_pattern(
+    colour = "white",
+    pattern = 'gradient',
+    pattern_fill2 = '#BC002D',
+    pattern_fill = '#FFFFFF',
+    pattern_orientation='horizontal',
+    pattern_alpha=1)+
+    scale_fill_hue() +
+    geom_text(aes(label=n),hjust=-0.1,size=7,family="Nanum Gothic")+
+    labs(y = NULL, title="Japan") +
+    theme_bw()+
+    theme(plot.title =  element_text(size=40),
+        text=element_text(family="Nanum Gothic",size=25)) -> d1) 
+```
+
+## TF-IDF per paragraph
+
+```{r, fig.align='center',fig.width=10,fig.height=10}
+japan_tfidf <- japan_tokenized %>%
+    mutate(id=glue::glue("{paragraph}-{sentence}")) %>% 
+    group_by(paragraph) %>%
+    count(paragraph,words) %>% 
+    bind_tf_idf(words, paragraph, n) %>% 
+    arrange(desc(tf_idf)) %>% 
+    relocate(words,.before=paragraph) 
+      
+japan_tfidf %>% 
+    filter(n>=2)%>% 
+    head(20) %>% 
+    kbl() %>% 
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
+
+## Topic modeling
+
+```{r}
+set.seed(2022)
+
+japan_tfidf  %>%
+  cast_dtm(paragraph, words, n) -> japan_dtm.old
+
+rowTotals <- apply(japan_dtm.old, 1, sum) # Find the sum of words in each Document
+japan_dtm <- japan_dtm.old[rowTotals> 0, ] # Remove all docs without words
+
+```
+
+### Using perplexity for hold out set
+
+The perplexity is the geometric mean of word likelihood. In 5-fold CV, we first estimate the model, usually called training model, for a given number of topics using 4 folds of the data and then use the left one fold of the data to calculate the perplexity. In calculating the perplexity, we set the model in LDA or CTM to be the training model and not to estimate the beta parameters.
+
+```{r warning = FALSE, message = FALSE, results='hide', fig.align='center',fig.width=10,fig.height=7}
+japan_split <- initial_split(japan_tfidf, prop = 0.8)
+
+# Train
+japan_split_train <- training(japan_split)
+japan_split_train  %>%
+    cast_dtm(paragraph, words, n) -> japan_train_dtm.old
+
+rowTotals <- apply(japan_train_dtm.old, 1, sum) # Find the sum of words in each Document
+japan_train_dtm <- japan_train_dtm.old[rowTotals> 0, ] # Remove all docs without words
+
+# Test
+japan_split_test <- testing(japan_split)
+japan_split_test  %>%
+    cast_dtm(paragraph, words, n) -> japan_test_dtm.old
+
+rowTotals <- apply(japan_test_dtm.old, 1, sum) # Find the sum of words in each Document
+japan_test_dtm <- japan_test_dtm.old[rowTotals> 0, ] # Remove all docs without words
+
+loglik_v     <- vector("numeric", 20)
+perplexity_v <- vector("numeric", 20)
+
+
+for (i in 2:20) {
+    cat("... ", i, "\n")
+    tmp_mod  <- LDA(japan_train_dtm, k=i, method="Gibbs", control=list(alpha=0.5, iter=1000, seed=2020, thin=3))
+    loglik_v[i] <- logLik(tmp_mod)
+    perplexity_v[i] <- perplexity(tmp_mod, newdata = japan_test_dtm)
+}
+
+japan_topic_k_df <- tibble(
+    topic_k = 1:20,
+    loglik = loglik_v,
+    perplexity = perplexity_v)
+
+japan_topic_k_df %>%
+    filter(topic_k != 1) %>%
+    gather(metric, value, -topic_k) %>%
+    ggplot(aes(x=topic_k, y=value)) +
+    geom_line() +
+    geom_point() +
+    facet_wrap(~metric, scales = "free")+
+    theme_bw() +
+    theme(plot.title = element_text(size=20),
+        text=element_text(family="Nanum Gothic",size=40))
+```
+
+### Cast LDA (k=10)
+
+```{r}
+japan_topic="covid, pandemic, system, poverty, life, population, age, service, people, local, government, city, promote, regional, aim, organization, private, public, initiative, disaster, increase, numb, water, reduction, survey, time, rate, worker, result, previous, compare, approximately, society, woman, gender, human, include, business, equality, activity, company, civil, child, education, school, national, awareness, raise, disability, center, student, generation, country, development, international, develop, cooperation, contribute, nation, provide, fund, peace,food, forest, resource, waste, marine, plastic, loss, management, fishery, biodiversity, change, economic, social, infrastructure, sustainable, quality, environment, technology, growth, innovation, energy, transportation, renewable, consumption, addition, emission, reduce, power, project, promotion, effort, plan, policy, action, achieve, target, goal, stakeholder"
+japan_topic_update <- japan_topic %>% 
+    str_squish() %>% 
+    str_split(pattern=", ",simplify =T) 
+japan_topic_names=data.frame(
+  stringsAsFactors = T, topic = c(1L,2L,3L,4L,5L,6L,7L,8L,9L,10L),               topic2= c("Quality of Life","Government Policy","Disaster Management",
+            "Human Rights","Education","International Cooperation",
+            "Natural Resources","Innovative Development",
+            "Renewable Energy","Goal-oriented Development"))
+```
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+japan_lda <-  LDA(japan_dtm, k = 10,
+              method="Gibbs",
+              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
+
+japan_tp_10 <- japan_lda %>%
+    tidy(matrix = "beta") %>%
+    group_by(term) %>%
+    slice_max(beta) %>%
+    dplyr::left_join(japan_topic_names,by="topic") %>% 
+    ungroup() %>% 
+    select(-topic) %>% 
+    rename(topic="topic2")
+
+japan_tp_10 %>% 
+    group_by(topic) %>%
+    slice_max(beta,n=10) %>%
+    filter(term %in% as.vector(japan_topic_update)) %>% 
+    arrange(topic)  %>% 
+    mutate(term = reorder_within(term, beta, topic)) %>%
+    ggplot(aes(beta, term, fill = topic)) +
+    geom_col(show.legend = FALSE) +
+    facet_wrap(~ topic, scales = "free", ncol=4) +
+    scale_y_reordered() +
+    theme_bw()+ 
+    theme(plot.title = element_text(size=20),
+          text=element_text(family="Nanum Gothic",size=20),
+          axis.text.x = element_text(size = 25),
+          axis.title.y=element_blank(),
+          strip.text = element_text(size = 30)) + 
+    scale_fill_manual( values = colorRampPalette(ghibli::ghibli_palette("PonyoLight"))(10))
+
+```
+
+-   Clustered into 10 topics: 'Quality of Life','Government Policy','Disaster Management','Human Rights','Education','International Cooperation','Natural Resources','Innovative Development','Renewable Energy','Goal-oriented Development'
+-   Through topics such as "Government Policy," Goal-Oriented Development" and "Innovative Growth," it is expected that Japan's policy process will be goal-oriented and emphasizing innovation
+-   In addition, due to Japan's frequent natural disasters such as earthquakes and tsunamis, preparation and response to disasters are considered an important topic ('Disaster Management'). In addition, it is found that the government is focusing on utilizing renewable energy and fostering human resources to reduce the country's development and dependence on energy by reflecting the fact that natural resources are highly dependent on foreign countries due to their low reserves ('Education' and 'Renewable Energy').
+-   Furthermore, efforts are being made for modern universal values and activities such as 'human rights' and 'international cooperation'.
+-   When the frequency of the appearance of certain words is listed in the order of many, words such as 'government', 'promote', 'social', 'development', and 'country' are at the top, so it can be expected that Japan is implementing policies led by the government.
+
+## Network Graph
+
+### Pairwise Count
+
+```{r}
+japan_coocur <- japan_tfidf  %>%
+    ungroup() %>% 
+    arrange(desc(n)) %>%
+    rename(term=words) %>%
+    pairwise_count(term, paragraph, sort = TRUE,upper = F) %>%
+    filter(!item1=="gender"&!item2=="gender")
+```
+
+### Building links and nodes
+
+```{r}
+links <- japan_coocur %>%
+    top_n(150) %>%
+    rename(source="item1",target="item2",weight="n") 
+
+nodes <- tibble(term=union(links$source,links$target)) %>%
+    left_join(y=japan_tp_10,by="term") %>%
+    dplyr::select(nodes="term",topic)
+```
+
+### Building networks
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+japan_network <- graph_from_data_frame(d = links, vertices = nodes, directed = F)
+japan_g <- as_tbl_graph(japan_network)
+```
+
+### Network Graph of inter-topic
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+japan_g %>%
+    activate("nodes") %>%
+    mutate(degree = centrality_degree(),
+             community = topic) %>%
+    ggraph(layout = 'kk') +
+    geom_edge_link(aes(alpha = weight,width=weight),
+                   colour = "black", show.legend = FALSE) +
+    scale_edge_width(range = c(0.05,1.5)) +
+    scale_edge_alpha(range = c(0.3,1)) +
+    scale_size(range = c(5,20)) + 
+    geom_node_point(aes(colour = community, size = degree)) +
+    geom_node_text(aes(label = name, size=degree),size=8, repel = TRUE,family="Nanum Gothic") +
+    theme_graph(base_family="Nanum Gothic") +
+    theme(text=element_text(family="Nanum Gothic", size=30)) +
+    guides(size="none",
+           color = guide_legend(title="Topic 명",
+                                override.aes = list(size=5))) +
+    scale_color_manual(values = colorRampPalette(ghibli::ghibli_palette("PonyoLight"))(10)[-8])
+```
+
+### Network Graph within topic
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+japan_g %>%
+    activate("nodes") %>%
+    mutate(degree = centrality_degree(),
+             community = as.factor(topic)) %>%
+    ggraph(layout = 'kk') +
+    geom_edge_link(aes(alpha = weight,width=weight),
+                   colour = "black", show.legend = FALSE) +
+    scale_edge_width(range = c(0.05,1)) +
+    scale_edge_alpha(range = c(0.05,1)) + 
+    geom_node_point(aes(colour = community, size = degree)) +
+    geom_node_text(aes(label = name),size=8, repel = TRUE,family="Nanum Gothic") +
+    theme_graph(base_family="Nanum Gothic") +
+    theme(text=element_text(family="Nanum Gothic", size=30),
+          strip.text = element_text(size = 20),
+          panel.border = element_rect(color = "black", fill = NA, size = 1)) +
+    guides(size="none",
+           color = guide_legend(title="Topic 명",
+                                override.aes = list(size=5))) +
+    facet_nodes(~ community, ncol=5, scales = "free") +
+    scale_color_manual(values = colorRampPalette(ghibli::ghibli_palette("PonyoLight"))(10)[-8])
+```
+
+-   Looking at the Network Graph within topic, the connection between words is more vivid than those other topics in the case of 'Government Policy', 'International Cooperation', 'Goal-oriented Development', and 'Human Rights' topics
+-   Through this, it can be inferred that govenrment efforts related to these four topics are relatively well constructed
+-   In particular, in the 'Government Policy' topic, the relationship between keywords such as 'government' and 'promote', 'government' and 'local' is clear, indicating that the government-led top-down policy process is adopted
+-   Looking at the Network Graph of inter-topic, strong connection between keywords within 'Governmental Policy' and 'International Cooperation' topics is easy to recognize
+-   In particular, keywords of 'promote' and 'government' of 'Government Policy" topic showed a strong connection with 'international', 'development', 'cooperation', and 'human' of 'international cooperation' topic, and in Japan, policies related to sustainable development at domestic and foreign are led by the central government
+
+# 7. UK VNR
+
+## Preprocess
+
+```{r}
+uk <-readLines(uk_path) %>%
+    str_flatten(collapse = " ") %>%
+    str_replace_all(pattern="//", " // ") %>%
+    str_split(pattern="//") %>%
+    unlist() %>%
+    str_squish() %>%
+    str_remove_all("ABC*\\w*") %>%
+    tibble(text=.) %>% 
+    filter(trimws(text) != "") %>% 
+    mutate(paragraph=1:n(),.before=text)
+```
+
+## Tokenizing words
+
+break the text into individual tokens (a process called tokenization) and transform it to a tidy data structure.
+
+```{r}
+uk_tokenized <- uk %>% 
+   mutate(words=map(text, sentence_word1)) %>%
+   dplyr::select(-text) %>%
+   unnest(words) %>% 
+   transmute(paragraph,sentence,words) %>%
+   mutate(words=map(words, sentence_word2)) %>%
+   unnest(words) 
+```
+
+## n-grams
+
+An n-gram (sometimes written "ngram") is a term in linguistics for a contiguous sequence of\
+n items from a given sequence of text or speech. The item can be phonemes, syllables, letters, or words depending on the application, but when most people talk about n-grams, they mean a group of\
+n words.
+
+```{r}
+uk_ngram  <-  uk %>% 
+   mutate(words=map(text, sentence_word1)) %>%
+   dplyr::select(-text) %>%
+   unnest(words) %>% 
+   transmute(paragraph,sentence,words) %>%
+   mutate(words=map(words, sentence_word3)) %>%
+   unnest(words) 
+```
+
+## Remove inadequate words for analysis
+
+```{r}
+uk_tokenized <- uk_tokenized  %>% 
+    filter(!str_detect(words,pattern="[0-9]")) %>%  
+    filter(!str_detect(words,pattern="uk[a-z]*")) %>%
+    filter(!str_detect(words,pattern="eur[a-z]*")) %>% 
+    filter(!str_detect(words,pattern="key")) %>%
+    filter(!str_detect(words,pattern="sdg*")) %>% 
+    filter(!str_detect(words,pattern="eu*")) %>%
+    filter(!str_detect(words,pattern="billi*")) %>% 
+    filter(!str_detect(words,pattern="milli*")) %>%
+    filter(!str_detect(words,pattern="progra*")) %>%
+    filter(!str_detect(words,pattern="inwh*")) %>%
+    filter(!str_detect(words,pattern="agend*")) %>% 
+    filter(!str_detect(words,pattern="wale*")) %>% 
+    filter(!str_detect(words,pattern="scot*")) %>% 
+    filter(!str_detect(words,pattern="eng*")) %>% 
+    filter(!str_detect(words,pattern="irel*")) %>% 
+    filter(!str_detect(words,pattern="datum*")) %>% 
+    filter(!str_detect(words,pattern="support*")) %>% 
+    filter(!str_detect(words,pattern="wt*")) %>% 
+    filter(!str_detect(words,pattern="rbmps*")) %>% 
+    filter(!str_detect(words,pattern="inn*")) %>%
+    filter(!str_detect(words,pattern="whilst*")) %>% 
+    filter(!str_detect(words,pattern="npt*")) %>%
+    filter(!str_detect(words,pattern="britain*")) 
+
+uk_ngram <- uk_ngram  %>% 
+    filter(!str_detect(words,pattern="[0-9]")) %>%  
+    filter(!str_detect(words,pattern="uk[a-z]*")) %>%
+    filter(!str_detect(words,pattern="eur[a-z]*")) %>% 
+    filter(!str_detect(words,pattern="key")) %>%
+    filter(!str_detect(words,pattern="sdg*")) %>% 
+    filter(!str_detect(words,pattern="eu*")) %>%
+    filter(!str_detect(words,pattern="billi*")) %>% 
+    filter(!str_detect(words,pattern="milli*")) %>%
+    filter(!str_detect(words,pattern="progra*")) %>%
+    filter(!str_detect(words,pattern="inwh*")) %>%
+    filter(!str_detect(words,pattern="agend*")) %>% 
+    filter(!str_detect(words,pattern="wale*")) %>% 
+    filter(!str_detect(words,pattern="scot*")) %>% 
+    filter(!str_detect(words,pattern="eng*")) %>% 
+    filter(!str_detect(words,pattern="irel*")) %>% 
+    filter(!str_detect(words,pattern="datum*")) %>% 
+    filter(!str_detect(words,pattern="support*")) %>% 
+    filter(!str_detect(words,pattern="wt*")) %>% 
+    filter(!str_detect(words,pattern="rbmps*")) %>% 
+    filter(!str_detect(words,pattern="inn*")) %>%
+    filter(!str_detect(words,pattern="whilst*")) %>% 
+    filter(!str_detect(words,pattern="npt*")) %>%
+    filter(!str_detect(words,pattern="britain*")) 
+```
+
+## Frequency table
+
+The frequency of specific words and n-grams in each paragraphs.
+
+```{r, fig.align='center',fig.width=6,fig.height=4}
+(uk_tokenized %>%
+    count(words) %>% 
+    arrange(desc(n)) %>% 
+    top_n(30) %>%
+    mutate(word = fct_reorder(words, n, .desc = F)) %>%
+    ggplot(aes(x=n, y=word)) +
+    geom_col_pattern(
+    colour = "white",
+    pattern = 'gradient',
+    pattern_fill2 = '#00247D',
+    pattern_fill = '#CF142B',
+    pattern_orientation='horizontal',
+    pattern_alpha=1)+
+    scale_fill_hue() +
+    geom_text(aes(label=n),hjust=-0.1,size=7,family="Nanum Gothic")+
+    labs(y = NULL, title="United Kingdom") +
+    theme_bw()+
+    theme(plot.title = element_text(size=40),
+        text=element_text(family="Nanum Gothic",size=25)) -> e)
+
+(uk_ngram %>%
+    count(words) %>% 
+    arrange(desc(n)) %>% 
+    top_n(20) %>%
+    mutate(word = fct_reorder(words, n, .desc = F)) %>%
+    ggplot(aes(x=n, y=word)) +
+    geom_col_pattern(
+    colour = "white",
+    pattern = 'gradient',
+    pattern_fill2 = '#00247D',
+    pattern_fill = '#CF142B',
+    pattern_orientation='horizontal',
+    pattern_alpha=1)+
+    scale_fill_hue() +
+    geom_text(aes(label=n),hjust=-0.1,size=7,family="Nanum Gothic")+
+    labs(y = NULL, title="United Kingdom") +
+    theme_bw()+
+    theme(plot.title =  element_text(size=40),
+        text=element_text(family="Nanum Gothic",size=25)) -> e1) 
+```
+
+## TF-IDF per paragraph
+
+```{r, fig.align='center',fig.width=10,fig.height=10}
+uk_tfidf <- uk_tokenized %>%
+    mutate(id=glue::glue("{paragraph}-{sentence}")) %>% 
+    group_by(paragraph) %>%
+    count(paragraph,words) %>% 
+    bind_tf_idf(words, paragraph, n) %>% 
+    arrange(desc(tf_idf)) %>% 
+    relocate(words,.before=paragraph) 
+      
+uk_tfidf %>% 
+    filter(n>=2)%>% 
+    head(20) %>% 
+    kbl() %>% 
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
+
+## Topic modeling
+
+```{r}
+set.seed(2022)
+
+uk_tfidf  %>%
+  cast_dtm(paragraph, words, n) -> uk_dtm.old
+
+rowTotals <- apply(uk_dtm.old, 1, sum) # Find the sum of words in each Document
+uk_dtm <- uk_dtm.old[rowTotals> 0, ] # Remove all docs without words
+
+```
+
+### Using perplexity for hold out set
+
+The perplexity is the geometric mean of word likelihood. In 5-fold CV, we first estimate the model, usually called training model, for a given number of topics using 4 folds of the data and then use the left one fold of the data to calculate the perplexity. In calculating the perplexity, we set the model in LDA or CTM to be the training model and not to estimate the beta parameters.
+
+```{r warning = FALSE, message = FALSE, results='hide', fig.align='center',fig.width=10,fig.height=7}
+uk_split <- initial_split(uk_tfidf, prop = 0.8)
+
+# Train
+uk_split_train <- training(uk_split)
+uk_split_train  %>%
+    cast_dtm(paragraph, words, n) -> uk_train_dtm.old
+
+rowTotals <- apply(uk_train_dtm.old, 1, sum) # Find the sum of words in each Document
+uk_train_dtm <- uk_train_dtm.old[rowTotals> 0, ] # Remove all docs without words
+
+# Test
+uk_split_test <- testing(uk_split)
+uk_split_test  %>%
+    cast_dtm(paragraph, words, n) -> uk_test_dtm.old
+
+rowTotals <- apply(uk_test_dtm.old, 1, sum) # Find the sum of words in each Document
+uk_test_dtm <- uk_test_dtm.old[rowTotals> 0, ] # Remove all docs without words
+
+loglik_v     <- vector("numeric", 20)
+perplexity_v <- vector("numeric", 20)
+
+
+for (i in 2:20) {
+    cat("... ", i, "\n")
+    tmp_mod  <- LDA(uk_train_dtm, k=i, method="Gibbs", control=list(alpha=0.5, iter=1000, seed=2020, thin=3))
+    loglik_v[i] <- logLik(tmp_mod)
+    perplexity_v[i] <- perplexity(tmp_mod, newdata = uk_test_dtm)
+}
+
+uk_topic_k_df <- tibble(
+    topic_k = 1:20,
+    loglik = loglik_v,
+    perplexity = perplexity_v)
+
+uk_topic_k_df %>%
+    filter(topic_k != 1) %>%
+    gather(metric, value, -topic_k) %>%
+    ggplot(aes(x=topic_k, y=value)) +
+    geom_line() +
+    geom_point() +
+    facet_wrap(~metric, scales = "free")+
+    theme_bw() +
+    theme(plot.title = element_text(size=20),
+        text=element_text(family="Nanum Gothic",size=40))
+```
+
+### Cast LDA (k=6)
+
+```{r}
+uk_topic="
+plastic, quality, population, land, significant, impact, priority, monitor, air,
+child, school, fund, girl, disability, family, adult, additional,
+goal, community, local, national, public, risk, act, approach, opportunity, authority,
+plan, action, policy, publish, gap, launch, focus, fair, ambition,
+global, country, commit, build, job, capacity, poor, africa, bank,
+food, supply, transport, company, standard, city, productivity, aim, product"
+uk_topic_update <- uk_topic %>% 
+    str_squish() %>% 
+    str_split(pattern=", ",simplify =T) 
+uk_topic_names=data.frame(
+  stringsAsFactors = FALSE,
+                topic = c(1L, 2L, 3L, 4L, 5L, 6L),
+                topic2= c("Environment", "Human Rights", "Governance", "Government Policy", "International Cooperation", "Food Security"))
+```
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+uk_lda <-  LDA(uk_dtm, k = 6,
+              method="Gibbs",
+              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
+
+uk_tp_6 <- uk_lda %>%
+    tidy(matrix = "beta") %>%
+    group_by(term) %>%
+    slice_max(beta) %>%
+    dplyr::left_join(uk_topic_names,by="topic") %>% 
+    ungroup() %>% 
+    select(-topic) %>% 
+    rename(topic="topic2")
+
+uk_tp_6 %>% 
+    group_by(topic) %>%
+    slice_max(beta,n=10) %>%
+    filter(term %in% as.vector(uk_topic_update)) %>% 
+    arrange(topic)  %>% 
+    mutate(term = reorder_within(term, beta, topic)) %>%
+    ggplot(aes(beta, term, fill = topic)) +
+    geom_col(show.legend = FALSE) +
+    facet_wrap(~ topic, scales = "free",ncol=3) +
+    scale_y_reordered() +
+    theme_bw()+ 
+    theme(plot.title = element_text(size=20),
+          text=element_text(family="Nanum Gothic",size=40),
+          axis.text.x = element_text(size = 20),
+          axis.title.y=element_blank()) + 
+    ghibli::scale_fill_ghibli_d("PonyoLight", direction = 1)
+```
+
+-   Clustered into 6 topics: 'Environment', 'Human Rights', 'Governance', 'Government Policy', 'International Cooperation', 'Food Security'
+-   The policy process is expected to take place in a way that cooperates with civil society, not just the top-down way in the past, despite the fact that the government plays a leading role.
+-   In addition, due to the recent climate crisis and Russian-Ukraine war, food problems have emerged as an important issue not only in developing countries but also in major developed countries, and the concept of security is expanding to a area of food security.
+-   UK showed great effort ot attain mordern universial values such as 'Human Rights' and 'International Cooperation'.
+-   When the keywords are sorted in the order of occurrence frequencies, keywords such as 'goal', 'plan', 'action', 'national', 'community', and 'local' are at the top, so it can be deduced that the UK has a cooperative approach with civil society, while total scheme being led by the central government.
+
+## Network Graph
+
+### Pairwise Count
+
+```{r}
+uk_coocur <- uk_tfidf  %>%
+    ungroup() %>% 
+    arrange(desc(n)) %>%
+    rename(term=words) %>%
+    pairwise_count(term, paragraph, sort = TRUE,upper = F) %>% 
+    filter(!(item1=="school"&item2=="child")) %>% 
+    filter(!(item2=="school"&item1=="child")) %>% 
+    filter(!(item2=="family"&item1=="child")) %>% 
+    filter(!(item2=="child"&item1=="family"))
+```
+
+### Building links and nodes
+
+```{r}
+links <- uk_coocur %>%
+    top_n(100) %>%
+    rename(source="item1",target="item2",weight="n") 
+
+nodes <- tibble(term=union(links$source,links$target)) %>%
+    left_join(y=uk_tp_6,by="term") %>%
+    dplyr::select(nodes="term",topic) %>% 
+    filter(!(nodes %in% c("school","child","family")))
+```
+
+### Building networks
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+uk_network <- graph_from_data_frame(d = links, vertices = nodes, directed = F)
+uk_g <- as_tbl_graph(uk_network)
+```
+
+### Network Graph of inter-topic
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+uk_g %>%
+    activate("nodes") %>%
+    mutate(degree = centrality_degree(),
+             community = as.factor(topic)) %>%
+    ggraph(layout = 'kk') +
+    geom_edge_link(aes(alpha = weight,width=weight),
+                   colour = "black", show.legend = FALSE) +
+    scale_edge_width(range = c(0.05,1.5)) +
+    scale_edge_alpha(range = c(0.3,1)) +
+    scale_size(range = c(5,20)) + 
+    geom_node_point(aes(colour = community, size = degree)) +
+    geom_node_text(aes(label = name, size=degree),size=8, repel = TRUE,family="Nanum Gothic") +
+    theme_graph(base_family="Nanum Gothic") +
+    theme(text=element_text(family="Nanum Gothic", size=30)) +
+    guides(size="none",
+           color = guide_legend(title="Topic 명",
+                                override.aes = list(size=5))) +
+    ghibli::scale_color_ghibli_d("PonyoLight", direction = 1)
+```
+
+### Network Graph within topic
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+uk_g %>%
+    activate("nodes") %>%
+    mutate(degree = centrality_degree(),
+             community = as.factor(topic)) %>%
+    ggraph(layout = 'kk') +
+    geom_edge_link(aes(alpha = weight,width=weight),
+                   colour = "black", show.legend = FALSE) +
+    scale_edge_width(range = c(0.05,1)) +
+    scale_edge_alpha(range = c(0.05,1)) + 
+    geom_node_point(aes(colour = community, size = degree)) +
+    geom_node_text(aes(label = name),size=8, repel = TRUE,family="Nanum Gothic") +
+    theme_graph(base_family="Nanum Gothic") +
+    theme(text=element_text(family="Nanum Gothic", size=30),
+          strip.text = element_text(size = 20),
+          panel.border = element_rect(color = "black", fill = NA, size = 1)) +
+    guides(size="none",
+           color = guide_legend(title="Topic 명",
+                                override.aes = list(size=5))) +
+    ghibli::scale_color_ghibli_d("PonyoLight", direction = 1) +
+    facet_nodes(~ community, ncol=3, scales = "free")
+```
+
+-   Looking at the Network Graph within topic, the connection between words is more evident than other topics like 'Governance', 'International Cooperation', and 'Government Policy'
+-   This allows us to deduce that policy efforts related to the these four topics are organized relatively well
+-   In particular, the relationship between keywords of 'plan' and 'action' in the 'government' topic is clear, and the relationship between 'local' and 'community', 'authority', 'national' and 'goal' in the government topic shows that the government forms and executes policies in cooperation with the community and civil society
+-   Looking at the Network Graph of inter-topic, there is a strong connection between the words constituting 'Governance' and 'Government Policy', 'Governance' and 'International Cooperation'
+-   In particular, the connection between keywords such as 'Goal', 'Action' and 'Plan' is relatively strong
+-   Therefore, it can be inferred that the British government is actively working on international cooperation and establishing policies in cooperation with civil society
+
+# 8. Austrailia VNR
+
+## Preprocess
+
+```{r}
+austrailia<-readLines(astl_path) %>%
+    str_flatten(collapse = " ") %>%
+    str_replace_all(pattern="//", " // ") %>%
+    str_split(pattern="//") %>%
+    unlist() %>%
+    str_squish() %>%
+    str_remove_all("ABC*\\w*") %>%
+    tibble(text=.) %>% 
+    filter(trimws(text) != "") %>% 
+    mutate(paragraph=1:n(),.before=text)
+```
+
+## Tokenizing words
+
+break the text into individual tokens (a process called tokenization) and transform it to a tidy data structure.
+
+```{r}
+austrailia_tokenized <- austrailia %>% 
+   mutate(words=map(text, sentence_word1)) %>%
+   dplyr::select(-text) %>%
+   unnest(words) %>% 
+   transmute(paragraph,sentence,words) %>%
+   mutate(words=map(words, sentence_word2)) %>%
+   unnest(words) 
+```
+
+## n-grams
+
+An n-gram (sometimes written "ngram") is a term in linguistics for a contiguous sequence of\
+n items from a given sequence of text or speech. The item can be phonemes, syllables, letters, or words depending on the application, but when most people talk about n-grams, they mean a group of\
+n words.
+
+```{r}
+austrailia_ngram  <-  austrailia %>% 
+   mutate(words=map(text, sentence_word1)) %>%
+   dplyr::select(-text) %>%
+   unnest(words) %>% 
+   transmute(paragraph,sentence,words) %>%
+   mutate(words=map(words, sentence_word3)) %>%
+   unnest(words) 
+```
+
+## Remove inadequate words for analysis
+
+```{r}
+austrailia_tokenized <- austrailia_tokenized  %>% 
+    filter(!str_detect(words,pattern="[0-9]")) %>%  
+    filter(!str_detect(words,pattern="austra*[a-z]*")) %>%
+    filter(!str_detect(words,pattern="eur[a-z]*")) %>% 
+    filter(!str_detect(words,pattern="key")) %>%
+    filter(!str_detect(words,pattern="sdg*")) %>% 
+    filter(!str_detect(words,pattern="eu*")) %>%
+    filter(!str_detect(words,pattern="billi*")) %>% 
+    filter(!str_detect(words,pattern="milli*")) %>%
+    filter(!str_detect(words,pattern="inwh*")) %>%
+    filter(!str_detect(words,pattern="agend*")) %>% 
+    filter(!str_detect(words,pattern="torres*"))%>% 
+    filter(!str_detect(words,pattern="cent")) %>% 
+    filter(!str_detect(words,pattern="datum*")) %>% 
+    filter(!str_detect(words,pattern="support*")) %>%
+    filter(!str_detect(words,pattern="progra*"))
+
+austrailia_ngram <- austrailia_ngram %>% 
+    filter(!str_detect(words,pattern="[0-9]")) %>%  
+    filter(!str_detect(words,pattern="austrail[a-z]*")) %>%
+    filter(!str_detect(words,pattern="eur[a-z]*")) %>% 
+    filter(!str_detect(words,pattern="key")) %>%
+    filter(!str_detect(words,pattern="sdg*")) %>% 
+    filter(!str_detect(words,pattern="eu*")) %>%
+    filter(!str_detect(words,pattern="billi*")) %>% 
+    filter(!str_detect(words,pattern="milli*")) %>%
+    filter(!str_detect(words,pattern="inwh*")) %>%
+    filter(!str_detect(words,pattern="agend*")) %>% 
+    filter(!str_detect(words,pattern="torres*"))%>% 
+    filter(!str_detect(words,pattern="cent")) %>% 
+    filter(!str_detect(words,pattern="datum*")) %>% 
+    filter(!str_detect(words,pattern="support*")) %>%
+    filter(!str_detect(words,pattern="progra*"))
+```
+
+## Frequency table
+
+The frequency of specific words and n-grams in each paragraphs.
+
+```{r, fig.align='center',fig.width=6,fig.height=4}
+(austrailia_tokenized %>%
+    count(words) %>% 
+    arrange(desc(n)) %>% 
+    top_n(30) %>%
+    mutate(word = fct_reorder(words, n, .desc = F)) %>%
+    ggplot(aes(x=n, y=word)) +
+    geom_col_pattern(
+    colour = "white",
+    pattern = 'gradient',
+    pattern_fill2 = '#00008B',
+    pattern_fill = '#FFFFFF',
+    pattern_orientation='horizontal',
+    pattern_alpha=1)+
+    scale_fill_hue() +
+    geom_text(aes(label=n),hjust=-0.1,size=7,family="Nanum Gothic")+
+    labs(y = NULL, title="Austrailia") +
+    theme_bw()+
+    theme(plot.title = element_text(size=40),
+        text=element_text(family="Nanum Gothic",size=25)) -> f)
+
+(austrailia_ngram %>%
+    count(words) %>% 
+    arrange(desc(n)) %>% 
+    top_n(20) %>%
+    mutate(word = fct_reorder(words, n, .desc = F)) %>%
+    ggplot(aes(x=n, y=word)) +
+    geom_col_pattern(
+    colour = "white",
+    pattern = 'gradient',
+    pattern_fill2 = '#00008B',
+    pattern_fill = '#FFFFFF',
+    pattern_orientation='horizontal',
+    pattern_alpha=1)+
+    scale_fill_hue() +
+    geom_text(aes(label=n),hjust=-0.1,size=7,family="Nanum Gothic")+
+    labs(y = NULL, title="Austrailia") +
+    theme_bw()+
+    theme(plot.title =  element_text(size=40),
+        text=element_text(family="Nanum Gothic",size=25)) -> f1) 
+```
+
+## TF-IDF per paragraph
+
+```{r, fig.align='center',fig.width=10,fig.height=10}
+austrailia_tfidf <- austrailia_tokenized %>%
+    mutate(id=glue::glue("{paragraph}-{sentence}")) %>% 
+    group_by(paragraph) %>%
+    count(paragraph,words) %>% 
+    bind_tf_idf(words, paragraph, n) %>% 
+    arrange(desc(tf_idf)) %>% 
+    relocate(words,.before=paragraph) 
+      
+austrailia_tfidf %>% 
+    filter(n>=2)%>% 
+    head(20) %>% 
+    kbl() %>% 
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
+
+## Topic modeling
+
+```{r}
+set.seed(2022)
+
+austrailia_tfidf  %>%
+  cast_dtm(paragraph, words, n) -> austrailia_dtm.old
+
+rowTotals <- apply(austrailia_dtm.old, 1, sum) # Find the sum of words in each Document
+austrailia_dtm <- austrailia_dtm.old[rowTotals> 0, ] # Remove all docs without words
+
+```
+
+### Using perplexity for hold out set
+
+The perplexity is the geometric mean of word likelihood. In 5-fold CV, we first estimate the model, usually called training model, for a given number of topics using 4 folds of the data and then use the left one fold of the data to calculate the perplexity. In calculating the perplexity, we set the model in LDA or CTM to be the training model and not to estimate the beta parameters.
+
+```{r warning = FALSE, message = FALSE, results='hide', fig.align='center',fig.width=10,fig.height=7}
+austrailia_split <- initial_split(austrailia_tfidf, prop = 0.8)
+
+# Train
+austrailia_split_train <- training(austrailia_split)
+austrailia_split_train  %>%
+    cast_dtm(paragraph, words, n) -> austrailia_train_dtm.old
+
+rowTotals <- apply(austrailia_train_dtm.old, 1, sum) # Find the sum of words in each Document
+austrailia_train_dtm <- austrailia_train_dtm.old[rowTotals> 0, ] # Remove all docs without words
+
+# Test
+austrailia_split_test <- testing(austrailia_split)
+austrailia_split_test  %>%
+    cast_dtm(paragraph, words, n) -> austrailia_test_dtm.old
+
+rowTotals <- apply(austrailia_test_dtm.old, 1, sum) # Find the sum of words in each Document
+austrailia_test_dtm <- austrailia_test_dtm.old[rowTotals> 0, ] # Remove all docs without words
+
+loglik_v     <- vector("numeric", 20)
+perplexity_v <- vector("numeric", 20)
+
+
+for (i in 2:20) {
+    cat("... ", i, "\n")
+    tmp_mod  <- LDA(austrailia_train_dtm, k=i, method="Gibbs", control=list(alpha=0.5, iter=1000, seed=2020, thin=3))
+    loglik_v[i] <- logLik(tmp_mod)
+    perplexity_v[i] <- perplexity(tmp_mod, newdata = austrailia_test_dtm)}
+
+austrailia_topic_k_df <- tibble(
+    topic_k = 1:20,
+    loglik = loglik_v,
+    perplexity = perplexity_v)
+
+austrailia_topic_k_df %>%
+    filter(topic_k != 1) %>%
+    gather(metric, value, -topic_k) %>%
+    ggplot(aes(x=topic_k, y=value)) +
+    geom_line() +
+    geom_point() +
+    facet_wrap(~metric, scales = "free")+
+    theme_bw() +
+    theme(plot.title = element_text(size=20),
+        text=element_text(family="Nanum Gothic",size=40))
+```
+
+### Cast LDA (k=6)
+
+```{r}
+austrailia_topic=" organisation, approach, policy, indicator, civil, social, financial, action,
+food, supply, cost, world, agricultural, risk, aim, production,
+woman, aboriginal, disability, child, school, participation, girl, family,
+human, national, law, public, activity, institution, commit, land, discrimination,
+city, plan, community, sustainability, build, growth, local, urban, opportunity, council,
+pacific, country, fund, island, indo, capacity, asia, aid, major, bank, assist"
+austrailia_topic_update <- austrailia_topic %>% 
+    str_squish() %>% 
+    str_split(pattern=", ",simplify =T) 
+austrailia_topic_names=data.frame(
+  stringsAsFactors = FALSE,
+                topic = c(1L, 2L, 3L, 4L, 5L, 6L),
+                topic2= c("Government Policy", "Food Security", "Human Rights", "Public Value", "Governance", "International Cooperation"))
+```
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+austrailia_lda <-  LDA(austrailia_dtm, k = 6,
+              method="Gibbs",
+              control = list(alpha=0.5, iter=1000, seed=2020, thin=3))
+
+austrailia_tp_6 <- austrailia_lda %>%
+    tidy(matrix = "beta") %>%
+    group_by(term) %>%
+    slice_max(beta) %>%
+    dplyr::left_join(austrailia_topic_names,by="topic") %>% 
+    ungroup() %>% 
+    select(-topic) %>% 
+    rename(topic="topic2")
+
+austrailia_tp_6 %>% 
+    group_by(topic) %>%
+    slice_max(beta,n=10) %>%
+    filter(term %in% as.vector(austrailia_topic_update)) %>% 
+    arrange(topic)  %>% 
+    mutate(term = reorder_within(term, beta, topic)) %>%
+    ggplot(aes(beta, term, fill = topic)) +
+    geom_col(show.legend = FALSE) +
+    facet_wrap(~ topic, scales = "free",ncol=3) +
+    scale_y_reordered() +
+    theme_bw()+ 
+    theme(plot.title = element_text(size=20),
+          text=element_text(family="Nanum Gothic",size=40),
+          axis.text.x = element_text(size = 20),
+          axis.title.y=element_blank()) + 
+    ghibli::scale_fill_ghibli_d("PonyoLight", direction = 1)
+```
+
+-   Clustered into 6 topics: 'Government Policy', 'Food Security', 'Human Rights', 'Public Value', 'Governance', 'International Cooperation'
+-   It is expected that the policy process will be conducted in a way that cooperates with civil society, not the top-down way in the past, even if the government plays a leading role through the topics of 'Governance' and 'Government Policy'.
+-   In addition, it can be deduced that there is a high interest in community values and order such as 'Public value' and 'Human rights'
+-   In particular, the human rights issue seems to reflect the situation in Australia, which has a native (Aborigine) problem unlike other comparable countries
+-   When the keywords are sorted in the order of occurrence frequencies, the words 'community', 'country', 'woman', 'national', and 'original' are at the top, so Australia seems like promoting policies in cooperation with civil society and deal with human rights issues, especially women and natives
+
+## Network Graph
+
+### Pairwise Count
+
+```{r}
+austrailia_coocur <- austrailia_tfidf  %>%
+    ungroup() %>% 
+    arrange(desc(n)) %>%
+    rename(term=words) %>%
+    pairwise_count(term, paragraph, sort = TRUE,upper = F) 
+```
+
+### Building links and nodes
+
+```{r}
+links <- austrailia_coocur %>%
+    top_n(100) %>%
+    rename(source="item1",target="item2",weight="n") 
+
+nodes <- tibble(term=union(links$source,links$target)) %>%
+    left_join(y=austrailia_tp_6,by="term") %>%
+    dplyr::select(nodes="term",topic)
+```
+
+### Building networks
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+austrailia_network <- graph_from_data_frame(d = links, vertices = nodes, directed = F)
+austrailia_g <- as_tbl_graph(austrailia_network)
+
+```
+
+### Network Graph of inter-topic
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+austrailia_g %>%
+    activate("nodes") %>%
+    mutate(degree = centrality_degree(),
+             community = as.factor(topic)) %>%
+    ggraph(layout = 'kk') +
+    geom_edge_link(aes(alpha = weight,width=weight),
+                   colour = "black", show.legend = FALSE) +
+    scale_edge_width(range = c(0.05,1.5)) +
+    scale_edge_alpha(range = c(0.3,1)) +
+    scale_size(range = c(5,20)) + 
+    geom_node_point(aes(colour = community, size = degree)) +
+    geom_node_text(aes(label = name, size=degree),size=8, repel = TRUE,family="Nanum Gothic") +
+    theme_graph(base_family="Nanum Gothic") +
+    theme(text=element_text(family="Nanum Gothic", size=30)) +
+    guides(size="none",
+           color = guide_legend(title="Topic 명",
+                                override.aes = list(size=5))) +
+    ghibli::scale_color_ghibli_d("PonyoLight", direction = 1)
+```
+
+### Network Graph within topic
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+#| column: page
+austrailia_g %>%
+    activate("nodes") %>%
+    mutate(degree = centrality_degree(),
+             community = as.factor(topic)) %>%
+    ggraph(layout = 'kk') +
+    geom_edge_link(aes(alpha = weight,width=weight),
+                   colour = "black", show.legend = FALSE) +
+    scale_edge_width(range = c(0.05,1)) +
+    scale_edge_alpha(range = c(0.05,1)) + 
+    geom_node_point(aes(colour = community, size = degree)) +
+    geom_node_text(aes(label = name),size=8, repel = TRUE,family="Nanum Gothic") +
+    theme_graph(base_family="Nanum Gothic") +
+    theme(text=element_text(family="Nanum Gothic", size=30),
+          strip.text = element_text(size = 20),
+          panel.border = element_rect(color = "black", fill = NA, size = 1)) +
+    guides(size="none",
+           color = guide_legend(title="Topic 명",
+                                override.aes = list(size=5))) +
+    ghibli::scale_color_ghibli_d("PonyoLight", direction = 1) +
+    facet_nodes(~ community, ncol=3, scales = "free")
+```
+
+-   Looking at the Network Graph within topic, the connection between words is more evident in topics like 'Governance', 'International Cooperation', 'Human Rights', and 'Government Policy' than other topics
+-   Through this, it can be inferred that policy efforts related to these four topics are relatively well constructed
+-   In particular, the relationship between keywords such as 'community' and 'build', 'local', 'city', and 'impact' is evident in the 'Governance' topic, indicating that a bottom-up policy process in which the government cooperates with the community and civil society rather than simply leading the policy process
+-   The relationship between keywords of 'aboriginal' and 'straits' in the 'human rights' topic and 'indo' and 'country' in the 'international cooperation' topic, we can see that the Australian government is paying attention to aboriginal poverty and international cooperation in the Indo-Pacific region
+-   Looking at the Network Graph of inter-topic, there is a strong connection between words that constitutes 'Governance' and 'Government Policy', 'Governance' and 'Human Rights'
+-   In particular, the connection between keywords such as 'community' and 'social', 'organization', 'approach', 'country', 'Pacific', 'Aboriginal', 'straight', and 'focus' is relatively strong
+-   Therefore, it can be inferred that the Australian government is continuously taking human rights issues into account while establishing policies in cooperation with civil society and actively engaging in international cooperation
+
+# 9. Comparing Six countries
+
+## Comparing Word Frequencies of Six Countries
+
+```{r, fig.align='center',fig.width=10,fig.height=10, warning = FALSE, message = FALSE}
+#| column: page
+korea_tokenized %>% 
+    mutate(key="Republic_of_Korea") %>% 
+    full_join(germany_tokenized %>%
+                  mutate(key="Germany")) %>% 
+    full_join(finland_tokenized %>%
+                  mutate(key="Finland")) %>% 
+    full_join(japan_tokenized %>% 
+                mutate(key="Japan")) %>%
+    full_join(uk_tokenized %>% 
+                mutate(key="United Kingdom")) %>%
+    full_join(austrailia_tokenized %>% 
+                mutate(key="Austrailia")) %>%
+    mutate(key=as_factor(key)) -> total_tokenized
+
+total_tokenized %>% 
+    group_by(key) %>%
+    count(key,words) %>% 
+    group_by(key) %>% 
+    top_n(n, n=20) %>%
+    arrange(desc(n)) %>% 
+    mutate(words = reorder_within(words, n, key)) %>%
+    ggplot(aes(x=n, y=words)) +
+    geom_col(aes(fill=key),show.legend = FALSE) +
+    scale_y_reordered() +
+    facet_wrap(~key, nrow = 2, scales = "free") +
+    labs(y = NULL, title="Comparing Word Frequencies of Six Countries") +
+    theme_bw()+
+    theme(plot.title = element_text(size=40),
+          text=element_text(family="Nanum Gothic",size=40),
+          axis.text.x = element_text(size = 20))+
+    ggeasy::easy_center_title()
+
+```
+
+## Comparing bigrams of Six Countries
+
+```{r, fig.align='center',fig.width=10,fig.height=10, warning = FALSE, message = FALSE}
+#| column: screen-inset-shaded
+grid.arrange(a1,b1,c1,d1,e1,f1, nrow=2,
+             top=textGrob("Comparing Bigrams of Six Countries",
+                          gp = gpar(col = "black", 
+                                    fontsize = 40,
+                                    fontfamily="Nanum Gothic")))
+```
+
+## Comparing Tf-idf of Six Countries
+
+```{r, fig.align='center',fig.width=10,fig.height=10, warning = FALSE, message = FALSE}
+#| column: page
+
+total_tokenized %>% 
+    group_by(key) %>%
+    count(key,words) %>% 
+    bind_tf_idf(words, key, n) %>% 
+    group_by(key) %>% 
+    top_n(tf_idf, n=20) %>%
+    arrange(desc(tf_idf)) %>% 
+    mutate(words = reorder_within(words, tf_idf, key)) %>%
+    ggplot(aes(x=tf_idf, y=words)) +
+    geom_col(aes(fill=key),show.legend = FALSE) +
+    scale_y_reordered() +
+    facet_wrap(~key, nrow = 2, scales = "free") +
+    labs(y = NULL, title="Comparing TF-IDF of Six Countries") +
+    theme_bw()+
+    theme(plot.title = element_text(size=40),
+          text=element_text(family="Nanum Gothic",size=40),
+          axis.text.x = element_text(size = 20))  +
+    ggeasy::easy_center_title()
+
+```
+
+## Comparing the word frequencies
+
+```{r, fig.align='center',fig.width=10,fig.height=7}
+compare_six <- total_tokenized %>% 
+    count(key, words) %>% 
+    group_by(key) %>%
+    mutate(proportion = n / sum(n)) %>%
+    dplyr::select(-n) %>% 
+    pivot_wider(names_from = key, values_from = proportion) %>%
+    pivot_longer(3:7,
+               names_to = "key", values_to = "proportion")
+    
+```
+
+Words that are far from the line are words that are found more in one set of texts than another.
+
+```{r, fig.align='center',fig.width=11,fig.height=9, warning = FALSE, message = FALSE}
+#| column: page
+
+# expect a warning about rows with missing values being removed
+set.seed(2022)
+compare_six %>%
+    ggplot(aes(x = proportion, y = Republic_of_Korea, color = abs(Republic_of_Korea - proportion))) +
+    geom_abline(color = "darkgreen", lty = 2, size=1.5) +
+    geom_jitter(alpha = 0.1, size = 1.5, width = 0.3, height = 0.3) +
+    geom_text(aes(label = words), check_overlap = TRUE, vjust = 1.5, family="Nanum Gothic",size=9) +
+    scale_x_log10(labels = percent_format()) +
+    scale_y_log10(labels = percent_format()) +
+    scale_color_gradient(limits = c(0.001, 0.01), 
+                         low = "darkgreen", high =  "black") +
+    facet_wrap(~key, nrow = 2) +
+    theme(legend.position="none") +
+    labs(y = "Republic of Korea", x = NULL, title=NULL) +
+    theme_bw() +
+    theme(plot.title = element_text(size=40),
+          strip.text = element_text(size = 40),
+          text=element_text(family="Nanum Gothic",size=25))+
+    guides(color="none") +
+    ggeasy::easy_center_title()
+```
+
+## Correlation of words
+
+```{r, fig.align='center',fig.width=6,fig.height=6, warning = FALSE, message = FALSE}
+#| column: page
+total_tokenized %>% 
+    count(key, words) %>% 
+    group_by(key) %>%
+    mutate(proportion = n / sum(n)) %>%
+    dplyr::select(- n) %>% 
+    pivot_wider(names_from = key, values_from = proportion) %>% 
+    dplyr::select(- words) -> correlation_total  
+
+testRes=corrplot::cor.mtest(correlation_total, conf.level = 0.95)
+
+correlation_total %>% 
+    cor(use="pairwise.complete.obs") %>% 
+    .[order(.[ , 1],decreasing = T), order(.[ 1, ],decreasing = T)] %>% 
+    corrplot(tl.col = "black",
+             diag=T, 
+             type="lower",
+             method="color",
+             cl.pos="n",
+             addCoef.col = 1,
+             number.cex = 4,
+             tl.cex = 3) 
+
+```
+
+```{r result="hide"}
+cortrix = function (R, histogram = TRUE, method = c("pearson", "kendall", 
+  "spearman"), ...) 
+{
+  x = as.matrix(R, method = "matrix")
+  if (missing(method)) 
+    method = method[1]
+  cormeth <- method
+  panel.cor <- function(x, y, digits = 2, prefix = "", use = "pairwise.complete.obs", 
+    method = cormeth, cex.cor, ...) {
+    usr <- par("usr")
+    on.exit(par(usr))
+    par(usr = c(0, 1, 0, 1))
+    r <- cor(x, y, use = use, method = method)
+    txt <- format(c(r, 0.123456789), digits = digits)[1]
+    txt <- paste(prefix, txt, sep = "")
+    if (missing(cex.cor)) 
+      cex <- 2
+    test <- cor.test(as.numeric(x), as.numeric(y), method = method)
+    Signif <- symnum(test$p.value, corr = FALSE, na = FALSE, 
+      cutpoints = c(0, 0.001, 0.01, 0.05, 0.1, 1), symbols = c("***", 
+        "**", "*", ".", " "))
+    text(0.5, 0.5, txt, cex = cex)
+    text(0.8, 0.8, Signif, cex = 2, col = 2)
+  }
+  f <- function(t) {
+    dnorm(t, mean = mean(x), sd = sd.xts(x))
+  }
+  dotargs <- list(...)
+  dotargs$method <- NULL
+  rm(method)
+  hist.panel = function(x, ... = NULL) {
+    par(new = TRUE)
+    hist(x, col = "light blue", probability = TRUE, axes = FALSE, 
+      main = "", breaks = "FD")
+    lines(density(x, na.rm = TRUE), col = "red", lwd = 2)
+    rug(x)
+  }
+  if (histogram) 
+    pairs(x, gap = 0, lower.panel = panel.smooth, upper.panel = panel.cor, 
+      diag.panel = hist.panel, ...)
+  else pairs(x, gap = 0, lower.panel = panel.smooth, upper.panel = panel.cor, 
+    ...)
+}
+```
+
+```{r, fig.align='center',fig.width=4,fig.height=4, warning = FALSE, message = FALSE, out.width="150%"}
+
+correlation_total %>% 
+    cortrix(histogram=F)
+```
+
+\*\*\*: 0 - 0.001
+
+## Document Similarity
+
+```{r}
+korea_string <- korea %>% 
+    dplyr::select(2) %>%
+    unlist() %>% 
+    as.vector() %>% 
+    str_c(.,collapse = " ") 
+germany_string <- germany %>% 
+    dplyr::select(2) %>%
+    unlist() %>% 
+    as.vector() %>% 
+    str_c(.,collapse = " ") 
+finland_string <- finland %>% 
+    dplyr::select(2) %>%
+    unlist() %>% 
+    as.vector() %>% 
+    str_c(.,collapse = " ") 
+japan_string <- japan %>% 
+    dplyr::select(2) %>%
+    unlist() %>% 
+    as.vector() %>% 
+    str_c(.,collapse = " ") 
+uk_string <- uk %>% 
+    dplyr::select(2) %>%
+    unlist() %>% 
+    as.vector() %>% 
+    str_c(.,collapse = " ") 
+austrailia_string <- austrailia %>% 
+    dplyr::select(2) %>%
+    unlist() %>% 
+    as.vector() %>% 
+    str_c(.,collapse = " ") 
+```
+
+```{python}
+import matplotlib.pylab as plt 
+import matplotlib as mpl
+import numpy as np
+import pandas as pd
+import seaborn as sns
+from IPython.display import display, Markdown
+from tabulate import tabulate
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.cluster import KMeans
+import warnings
+from nltk.stem import WordNetLemmatizer
+import nltk
+import string
+```
+
+```{python}
+mpl.rc('font', family='NanumGothic') # 폰트 설정
+mpl.rc('axes', unicode_minus=False) # 유니코드에서 음수 부호 설정
+
+# 차트 스타일 설정
+sns.set(font="NanumGothic", rc={"axes.unicode_minus":False}, style='white')
+warnings.filterwarnings("ignore")
+```
+
+### Convert data from R objects
+
+```{python}
+document_df = pd.DataFrame.from_dict(
+    {'filename': ["Korea", "Germany", "Finland", "Japan", "UK", "Austrailia"],
+    'opinion_text':[r.korea_string, r.germany_string, r.finland_string, 
+    r.japan_string, r.uk_string, r.austrailia_string]})
+```
+
+### Tokenizer
+
+```{python}
+# 단어 원형 추출 함수
+lemmar = WordNetLemmatizer()
+
+def LemTokens(tokens):
+    return [lemmar.lemmatize(token) for token in tokens]
+
+# 특수 문자 사전 생성: {33: None ...}
+# ord(): 아스키 코드 생성
+remove_punct_dict = dict((ord(punct), None) for punct in string.punctuation)
+
+# 특수 문자 제거 및 단어 원형 추출
+def LemNormalize(text):
+    text_new = text.lower().translate(remove_punct_dict)
+    word_tokens = nltk.word_tokenize(text_new)
+    return LemTokens(word_tokens)
+
+# nltk.download('punkt')
+# nltk.download('wordnet')
+# nltk.download('omw-1.4')
+tfidf_vect = TfidfVectorizer(stop_words='english' , ngram_range=(1,2), 
+                             tokenizer = LemNormalize, min_df=0.05, max_df=0.85)
+
+feature_vect = tfidf_vect.fit_transform(document_df['opinion_text'])    
+```
+
+### Cosine Similarity
+
+```{python}
+from sklearn.metrics.pairwise import cosine_similarity
+
+similarity_pair = cosine_similarity(feature_vect[0] , feature_vect)
+document_df["similarity"] = similarity_pair.reshape(-1,1)
+```
+
+### Visualization
+
+```{python}
+#| fig-align: center
+#| column: page
+plt.clf()
+vis=document_df.iloc[1:].sort_values(by="similarity",ascending=False).reset_index(drop=True)
+plt.style.use("seaborn-pastel")
+plt.figure(figsize = (10,7))
+sns.barplot(x="similarity", y="filename", data=vis)
+plt.title('Korea')
+```
+
+# 10. Conclusion
+
+## Summary of VNR Analysis Results in Korea
+
+-   The major keywords used in the VNR report of Korea are classified into six topics:'International Cooperation', 'Welfare', 'Human Rights', and 'Government Policy', 'Sustainable Development' and 'Integrated Goal-Setting'
+
+-   Looking at the analysis results of the network within and inter topics of 6 topics, it can be concluded that SDGs in Korea are being implemented centered on the connectivity between 'sustainable development' and 'government policy'
+
+-   Although topics such as 'Human Rights', 'Welfare' are formed, it can be judged that the government-led policy does not receive attention sufficiently since those topics shows minimal connection with sustainable development policies
+
+## VNR Comparison Analysis Summary with Korea and Other Countries
+
+-   Comparing the results of VNR analysis in Korea with other countries, the same-word occurrence frequency correlation showed a relatively high correlation with Finland (0.8) and the UK (0.69), while Germany (0.58) and Australia (0.5) showed a relatively low correlation
+
+-   Unlike Korea, Finland operate the SDGs that social innovation played a major role in the establishment and implementation of SDGs policy goals, local community played a large role in establishing and implementing in Germany, Japan's discussion on civil rights was more important than Korea
+
+-   Conclusion 1: Deriving key features related to current SDGs in Korea
+
+    -   As a result of the analysis, it can be judged that the policy direction for SDGs in Korea is going in the right direction, such as carrying out the 'integrated goal setting' process to achieve 'sustainable development'
+    -   However, the biggest difference between Korea and other countries is that majority of the government policy-making and enforcement of the SDGs were led by the government, whereas influence of other actors such as 'community', 'social innovation', and 'governance' is weak
+    -   In conclusion, it is necessary to develop policies in a way that diversifies the measures of adopting them and attains sustainable development through cooperation with other actors rather than the direction of the government itself
+
+-   Conclusion 2: Proposing the policy direction of SDGs in Korea
+
+    -   As a final conclusion of this analysis, it can be judged that the establishment and implementation of the SDGs of the Korea should adopt approaches of German, Britain and Austrailian models to take their advantages
+    -   As shown in the above analysis, the main characteristic of SDGs in these countries and the most different from that of Korea is the role of the 'community'
+    -   Germany's "community" topic shows strong connectivity in the center along with 'international cooperation' and 'government policy'
+    -   This can be inferred that the 'community' in the German SDGs discussion not only emphasizes the role as a community or as a part of the community in the city, but discusses the relationship between urban and rural areas, central and local areas
+    -   On the other hand, in Korea, the government-centered development that has extended since the 1960s and achieved rapid growth, but from the perspective of SDGs, it is no longer efficient nor effective in maintaining the development only resorting to pure government's capacity
+    -   In order to pursue and attain sustainable development, it is imperative to construct international diplomatic relationships, central-local relationships prior to establishing and implementing SDGs goals
+    -   In conclusion, while maintaining the mediating and organizing role of the centralized government, it is necessary to diverge from the current SDGs structure in which all detailed topics are converges to the one centalized entity. Instead, promoting policy development in the direction of strengthening cooperation outward with other countries and strengthening connectivity inward with local communities is the most effective and efficient way to achieve sustainable development goals.

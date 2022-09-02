@@ -2,7 +2,9 @@
 title: "Data Analytics"
 subtitle: "some of the academic data analysis and visualization projects by R and Python"
 listing:
+  page-size: 20
   contents: posts
+  fields: [date,image, title, author, description,file-modified,categories]
   sort: 
     - "date desc"
     - "title"
@@ -12,7 +14,7 @@ listing:
   image-align: left 
   sort-ui: true
   filter-ui: true
-  max-items: 10
+  
 page-layout: full
 title-block-banner: true
 ---
