@@ -1,50 +1,63 @@
 ---
-title: "Research Interests"
+title: "Interests and Prospects"
 ---
 
-```{=html}
-<p align="justify">
-<b> My research interests </b> lie at the intersection of public policy analysis and information systems. Toward better public-sector decision-making, my interests are  
-</p>
-```
+# Interests
 
-**1. Policy analysis and program evaluation**
+::: justify
+**My research interests** lie at the intersection of public management, macro-organization theories, and information systems. Toward better public-sector decision-making, my interests and prospected topics are
+:::
 
-- experimental and quasi-experimental policy evaluation
+## 1. Organization Theory and Behavior
 
-- specifically, information policy or social policy 
+::: justify
+-   (Strategic) Decision-Making Theories
 
-**2. Organization theory and behavior**
+-   Interaction Between Macro and Micro Level Organizational Behavior
 
--   strategic decision-making
+-   Human-Machine Cooperation in Organizational Decision-making: AI, Machine-Learning, and Automation
+:::
 
--   human-machine cooperation in organizational decision-making
+## 2. Public Management
 
-**3. Computational Social Science**
+::: justify
+-   New Public Management vs. Public Value Theory
 
-**4. Evidence-based Decision-Making in public policy and management (EBPPM)**
+-   Strategic Approach in Public Sector
+:::
 
--   being evidence-based is being data-driven?
+## 3. Evidence-based Decision-Making in public policy and management (EBPPM)
 
--   what is the difference between evidence-based approach and contemporary policy analysis? (such as discourse policy analysis)
+::: justify
+-   Being Evidence-Based is Being Data-Driven?
 
--   positivism vs. constructivism in research utilization
+-   What are the Differences Between Evidence-Based Approach and Contemporary Policy Analysis? (such as discourse policy analysis)
 
-**5. Management information systems**
+-   Positivism vs. Constructivism in Research Utilization
+:::
 
-- public value in IT
+## 4. Management Information Systems
 
-- quantifying societal impact of information systems
+::: justify
+-   Government IT Strategy and Management
 
+-   Acquiring (or Creating) Public Value with Information Systems
 
-    
+-   Quantifying Societal Impact of Information Systems: Public Policy in the Information Age
+:::
 
-```{=html}
-<p align="justify">
+## 5. Methodologies and Computational Social Science
 
+::: justify
+-   Machine-learning, Deep-Learning, and other Computational Methods for both Public and Business Data Analytics
 
+-   Applied Econometrics for Quasi-Experimental Approaches \
+    (Panel Data Analysis, Synthetic Control, Instrumental Variable)
 
-<b> Methodologically</b>, I'm interested in applied econometrics for quasi-experimental approach, machine-learning as well as other computational methods for both business and public data analytics, and I/O psychology survey analysis. Also I have prior experience in policy analysis techniques (such as Cost-Benefit Analysis, Analytic Hierarchy Process etc.)
-</p>
-```
-![](20220716_163613.png)
+-   Hierarchical Linear Modelling: [Certificate](https://drive.google.com/file/d/1guBYnUsqjVu0mu3wEciR9SV-2yCBtqfi/view?usp=share_link)
+
+-   Policy Analysis Techniques \
+    (Cost-Benefit Analysis, Analytic Hierarchy Process etc.)
+:::
+
+\`\`\` ![](20220716_163613.png)

@@ -1,21 +1,18 @@
 project:
   type: website
+  output-dir: _site
 
 website:
-  title: "Sangwon Ju's Personal Page"
+  title: "Sangwon Ju"
+  repo-url: https://github.com/SangwonJu/Personal-Page
   page-footer:
     background: dark
     center:
         - text: "© 2022 Sangwon Ju"
 
-
-
-
   navbar:
-    background: light
-
-    pinned: true
-    logo: ./logo/policy.png
+    background: dark
+    fontcolor: white
     page-navigation: true
     collapse-below: md
 
@@ -25,7 +22,7 @@ website:
         - sidebar:Research
         - text: "Data Analytics"
           file: data_analytics.qmd
-        - text: "CV (as of July 2022)"
+        - text: "CV (as of January 2023)"
           file: cv.qmd
 
     right:
@@ -46,10 +43,11 @@ website:
       title: "Research"
       style: "floating"
       contents:
-        - text: "Research Interests"
+        - text: "Interests and Prospects"
           href: research_interests.qmd
-        - text: "Publications / Working Papers"
+        - text: "Publications"
           href: publication.qmd
+
 
     - id: dummy
       title: "Research"
@@ -62,16 +60,10 @@ website:
 format:
   html:
     theme:
-        light: Simplex
-        dark: darkly
-
-    css: styles.css
+        - Sandstone
+        - sandstone.scss
     toc: true
-
+    linestretch: 1.5
 
 execute:
   freeze: auto
-
-
-editor: visual
-

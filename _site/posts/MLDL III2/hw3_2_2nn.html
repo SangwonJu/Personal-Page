@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.1.251">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Sangwon Ju, SNU GSPA">
+<meta name="dcterms.date" content="2022-11-27">
+
+<title>Sangwon Ju - Assignment 3-2</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-md navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Sangwon Ju</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html">About Me</a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-research" role="button" data-bs-toggle="dropdown" aria-expanded="false">Research</a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-research">    
+        <li>
+    <a class="dropdown-item" href="../../research_interests.html">
+ <span class="dropdown-text">Interests and Prospects</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../publication.html">
+ <span class="dropdown-text">Publications</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../../data_analytics.html">Data Analytics</a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../CV.html">CV (as of January 2023)</a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="mailto: sangwon.ju@snu.ac.kr"><i class="bi bi-mailbox2" role="img" aria-label="E-mail">
+</i> 
+ </a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/SangwonJu"><i class="bi bi-github" role="img" aria-label="Github">
+</i> 
+ </a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://www.linkedin.com/in/sangwon-ju-37a6b0216/"><i class="bi bi-linkedin" role="img" aria-label="Linkedin">
+</i> 
+ </a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#local-setup" id="toc-local-setup" class="nav-link active" data-scroll-target="#local-setup">Local Setup</a></li>
+  <li><a href="#import-modules" id="toc-import-modules" class="nav-link" data-scroll-target="#import-modules">Import Modules</a></li>
+  <li><a href="#utils" id="toc-utils" class="nav-link" data-scroll-target="#utils">Utils</a></li>
+  <li><a href="#layer-neural-network" id="toc-layer-neural-network" class="nav-link" data-scroll-target="#layer-neural-network">2-Layer Neural Network</a></li>
+  <li><a href="#load-mnist" id="toc-load-mnist" class="nav-link" data-scroll-target="#load-mnist">Load MNIST</a></li>
+  <li><a href="#training-evaluation" id="toc-training-evaluation" class="nav-link" data-scroll-target="#training-evaluation">Training &amp; Evaluation</a></li>
+  <li><a href="#extra-credit-optional" id="toc-extra-credit-optional" class="nav-link" data-scroll-target="#extra-credit-optional">Extra Credit (Optional)</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Assignment 3-2</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">Machine Learning &amp; Deep Learning for Data Science (2022 Fall)</div>
+  </div>
+  </div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Sangwon Ju, SNU GSPA </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">November 27, 2022</p>
+    </div>
+  </div>
+    
+  </div>
+  
+
+</header>
+
+<p>2NN and Fully Connected Layers (Score: 107/100)</p>
+<section id="local-setup" class="level1">
+<h1>Local Setup</h1>
+<div class="cell" data-execution_count="1">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># get current path</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(os.getcwd())</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># change path</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>os.chdir(<span class="st">"E:/OneDrive - SNU/(B) 대학원/수업/2022 2학기/데이터사이언스를위한머신러닝과딥러닝/과제3"</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(os.getcwd())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>e:\OneDrive - SNU\(B) 대학원\수업\2022 2학기\데이터사이언스를위한머신러닝과딥러닝\과제3
+E:\OneDrive - SNU\(B) 대학원\수업\2022 2학기\데이터사이언스를위한머신러닝과딥러닝\과제3</code></pre>
+</div>
+</div>
+</section>
+<section id="import-modules" class="level1">
+<h1>Import Modules</h1>
+<div class="cell" data-execution_count="2">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> copy</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> mnist.data_utils <span class="im">import</span> load_data</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="utils" class="level1">
+<h1>Utils</h1>
+<div class="cell" data-execution_count="3">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> tanh(z):</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Implement the tanh activation function.</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co">    The method takes the input z and returns the output of the function.</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co">    Question (a)</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="co">##### YOUR CODE #####</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    tanh <span class="op">=</span> <span class="kw">lambda</span> x: (np.exp(x)<span class="op">-</span>np.exp(<span class="op">-</span>x))<span class="op">/</span>(np.exp(x)<span class="op">+</span>np.exp(<span class="op">-</span>x))</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    result <span class="op">=</span> tanh(z)</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> result   </span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    <span class="co">##################### </span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> softmax(X):</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="co">    Implement the softmax function.</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="co">    The method takes the input X and returns the output of the function.</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="co">    Question (a)</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>    <span class="co">##### YOUR CODE #####</span></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>    elements <span class="op">=</span> np.exp(X<span class="op">-</span>np.amax(X,axis<span class="op">=</span><span class="dv">1</span>,keepdims<span class="op">=</span><span class="va">True</span>))</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>    sums <span class="op">=</span> np.<span class="bu">sum</span>(elements, axis<span class="op">=</span><span class="dv">1</span>, keepdims<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> elements<span class="op">/</span>sums</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>    <span class="co">#####################</span></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> load_batch(X, Y, batch_size, shuffle<span class="op">=</span><span class="va">True</span>):</span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a><span class="co">    Generates batches with the remainder dropped.</span></span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a><span class="co">    Do NOT modify this function</span></span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> shuffle:</span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>        permutation <span class="op">=</span> np.random.permutation(X.shape[<span class="dv">0</span>])</span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>        X <span class="op">=</span> X[permutation, :]</span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>        Y <span class="op">=</span> Y[permutation, :]</span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>    num_steps <span class="op">=</span> <span class="bu">int</span>(X.shape[<span class="dv">0</span>])<span class="op">//</span>batch_size</span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>    step <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> step<span class="op">&lt;</span>num_steps:</span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a>        X_batch <span class="op">=</span> X[batch_size<span class="op">*</span>step:batch_size<span class="op">*</span>(step<span class="op">+</span><span class="dv">1</span>)]</span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>        Y_batch <span class="op">=</span> Y[batch_size<span class="op">*</span>step:batch_size<span class="op">*</span>(step<span class="op">+</span><span class="dv">1</span>)]</span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a>        step<span class="op">+=</span><span class="dv">1</span></span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a>        <span class="cf">yield</span> X_batch, Y_batch</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="layer-neural-network" class="level1">
+<h1>2-Layer Neural Network</h1>
+<div class="cell" data-execution_count="4">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> TwoLayerNN:</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">""" a neural network with 2 layers """</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, input_dim, num_hiddens, num_classes):</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>        <span class="co">"""</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co">        Do NOT modify this function.</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co">        """</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.input_dim <span class="op">=</span> input_dim</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.num_hiddens <span class="op">=</span> num_hiddens</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.num_classes <span class="op">=</span> num_classes</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.params <span class="op">=</span> <span class="va">self</span>.initialize_parameters(input_dim, num_hiddens, num_classes)</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> initialize_parameters(<span class="va">self</span>, input_dim, num_hiddens, num_classes):</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>        <span class="co">"""</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="co">        initializes parameters with Xavier Initialization.</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="co">        Question (b)</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="co">        - refer to https://paperswithcode.com/method/xavier-initialization for Xavier initialization </span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="co">        </span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="co">        Inputs</span></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="co">        - input_dim</span></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a><span class="co">        - num_hiddens</span></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a><span class="co">        - num_classes</span></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a><span class="co">        Returns</span></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a><span class="co">        - params: a dictionary with the initialized parameters.</span></span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a><span class="co">        """</span></span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>        params <span class="op">=</span> {}</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>        <span class="co">##### YOUR CODE #####</span></span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>        params[<span class="st">"W1"</span>] <span class="op">=</span> np.random.uniform(low<span class="op">=-</span><span class="dv">1</span><span class="op">/</span>(np.sqrt(num_hiddens)), high<span class="op">=</span><span class="dv">1</span><span class="op">/</span>(np.sqrt(num_hiddens)), size<span class="op">=</span>(input_dim, num_hiddens))</span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>        params[<span class="st">"b1"</span>] <span class="op">=</span> np.zeros(num_hiddens)</span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>        params[<span class="st">"W2"</span>] <span class="op">=</span> np.random.uniform(low<span class="op">=-</span><span class="dv">1</span><span class="op">/</span>(np.sqrt(num_classes)), high<span class="op">=</span><span class="dv">1</span><span class="op">/</span>(np.sqrt(num_classes)), size<span class="op">=</span>(num_hiddens, num_classes))</span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>        params[<span class="st">"b2"</span>] <span class="op">=</span> np.zeros(num_classes)</span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>        <span class="co">#####################</span></span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> params</span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> forward(<span class="va">self</span>, X):</span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>        <span class="co">"""</span></span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a><span class="co">        Define and perform the feed forward step of a two-layer neural network.</span></span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a><span class="co">        Specifically, the network structue is given by</span></span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a><span class="co">          y = softmax(tanh(X W1 + b1) W2 + b2)</span></span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a><span class="co">        where X is the input matrix of shape (N, D), y is the class distribution matrix</span></span>
+<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a><span class="co">        of shape (N, C), N is the number of examples (either the entire dataset or</span></span>
+<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a><span class="co">        a mini-batch), D is the feature dimensionality, and C is the number of classes.</span></span>
+<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-47"><a href="#cb5-47" aria-hidden="true" tabindex="-1"></a><span class="co">        Question (c)</span></span>
+<span id="cb5-48"><a href="#cb5-48" aria-hidden="true" tabindex="-1"></a><span class="co">        - ff_dict will be used to run backpropagation in backward method.</span></span>
+<span id="cb5-49"><a href="#cb5-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-50"><a href="#cb5-50" aria-hidden="true" tabindex="-1"></a><span class="co">        Inputs</span></span>
+<span id="cb5-51"><a href="#cb5-51" aria-hidden="true" tabindex="-1"></a><span class="co">        - X: the input matrix of shape (N, D)</span></span>
+<span id="cb5-52"><a href="#cb5-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-53"><a href="#cb5-53" aria-hidden="true" tabindex="-1"></a><span class="co">        Returns</span></span>
+<span id="cb5-54"><a href="#cb5-54" aria-hidden="true" tabindex="-1"></a><span class="co">        - y: the output of the model</span></span>
+<span id="cb5-55"><a href="#cb5-55" aria-hidden="true" tabindex="-1"></a><span class="co">        - ff_dict: a dictionary with all the fully connected units and activations.</span></span>
+<span id="cb5-56"><a href="#cb5-56" aria-hidden="true" tabindex="-1"></a><span class="co">        """</span></span>
+<span id="cb5-57"><a href="#cb5-57" aria-hidden="true" tabindex="-1"></a>        ff_dict <span class="op">=</span> {}</span>
+<span id="cb5-58"><a href="#cb5-58" aria-hidden="true" tabindex="-1"></a>        <span class="co">##### YOUR CODE #####</span></span>
+<span id="cb5-59"><a href="#cb5-59" aria-hidden="true" tabindex="-1"></a>        params <span class="op">=</span> <span class="va">self</span>.params</span>
+<span id="cb5-60"><a href="#cb5-60" aria-hidden="true" tabindex="-1"></a>        w1 <span class="op">=</span> params[<span class="st">"W1"</span>] </span>
+<span id="cb5-61"><a href="#cb5-61" aria-hidden="true" tabindex="-1"></a>        b1 <span class="op">=</span> params[<span class="st">"b1"</span>] </span>
+<span id="cb5-62"><a href="#cb5-62" aria-hidden="true" tabindex="-1"></a>        w2 <span class="op">=</span> params[<span class="st">"W2"</span>] </span>
+<span id="cb5-63"><a href="#cb5-63" aria-hidden="true" tabindex="-1"></a>        b2 <span class="op">=</span> params[<span class="st">"b2"</span>] </span>
+<span id="cb5-64"><a href="#cb5-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-65"><a href="#cb5-65" aria-hidden="true" tabindex="-1"></a>        R1 <span class="op">=</span> np.dot(X, w1) <span class="op">+</span> b1 <span class="co"># N * H</span></span>
+<span id="cb5-66"><a href="#cb5-66" aria-hidden="true" tabindex="-1"></a>        Act1 <span class="op">=</span> tanh(R1) <span class="co"># N * H</span></span>
+<span id="cb5-67"><a href="#cb5-67" aria-hidden="true" tabindex="-1"></a>        R2 <span class="op">=</span> np.dot(Act1, w2) <span class="op">+</span> b2 <span class="co"># N * C </span></span>
+<span id="cb5-68"><a href="#cb5-68" aria-hidden="true" tabindex="-1"></a>        Act2 <span class="op">=</span> softmax(R2) <span class="co"># N * C</span></span>
+<span id="cb5-69"><a href="#cb5-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-70"><a href="#cb5-70" aria-hidden="true" tabindex="-1"></a>        ff_dict[<span class="st">'Affine1'</span>] <span class="op">=</span>  R1</span>
+<span id="cb5-71"><a href="#cb5-71" aria-hidden="true" tabindex="-1"></a>        ff_dict[<span class="st">'Tanh'</span>] <span class="op">=</span> Act1</span>
+<span id="cb5-72"><a href="#cb5-72" aria-hidden="true" tabindex="-1"></a>        ff_dict[<span class="st">'Affine2'</span>] <span class="op">=</span> R2</span>
+<span id="cb5-73"><a href="#cb5-73" aria-hidden="true" tabindex="-1"></a>        ff_dict[<span class="st">'Softmax'</span>] <span class="op">=</span> Act2</span>
+<span id="cb5-74"><a href="#cb5-74" aria-hidden="true" tabindex="-1"></a>        y <span class="op">=</span> Act2</span>
+<span id="cb5-75"><a href="#cb5-75" aria-hidden="true" tabindex="-1"></a>        <span class="co">#####################</span></span>
+<span id="cb5-76"><a href="#cb5-76" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> y, ff_dict</span>
+<span id="cb5-77"><a href="#cb5-77" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-78"><a href="#cb5-78" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> backward(<span class="va">self</span>, X, Y, ff_dict):</span>
+<span id="cb5-79"><a href="#cb5-79" aria-hidden="true" tabindex="-1"></a>        <span class="co">"""</span></span>
+<span id="cb5-80"><a href="#cb5-80" aria-hidden="true" tabindex="-1"></a><span class="co">        Performs backpropagation over the two-layer neural network, and returns</span></span>
+<span id="cb5-81"><a href="#cb5-81" aria-hidden="true" tabindex="-1"></a><span class="co">        a dictionary of gradients of all model parameters.</span></span>
+<span id="cb5-82"><a href="#cb5-82" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-83"><a href="#cb5-83" aria-hidden="true" tabindex="-1"></a><span class="co">        Question (d)</span></span>
+<span id="cb5-84"><a href="#cb5-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-85"><a href="#cb5-85" aria-hidden="true" tabindex="-1"></a><span class="co">        Inputs:</span></span>
+<span id="cb5-86"><a href="#cb5-86" aria-hidden="true" tabindex="-1"></a><span class="co">         - X: the input matrix of shape (B, D), where B is the number of examples</span></span>
+<span id="cb5-87"><a href="#cb5-87" aria-hidden="true" tabindex="-1"></a><span class="co">              in a mini-batch, D is the feature dimensionality.</span></span>
+<span id="cb5-88"><a href="#cb5-88" aria-hidden="true" tabindex="-1"></a><span class="co">         - Y: the matrix of one-hot encoded ground truth classes of shape (B, C),</span></span>
+<span id="cb5-89"><a href="#cb5-89" aria-hidden="true" tabindex="-1"></a><span class="co">              where B is the number of examples in a mini-batch, C is the number</span></span>
+<span id="cb5-90"><a href="#cb5-90" aria-hidden="true" tabindex="-1"></a><span class="co">              of classes.</span></span>
+<span id="cb5-91"><a href="#cb5-91" aria-hidden="true" tabindex="-1"></a><span class="co">         - ff_dict: the dictionary containing all the fully connected units and</span></span>
+<span id="cb5-92"><a href="#cb5-92" aria-hidden="true" tabindex="-1"></a><span class="co">              activations.</span></span>
+<span id="cb5-93"><a href="#cb5-93" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-94"><a href="#cb5-94" aria-hidden="true" tabindex="-1"></a><span class="co">        Returns:</span></span>
+<span id="cb5-95"><a href="#cb5-95" aria-hidden="true" tabindex="-1"></a><span class="co">         - grads: a dictionary containing the gradients of corresponding weights and biases.</span></span>
+<span id="cb5-96"><a href="#cb5-96" aria-hidden="true" tabindex="-1"></a><span class="co">        """</span></span>
+<span id="cb5-97"><a href="#cb5-97" aria-hidden="true" tabindex="-1"></a>        grads <span class="op">=</span> {}</span>
+<span id="cb5-98"><a href="#cb5-98" aria-hidden="true" tabindex="-1"></a>        <span class="co">##### YOUR CODE #####</span></span>
+<span id="cb5-99"><a href="#cb5-99" aria-hidden="true" tabindex="-1"></a>        batch_size <span class="op">=</span> X.shape[<span class="dv">0</span>]</span>
+<span id="cb5-100"><a href="#cb5-100" aria-hidden="true" tabindex="-1"></a>        Act1 <span class="op">=</span> ff_dict[<span class="st">'Affine1'</span>] </span>
+<span id="cb5-101"><a href="#cb5-101" aria-hidden="true" tabindex="-1"></a>        z1 <span class="op">=</span> ff_dict[<span class="st">'Tanh'</span>]</span>
+<span id="cb5-102"><a href="#cb5-102" aria-hidden="true" tabindex="-1"></a>        z2 <span class="op">=</span> ff_dict[<span class="st">'Softmax'</span>]</span>
+<span id="cb5-103"><a href="#cb5-103" aria-hidden="true" tabindex="-1"></a>        w2 <span class="op">=</span> <span class="va">self</span>.params[<span class="st">"W2"</span>]</span>
+<span id="cb5-104"><a href="#cb5-104" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-105"><a href="#cb5-105" aria-hidden="true" tabindex="-1"></a>        dz2 <span class="op">=</span> (z2<span class="op">-</span>Y) <span class="op">/</span> batch_size  <span class="co"># normalization &amp; entropy diff</span></span>
+<span id="cb5-106"><a href="#cb5-106" aria-hidden="true" tabindex="-1"></a>        grads[<span class="st">"dW2"</span>] <span class="op">=</span> np.dot(z1.T, dz2)</span>
+<span id="cb5-107"><a href="#cb5-107" aria-hidden="true" tabindex="-1"></a>        grads[<span class="st">"db2"</span>] <span class="op">=</span> np.<span class="bu">sum</span>(dz2, axis <span class="op">=</span> <span class="dv">0</span>)</span>
+<span id="cb5-108"><a href="#cb5-108" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb5-109"><a href="#cb5-109" aria-hidden="true" tabindex="-1"></a>        dz1 <span class="op">=</span> (<span class="dv">1</span><span class="op">-</span>tanh(Act1)) <span class="op">*</span> (<span class="dv">1</span><span class="op">+</span>tanh(Act1)) <span class="op">*</span> np.dot(dz2, w2.T) <span class="co"># tanh diff</span></span>
+<span id="cb5-110"><a href="#cb5-110" aria-hidden="true" tabindex="-1"></a>        grads[<span class="st">"dW1"</span>] <span class="op">=</span> np.dot(X.T, dz1)</span>
+<span id="cb5-111"><a href="#cb5-111" aria-hidden="true" tabindex="-1"></a>        grads[<span class="st">"db1"</span>] <span class="op">=</span> np.<span class="bu">sum</span>(dz1, axis <span class="op">=</span> <span class="dv">0</span>)</span>
+<span id="cb5-112"><a href="#cb5-112" aria-hidden="true" tabindex="-1"></a>        <span class="co">#####################</span></span>
+<span id="cb5-113"><a href="#cb5-113" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> grads</span>
+<span id="cb5-114"><a href="#cb5-114" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-115"><a href="#cb5-115" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-116"><a href="#cb5-116" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> compute_loss(<span class="va">self</span>, Y, Y_hat):</span>
+<span id="cb5-117"><a href="#cb5-117" aria-hidden="true" tabindex="-1"></a>        <span class="co">"""</span></span>
+<span id="cb5-118"><a href="#cb5-118" aria-hidden="true" tabindex="-1"></a><span class="co">        Computes cross entropy loss.</span></span>
+<span id="cb5-119"><a href="#cb5-119" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-120"><a href="#cb5-120" aria-hidden="true" tabindex="-1"></a><span class="co">        Do NOT modify this function.</span></span>
+<span id="cb5-121"><a href="#cb5-121" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-122"><a href="#cb5-122" aria-hidden="true" tabindex="-1"></a><span class="co">        Inputs</span></span>
+<span id="cb5-123"><a href="#cb5-123" aria-hidden="true" tabindex="-1"></a><span class="co">            Y:</span></span>
+<span id="cb5-124"><a href="#cb5-124" aria-hidden="true" tabindex="-1"></a><span class="co">            Y_hat:</span></span>
+<span id="cb5-125"><a href="#cb5-125" aria-hidden="true" tabindex="-1"></a><span class="co">        Returns</span></span>
+<span id="cb5-126"><a href="#cb5-126" aria-hidden="true" tabindex="-1"></a><span class="co">            loss:</span></span>
+<span id="cb5-127"><a href="#cb5-127" aria-hidden="true" tabindex="-1"></a><span class="co">        """</span></span>
+<span id="cb5-128"><a href="#cb5-128" aria-hidden="true" tabindex="-1"></a>        loss <span class="op">=</span> <span class="op">-</span>(<span class="dv">1</span><span class="op">/</span>Y.shape[<span class="dv">0</span>]) <span class="op">*</span> np.<span class="bu">sum</span>(np.multiply(Y, np.log(Y_hat)))</span>
+<span id="cb5-129"><a href="#cb5-129" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> loss</span>
+<span id="cb5-130"><a href="#cb5-130" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-131"><a href="#cb5-131" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> train(<span class="va">self</span>, X, Y, X_val, Y_val, lr, n_epochs, batch_size, log_interval<span class="op">=</span><span class="dv">1</span>):</span>
+<span id="cb5-132"><a href="#cb5-132" aria-hidden="true" tabindex="-1"></a>        <span class="co">"""</span></span>
+<span id="cb5-133"><a href="#cb5-133" aria-hidden="true" tabindex="-1"></a><span class="co">        Runs mini-batch gradient descent.</span></span>
+<span id="cb5-134"><a href="#cb5-134" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-135"><a href="#cb5-135" aria-hidden="true" tabindex="-1"></a><span class="co">        Do NOT Modify this method.</span></span>
+<span id="cb5-136"><a href="#cb5-136" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-137"><a href="#cb5-137" aria-hidden="true" tabindex="-1"></a><span class="co">        Inputs</span></span>
+<span id="cb5-138"><a href="#cb5-138" aria-hidden="true" tabindex="-1"></a><span class="co">        - X</span></span>
+<span id="cb5-139"><a href="#cb5-139" aria-hidden="true" tabindex="-1"></a><span class="co">        - Y</span></span>
+<span id="cb5-140"><a href="#cb5-140" aria-hidden="true" tabindex="-1"></a><span class="co">        - X_val</span></span>
+<span id="cb5-141"><a href="#cb5-141" aria-hidden="true" tabindex="-1"></a><span class="co">        - Y_Val</span></span>
+<span id="cb5-142"><a href="#cb5-142" aria-hidden="true" tabindex="-1"></a><span class="co">        - lr</span></span>
+<span id="cb5-143"><a href="#cb5-143" aria-hidden="true" tabindex="-1"></a><span class="co">        - n_epochs</span></span>
+<span id="cb5-144"><a href="#cb5-144" aria-hidden="true" tabindex="-1"></a><span class="co">        - batch_size</span></span>
+<span id="cb5-145"><a href="#cb5-145" aria-hidden="true" tabindex="-1"></a><span class="co">        - log_interval</span></span>
+<span id="cb5-146"><a href="#cb5-146" aria-hidden="true" tabindex="-1"></a><span class="co">        """</span></span>
+<span id="cb5-147"><a href="#cb5-147" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> epoch <span class="kw">in</span> <span class="bu">range</span>(n_epochs):</span>
+<span id="cb5-148"><a href="#cb5-148" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> X_batch, Y_batch <span class="kw">in</span> load_batch(X, Y, batch_size):</span>
+<span id="cb5-149"><a href="#cb5-149" aria-hidden="true" tabindex="-1"></a>                <span class="va">self</span>.train_step(X_batch, Y_batch, batch_size, lr)</span>
+<span id="cb5-150"><a href="#cb5-150" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> epoch <span class="op">%</span> log_interval<span class="op">==</span><span class="dv">0</span>:</span>
+<span id="cb5-151"><a href="#cb5-151" aria-hidden="true" tabindex="-1"></a>                Y_hat, ff_dict <span class="op">=</span> <span class="va">self</span>.forward(X)</span>
+<span id="cb5-152"><a href="#cb5-152" aria-hidden="true" tabindex="-1"></a>                train_loss <span class="op">=</span> <span class="va">self</span>.compute_loss(Y, Y_hat)</span>
+<span id="cb5-153"><a href="#cb5-153" aria-hidden="true" tabindex="-1"></a>                train_acc <span class="op">=</span> <span class="va">self</span>.evaluate(Y, Y_hat)</span>
+<span id="cb5-154"><a href="#cb5-154" aria-hidden="true" tabindex="-1"></a>                Y_hat, ff_dict <span class="op">=</span> <span class="va">self</span>.forward(X_val)</span>
+<span id="cb5-155"><a href="#cb5-155" aria-hidden="true" tabindex="-1"></a>                valid_loss <span class="op">=</span> <span class="va">self</span>.compute_loss(Y_val, Y_hat)</span>
+<span id="cb5-156"><a href="#cb5-156" aria-hidden="true" tabindex="-1"></a>                valid_acc <span class="op">=</span> <span class="va">self</span>.evaluate(Y_val, Y_hat)</span>
+<span id="cb5-157"><a href="#cb5-157" aria-hidden="true" tabindex="-1"></a>                <span class="bu">print</span>(<span class="st">'epoch </span><span class="sc">{:02}</span><span class="st"> - train loss/acc: </span><span class="sc">{:.3f}</span><span class="st"> </span><span class="sc">{:.3f}</span><span class="st">, valid loss/acc: </span><span class="sc">{:.3f}</span><span class="st"> </span><span class="sc">{:.3f}</span><span class="st">'</span>.<span class="op">\</span></span>
+<span id="cb5-158"><a href="#cb5-158" aria-hidden="true" tabindex="-1"></a>                      <span class="bu">format</span>(epoch, train_loss, train_acc, valid_loss, valid_acc))</span>
+<span id="cb5-159"><a href="#cb5-159" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-160"><a href="#cb5-160" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> train_step(<span class="va">self</span>, X_batch, Y_batch, batch_size, lr):</span>
+<span id="cb5-161"><a href="#cb5-161" aria-hidden="true" tabindex="-1"></a>        <span class="co">"""</span></span>
+<span id="cb5-162"><a href="#cb5-162" aria-hidden="true" tabindex="-1"></a><span class="co">        Updates the parameters using gradient descent.</span></span>
+<span id="cb5-163"><a href="#cb5-163" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-164"><a href="#cb5-164" aria-hidden="true" tabindex="-1"></a><span class="co">        Do NOT Modify this method.</span></span>
+<span id="cb5-165"><a href="#cb5-165" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-166"><a href="#cb5-166" aria-hidden="true" tabindex="-1"></a><span class="co">        Inputs</span></span>
+<span id="cb5-167"><a href="#cb5-167" aria-hidden="true" tabindex="-1"></a><span class="co">        - X_batch</span></span>
+<span id="cb5-168"><a href="#cb5-168" aria-hidden="true" tabindex="-1"></a><span class="co">        - Y_batch</span></span>
+<span id="cb5-169"><a href="#cb5-169" aria-hidden="true" tabindex="-1"></a><span class="co">        - batch_size</span></span>
+<span id="cb5-170"><a href="#cb5-170" aria-hidden="true" tabindex="-1"></a><span class="co">        - lr</span></span>
+<span id="cb5-171"><a href="#cb5-171" aria-hidden="true" tabindex="-1"></a><span class="co">        """</span></span>
+<span id="cb5-172"><a href="#cb5-172" aria-hidden="true" tabindex="-1"></a>        _, ff_dict <span class="op">=</span> <span class="va">self</span>.forward(X_batch)</span>
+<span id="cb5-173"><a href="#cb5-173" aria-hidden="true" tabindex="-1"></a>        grads <span class="op">=</span> <span class="va">self</span>.backward(X_batch, Y_batch, ff_dict)</span>
+<span id="cb5-174"><a href="#cb5-174" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.params[<span class="st">"W1"</span>] <span class="op">-=</span> lr <span class="op">*</span> grads[<span class="st">"dW1"</span>]<span class="op">/</span>batch_size</span>
+<span id="cb5-175"><a href="#cb5-175" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.params[<span class="st">"b1"</span>] <span class="op">-=</span> lr <span class="op">*</span> grads[<span class="st">"db1"</span>]<span class="op">/</span>batch_size</span>
+<span id="cb5-176"><a href="#cb5-176" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.params[<span class="st">"W2"</span>] <span class="op">-=</span> lr <span class="op">*</span> grads[<span class="st">"dW2"</span>]<span class="op">/</span>batch_size</span>
+<span id="cb5-177"><a href="#cb5-177" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.params[<span class="st">"b2"</span>] <span class="op">-=</span> lr <span class="op">*</span> grads[<span class="st">"db2"</span>]<span class="op">/</span>batch_size</span>
+<span id="cb5-178"><a href="#cb5-178" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-179"><a href="#cb5-179" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> evaluate(<span class="va">self</span>, Y, Y_hat):</span>
+<span id="cb5-180"><a href="#cb5-180" aria-hidden="true" tabindex="-1"></a>        <span class="co">"""</span></span>
+<span id="cb5-181"><a href="#cb5-181" aria-hidden="true" tabindex="-1"></a><span class="co">        Computes classification accuracy.</span></span>
+<span id="cb5-182"><a href="#cb5-182" aria-hidden="true" tabindex="-1"></a><span class="co">        </span></span>
+<span id="cb5-183"><a href="#cb5-183" aria-hidden="true" tabindex="-1"></a><span class="co">        Do NOT modify this function</span></span>
+<span id="cb5-184"><a href="#cb5-184" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-185"><a href="#cb5-185" aria-hidden="true" tabindex="-1"></a><span class="co">        Inputs</span></span>
+<span id="cb5-186"><a href="#cb5-186" aria-hidden="true" tabindex="-1"></a><span class="co">        - Y: A numpy array of shape (N, C) containing the softmax outputs,</span></span>
+<span id="cb5-187"><a href="#cb5-187" aria-hidden="true" tabindex="-1"></a><span class="co">             where C is the number of classes.</span></span>
+<span id="cb5-188"><a href="#cb5-188" aria-hidden="true" tabindex="-1"></a><span class="co">        - Y_hat: A numpy array of shape (N, C) containing the one-hot encoded labels,</span></span>
+<span id="cb5-189"><a href="#cb5-189" aria-hidden="true" tabindex="-1"></a><span class="co">             where C is the number of classes.</span></span>
+<span id="cb5-190"><a href="#cb5-190" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-191"><a href="#cb5-191" aria-hidden="true" tabindex="-1"></a><span class="co">        Returns</span></span>
+<span id="cb5-192"><a href="#cb5-192" aria-hidden="true" tabindex="-1"></a><span class="co">            accuracy: the classification accuracy in float</span></span>
+<span id="cb5-193"><a href="#cb5-193" aria-hidden="true" tabindex="-1"></a><span class="co">        """</span>        </span>
+<span id="cb5-194"><a href="#cb5-194" aria-hidden="true" tabindex="-1"></a>        classes_pred <span class="op">=</span> np.argmax(Y_hat, axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb5-195"><a href="#cb5-195" aria-hidden="true" tabindex="-1"></a>        classes_gt <span class="op">=</span> np.argmax(Y, axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb5-196"><a href="#cb5-196" aria-hidden="true" tabindex="-1"></a>        accuracy <span class="op">=</span> <span class="bu">float</span>(np.<span class="bu">sum</span>(classes_pred<span class="op">==</span>classes_gt)) <span class="op">/</span> Y.shape[<span class="dv">0</span>]</span>
+<span id="cb5-197"><a href="#cb5-197" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> accuracy</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="load-mnist" class="level1">
+<h1>Load MNIST</h1>
+<div class="cell" data-execution_count="5">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>X_train, Y_train, X_test, Y_test <span class="op">=</span> load_data()</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>idxs <span class="op">=</span> np.arange(<span class="bu">len</span>(X_train))</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>np.random.shuffle(idxs)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>split_idx <span class="op">=</span> <span class="bu">int</span>(np.ceil(<span class="bu">len</span>(idxs)<span class="op">*</span><span class="fl">0.8</span>))</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>X_valid, Y_valid <span class="op">=</span> X_train[idxs[split_idx:]], Y_train[idxs[split_idx:]]</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>X_train, Y_train <span class="op">=</span> X_train[idxs[:split_idx]], Y_train[idxs[:split_idx]]</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>()</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Set validation data aside'</span>)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Training data shape: '</span>, X_train.shape)</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Training labels shape: '</span>, Y_train.shape)</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Validation data shape: '</span>, X_valid.shape)</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Validation labels shape: '</span>, Y_valid.shape)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>MNIST data loaded:
+Training data shape: (60000, 784)
+Training labels shape: (60000, 10)
+Test data shape: (10000, 784)
+Test labels shape: (10000, 10)
+
+Set validation data aside
+Training data shape:  (48000, 784)
+Training labels shape:  (48000, 10)
+Validation data shape:  (12000, 784)
+Validation labels shape:  (12000, 10)</code></pre>
+</div>
+</div>
+</section>
+<section id="training-evaluation" class="level1">
+<h1>Training &amp; Evaluation</h1>
+<div class="cell" data-execution_count="6">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">### </span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Question (e)</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Tune the hyperparameters with validation data, </span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co"># and print the results by running the lines below.</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co">###</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell" data-execution_count="7">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># model instantiation</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> TwoLayerNN(input_dim<span class="op">=</span><span class="dv">784</span>, num_hiddens<span class="op">=</span><span class="dv">80</span>, num_classes<span class="op">=</span><span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell" data-execution_count="8">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># train the model</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>lr, n_epochs, batch_size <span class="op">=</span> <span class="dv">3</span>, <span class="dv">40</span>, <span class="dv">128</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>model.train(X_train, Y_train, X_valid, Y_valid, lr, n_epochs, batch_size)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>epoch 00 - train loss/acc: 0.512 0.867, valid loss/acc: 0.517 0.866
+epoch 01 - train loss/acc: 0.406 0.888, valid loss/acc: 0.411 0.888
+epoch 02 - train loss/acc: 0.361 0.899, valid loss/acc: 0.366 0.899
+epoch 03 - train loss/acc: 0.333 0.906, valid loss/acc: 0.340 0.904
+epoch 04 - train loss/acc: 0.314 0.911, valid loss/acc: 0.321 0.909
+epoch 05 - train loss/acc: 0.299 0.915, valid loss/acc: 0.307 0.913
+epoch 06 - train loss/acc: 0.286 0.918, valid loss/acc: 0.295 0.917
+epoch 07 - train loss/acc: 0.275 0.921, valid loss/acc: 0.285 0.920
+epoch 08 - train loss/acc: 0.266 0.925, valid loss/acc: 0.277 0.922
+epoch 09 - train loss/acc: 0.257 0.927, valid loss/acc: 0.268 0.924
+epoch 10 - train loss/acc: 0.249 0.930, valid loss/acc: 0.261 0.927
+epoch 11 - train loss/acc: 0.241 0.932, valid loss/acc: 0.254 0.928
+epoch 12 - train loss/acc: 0.234 0.935, valid loss/acc: 0.248 0.930
+epoch 13 - train loss/acc: 0.228 0.937, valid loss/acc: 0.242 0.931
+epoch 14 - train loss/acc: 0.222 0.938, valid loss/acc: 0.237 0.932
+epoch 15 - train loss/acc: 0.216 0.940, valid loss/acc: 0.232 0.933
+epoch 16 - train loss/acc: 0.211 0.942, valid loss/acc: 0.226 0.935
+epoch 17 - train loss/acc: 0.205 0.943, valid loss/acc: 0.222 0.935
+epoch 18 - train loss/acc: 0.200 0.944, valid loss/acc: 0.218 0.938
+epoch 19 - train loss/acc: 0.196 0.945, valid loss/acc: 0.213 0.939
+epoch 20 - train loss/acc: 0.192 0.947, valid loss/acc: 0.209 0.940
+epoch 21 - train loss/acc: 0.187 0.948, valid loss/acc: 0.206 0.941
+epoch 22 - train loss/acc: 0.183 0.949, valid loss/acc: 0.202 0.942
+epoch 23 - train loss/acc: 0.179 0.950, valid loss/acc: 0.199 0.943
+epoch 24 - train loss/acc: 0.176 0.951, valid loss/acc: 0.196 0.943
+epoch 25 - train loss/acc: 0.172 0.953, valid loss/acc: 0.192 0.945
+epoch 26 - train loss/acc: 0.169 0.953, valid loss/acc: 0.190 0.946
+epoch 27 - train loss/acc: 0.166 0.954, valid loss/acc: 0.186 0.947
+epoch 28 - train loss/acc: 0.162 0.955, valid loss/acc: 0.183 0.947
+epoch 29 - train loss/acc: 0.160 0.955, valid loss/acc: 0.181 0.948
+epoch 30 - train loss/acc: 0.157 0.957, valid loss/acc: 0.179 0.949
+epoch 31 - train loss/acc: 0.154 0.958, valid loss/acc: 0.176 0.949
+epoch 32 - train loss/acc: 0.151 0.959, valid loss/acc: 0.173 0.949
+epoch 33 - train loss/acc: 0.148 0.959, valid loss/acc: 0.171 0.950
+epoch 34 - train loss/acc: 0.146 0.960, valid loss/acc: 0.169 0.951
+epoch 35 - train loss/acc: 0.144 0.960, valid loss/acc: 0.167 0.952
+epoch 36 - train loss/acc: 0.141 0.962, valid loss/acc: 0.165 0.952
+epoch 37 - train loss/acc: 0.139 0.962, valid loss/acc: 0.163 0.953
+epoch 38 - train loss/acc: 0.136 0.962, valid loss/acc: 0.160 0.953
+epoch 39 - train loss/acc: 0.135 0.963, valid loss/acc: 0.159 0.954</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="9">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># evalute the model on test data</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>Y_hat, _ <span class="op">=</span> model.forward(X_test)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>test_loss <span class="op">=</span> model.compute_loss(Y_test, Y_hat)</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>test_acc <span class="op">=</span> model.evaluate(Y_test, Y_hat)</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Final test loss = </span><span class="sc">{:.3f}</span><span class="st">, acc = </span><span class="sc">{:.3f}</span><span class="st">"</span>.<span class="bu">format</span>(test_loss, test_acc))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Final test loss = 0.149, acc = 0.956</code></pre>
+</div>
+</div>
+</section>
+<section id="extra-credit-optional" class="level1">
+<h1>Extra Credit (Optional)</h1>
+<div class="cell" data-execution_count="32">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co">######### define relu #############</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> relu:</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> fw(x):</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>        z<span class="op">=</span>x.copy()</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>        fwd <span class="op">=</span> <span class="kw">lambda</span> k: np.maximum(<span class="dv">0</span>, k)</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>        result <span class="op">=</span> np.vectorize(fwd)(z)</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> result</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> bw(x):</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>        z<span class="op">=</span>x.copy()</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>        bwd <span class="op">=</span> <span class="kw">lambda</span> k : <span class="dv">0</span> <span class="cf">if</span> k<span class="op">&lt;=</span><span class="dv">0</span> <span class="cf">else</span> <span class="dv">1</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>        result <span class="op">=</span> np.vectorize(bwd)(z)</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> result        </span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a><span class="co">###################################</span></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> initialize_parameters(<span class="va">self</span>, input_dim, num_hiddens, num_classes):</span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a><span class="co">    initializes parameters with He Initialization.</span></span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a><span class="co">    Question (f)</span></span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a><span class="co">    - refer to https://paperswithcode.com/method/he-initialization for He initialization </span></span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a><span class="co">    Inputs</span></span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a><span class="co">    - input_dim</span></span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a><span class="co">    - num_hiddens</span></span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a><span class="co">    - num_classes</span></span>
+<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns</span></span>
+<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a><span class="co">    - params: a dictionary with the initialized parameters.</span></span>
+<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a>    params <span class="op">=</span> {}</span>
+<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a>    <span class="co">##### YOUR CODE #####</span></span>
+<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a>    params[<span class="st">"W1"</span>] <span class="op">=</span> np.random.uniform(low<span class="op">=-</span><span class="dv">1</span><span class="op">/</span>(np.sqrt(num_hiddens)), high<span class="op">=</span><span class="dv">1</span><span class="op">/</span>(np.sqrt(num_hiddens)), size<span class="op">=</span>(input_dim, num_hiddens))</span>
+<span id="cb14-33"><a href="#cb14-33" aria-hidden="true" tabindex="-1"></a>    params[<span class="st">"b1"</span>] <span class="op">=</span> np.zeros(num_hiddens)</span>
+<span id="cb14-34"><a href="#cb14-34" aria-hidden="true" tabindex="-1"></a>    params[<span class="st">"W2"</span>] <span class="op">=</span> np.random.uniform(low<span class="op">=-</span><span class="dv">1</span><span class="op">/</span>(np.sqrt(num_classes)), high<span class="op">=</span><span class="dv">1</span><span class="op">/</span>(np.sqrt(num_classes)), size<span class="op">=</span>(num_hiddens, num_classes))</span>
+<span id="cb14-35"><a href="#cb14-35" aria-hidden="true" tabindex="-1"></a>    params[<span class="st">"b2"</span>] <span class="op">=</span> np.zeros(num_classes)</span>
+<span id="cb14-36"><a href="#cb14-36" aria-hidden="true" tabindex="-1"></a>    <span class="co">#####################</span></span>
+<span id="cb14-37"><a href="#cb14-37" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> params</span>
+<span id="cb14-38"><a href="#cb14-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-39"><a href="#cb14-39" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> forward_relu(<span class="va">self</span>, X):</span>
+<span id="cb14-40"><a href="#cb14-40" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb14-41"><a href="#cb14-41" aria-hidden="true" tabindex="-1"></a><span class="co">    Defines and performs the feed forward step of a two-layer neural network.</span></span>
+<span id="cb14-42"><a href="#cb14-42" aria-hidden="true" tabindex="-1"></a><span class="co">    Specifically, the network structue is given by</span></span>
+<span id="cb14-43"><a href="#cb14-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-44"><a href="#cb14-44" aria-hidden="true" tabindex="-1"></a><span class="co">        y = softmax(relu(X W1 + b1) W2 + b2)</span></span>
+<span id="cb14-45"><a href="#cb14-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-46"><a href="#cb14-46" aria-hidden="true" tabindex="-1"></a><span class="co">    where X is the input matrix of shape (N, D), y is the class distribution matrix</span></span>
+<span id="cb14-47"><a href="#cb14-47" aria-hidden="true" tabindex="-1"></a><span class="co">    of shape (N, C), N is the number of examples (either the entire dataset or</span></span>
+<span id="cb14-48"><a href="#cb14-48" aria-hidden="true" tabindex="-1"></a><span class="co">    a mini-batch), D is the feature dimensionality, and C is the number of classes.</span></span>
+<span id="cb14-49"><a href="#cb14-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-50"><a href="#cb14-50" aria-hidden="true" tabindex="-1"></a><span class="co">    Question (f)</span></span>
+<span id="cb14-51"><a href="#cb14-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-52"><a href="#cb14-52" aria-hidden="true" tabindex="-1"></a><span class="co">    Inputs</span></span>
+<span id="cb14-53"><a href="#cb14-53" aria-hidden="true" tabindex="-1"></a><span class="co">        X: the input matrix of shape (N, D)</span></span>
+<span id="cb14-54"><a href="#cb14-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-55"><a href="#cb14-55" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns</span></span>
+<span id="cb14-56"><a href="#cb14-56" aria-hidden="true" tabindex="-1"></a><span class="co">        y: the output of the model</span></span>
+<span id="cb14-57"><a href="#cb14-57" aria-hidden="true" tabindex="-1"></a><span class="co">        ff_dict: a dictionary containing all the fully connected units and activations.</span></span>
+<span id="cb14-58"><a href="#cb14-58" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb14-59"><a href="#cb14-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-60"><a href="#cb14-60" aria-hidden="true" tabindex="-1"></a>    ff_dict <span class="op">=</span> {}        </span>
+<span id="cb14-61"><a href="#cb14-61" aria-hidden="true" tabindex="-1"></a>    <span class="co">##### YOUR CODE #####</span></span>
+<span id="cb14-62"><a href="#cb14-62" aria-hidden="true" tabindex="-1"></a>    params <span class="op">=</span> <span class="va">self</span>.params</span>
+<span id="cb14-63"><a href="#cb14-63" aria-hidden="true" tabindex="-1"></a>    w1 <span class="op">=</span> params[<span class="st">"W1"</span>] </span>
+<span id="cb14-64"><a href="#cb14-64" aria-hidden="true" tabindex="-1"></a>    b1 <span class="op">=</span> params[<span class="st">"b1"</span>] </span>
+<span id="cb14-65"><a href="#cb14-65" aria-hidden="true" tabindex="-1"></a>    w2 <span class="op">=</span> params[<span class="st">"W2"</span>] </span>
+<span id="cb14-66"><a href="#cb14-66" aria-hidden="true" tabindex="-1"></a>    b2 <span class="op">=</span> params[<span class="st">"b2"</span>] </span>
+<span id="cb14-67"><a href="#cb14-67" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-68"><a href="#cb14-68" aria-hidden="true" tabindex="-1"></a>    R1 <span class="op">=</span> np.dot(X, w1) <span class="op">+</span> b1 <span class="co"># N * H</span></span>
+<span id="cb14-69"><a href="#cb14-69" aria-hidden="true" tabindex="-1"></a>    Act1 <span class="op">=</span> relu.fw(R1) <span class="co"># N * H</span></span>
+<span id="cb14-70"><a href="#cb14-70" aria-hidden="true" tabindex="-1"></a>    R2 <span class="op">=</span> np.dot(Act1, w2) <span class="op">+</span> b2 <span class="co"># N * C </span></span>
+<span id="cb14-71"><a href="#cb14-71" aria-hidden="true" tabindex="-1"></a>    Act2 <span class="op">=</span> softmax(R2) <span class="co"># N * C</span></span>
+<span id="cb14-72"><a href="#cb14-72" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-73"><a href="#cb14-73" aria-hidden="true" tabindex="-1"></a>    ff_dict[<span class="st">'Affine1'</span>] <span class="op">=</span>  R1</span>
+<span id="cb14-74"><a href="#cb14-74" aria-hidden="true" tabindex="-1"></a>    ff_dict[<span class="st">'ReLU'</span>] <span class="op">=</span> Act1</span>
+<span id="cb14-75"><a href="#cb14-75" aria-hidden="true" tabindex="-1"></a>    ff_dict[<span class="st">'Affine2'</span>] <span class="op">=</span> R2</span>
+<span id="cb14-76"><a href="#cb14-76" aria-hidden="true" tabindex="-1"></a>    ff_dict[<span class="st">'Softmax'</span>] <span class="op">=</span> Act2</span>
+<span id="cb14-77"><a href="#cb14-77" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> Act2</span>
+<span id="cb14-78"><a href="#cb14-78" aria-hidden="true" tabindex="-1"></a>    <span class="co">#####################</span></span>
+<span id="cb14-79"><a href="#cb14-79" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> y, ff_dict</span>
+<span id="cb14-80"><a href="#cb14-80" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-81"><a href="#cb14-81" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> backward_relu(<span class="va">self</span>, X, Y, ff_dict):</span>
+<span id="cb14-82"><a href="#cb14-82" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb14-83"><a href="#cb14-83" aria-hidden="true" tabindex="-1"></a><span class="co">    Performs backpropagation over the two-layer neural network, and returns</span></span>
+<span id="cb14-84"><a href="#cb14-84" aria-hidden="true" tabindex="-1"></a><span class="co">    a dictionary of gradients of all model parameters.</span></span>
+<span id="cb14-85"><a href="#cb14-85" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-86"><a href="#cb14-86" aria-hidden="true" tabindex="-1"></a><span class="co">    Question (f)</span></span>
+<span id="cb14-87"><a href="#cb14-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-88"><a href="#cb14-88" aria-hidden="true" tabindex="-1"></a><span class="co">    Inputs:</span></span>
+<span id="cb14-89"><a href="#cb14-89" aria-hidden="true" tabindex="-1"></a><span class="co">        - X: the input matrix of shape (B, D), where B is the number of examples</span></span>
+<span id="cb14-90"><a href="#cb14-90" aria-hidden="true" tabindex="-1"></a><span class="co">            in a mini-batch, D is the feature dimensionality.</span></span>
+<span id="cb14-91"><a href="#cb14-91" aria-hidden="true" tabindex="-1"></a><span class="co">        - Y: the matrix of one-hot encoded ground truth classes of shape (B, C),</span></span>
+<span id="cb14-92"><a href="#cb14-92" aria-hidden="true" tabindex="-1"></a><span class="co">            where B is the number of examples in a mini-batch, C is the number</span></span>
+<span id="cb14-93"><a href="#cb14-93" aria-hidden="true" tabindex="-1"></a><span class="co">            of classes.</span></span>
+<span id="cb14-94"><a href="#cb14-94" aria-hidden="true" tabindex="-1"></a><span class="co">        - ff_dict: the dictionary containing all the fully connected units and</span></span>
+<span id="cb14-95"><a href="#cb14-95" aria-hidden="true" tabindex="-1"></a><span class="co">            activations.</span></span>
+<span id="cb14-96"><a href="#cb14-96" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-97"><a href="#cb14-97" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
+<span id="cb14-98"><a href="#cb14-98" aria-hidden="true" tabindex="-1"></a><span class="co">        - grads: a dictionary containing the gradients of corresponding weights</span></span>
+<span id="cb14-99"><a href="#cb14-99" aria-hidden="true" tabindex="-1"></a><span class="co">            and biases.</span></span>
+<span id="cb14-100"><a href="#cb14-100" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb14-101"><a href="#cb14-101" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-102"><a href="#cb14-102" aria-hidden="true" tabindex="-1"></a>    grads <span class="op">=</span> {}</span>
+<span id="cb14-103"><a href="#cb14-103" aria-hidden="true" tabindex="-1"></a>    <span class="co">##### YOUR CODE #####</span></span>
+<span id="cb14-104"><a href="#cb14-104" aria-hidden="true" tabindex="-1"></a>    batch_size <span class="op">=</span> X.shape[<span class="dv">0</span>]</span>
+<span id="cb14-105"><a href="#cb14-105" aria-hidden="true" tabindex="-1"></a>    Act1 <span class="op">=</span> ff_dict[<span class="st">'Affine1'</span>] </span>
+<span id="cb14-106"><a href="#cb14-106" aria-hidden="true" tabindex="-1"></a>    z1 <span class="op">=</span> ff_dict[<span class="st">'ReLU'</span>]</span>
+<span id="cb14-107"><a href="#cb14-107" aria-hidden="true" tabindex="-1"></a>    z2 <span class="op">=</span> ff_dict[<span class="st">'Softmax'</span>]</span>
+<span id="cb14-108"><a href="#cb14-108" aria-hidden="true" tabindex="-1"></a>    w2 <span class="op">=</span> <span class="va">self</span>.params[<span class="st">"W2"</span>]</span>
+<span id="cb14-109"><a href="#cb14-109" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-110"><a href="#cb14-110" aria-hidden="true" tabindex="-1"></a>    dz2 <span class="op">=</span> (z2<span class="op">-</span>Y) <span class="op">/</span> batch_size  <span class="co"># normalization &amp; entropy diff</span></span>
+<span id="cb14-111"><a href="#cb14-111" aria-hidden="true" tabindex="-1"></a>    grads[<span class="st">"dW2"</span>] <span class="op">=</span> np.dot(z1.T, dz2)</span>
+<span id="cb14-112"><a href="#cb14-112" aria-hidden="true" tabindex="-1"></a>    grads[<span class="st">"db2"</span>] <span class="op">=</span> np.<span class="bu">sum</span>(dz2, axis <span class="op">=</span> <span class="dv">0</span>)</span>
+<span id="cb14-113"><a href="#cb14-113" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb14-114"><a href="#cb14-114" aria-hidden="true" tabindex="-1"></a>    dz1 <span class="op">=</span> relu.bw(Act1) <span class="op">*</span> np.dot(dz2, w2.T) <span class="co"># relu diff</span></span>
+<span id="cb14-115"><a href="#cb14-115" aria-hidden="true" tabindex="-1"></a>    grads[<span class="st">"dW1"</span>] <span class="op">=</span> np.dot(X.T, dz1)</span>
+<span id="cb14-116"><a href="#cb14-116" aria-hidden="true" tabindex="-1"></a>    grads[<span class="st">"db1"</span>] <span class="op">=</span> np.<span class="bu">sum</span>(dz1, axis <span class="op">=</span> <span class="dv">0</span>)</span>
+<span id="cb14-117"><a href="#cb14-117" aria-hidden="true" tabindex="-1"></a>    <span class="co">#####################</span></span>
+<span id="cb14-118"><a href="#cb14-118" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> grads</span>
+<span id="cb14-119"><a href="#cb14-119" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-120"><a href="#cb14-120" aria-hidden="true" tabindex="-1"></a>TwoLayerNNRelu <span class="op">=</span> copy.copy(TwoLayerNN)</span>
+<span id="cb14-121"><a href="#cb14-121" aria-hidden="true" tabindex="-1"></a>TwoLayerNNRelu.initialize_parameters <span class="op">=</span> initialize_parameters</span>
+<span id="cb14-122"><a href="#cb14-122" aria-hidden="true" tabindex="-1"></a>TwoLayerNNRelu.forward <span class="op">=</span> forward_relu</span>
+<span id="cb14-123"><a href="#cb14-123" aria-hidden="true" tabindex="-1"></a>TwoLayerNNRelu.backward <span class="op">=</span> backward_relu</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell" data-execution_count="11">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co">### </span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Question (f)</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Tune the hyperparameters with validation data,</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="co"># and print the results by running the lines below.</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="co">###</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell" data-execution_count="33">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># model instantiation</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>model_relu <span class="op">=</span> TwoLayerNNRelu(input_dim<span class="op">=</span><span class="dv">784</span>, num_hiddens<span class="op">=</span><span class="dv">80</span>, num_classes<span class="op">=</span><span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell" data-execution_count="34">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># train the model</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>lr, n_epochs, batch_size <span class="op">=</span> <span class="fl">2.5</span>, <span class="dv">40</span>, <span class="dv">128</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>history <span class="op">=</span> model_relu.train(X_train, Y_train, X_valid, Y_valid, lr, n_epochs, batch_size)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>epoch 00 - train loss/acc: 0.511 0.868, valid loss/acc: 0.517 0.866
+epoch 01 - train loss/acc: 0.399 0.890, valid loss/acc: 0.408 0.886
+epoch 02 - train loss/acc: 0.353 0.901, valid loss/acc: 0.361 0.897
+epoch 03 - train loss/acc: 0.325 0.909, valid loss/acc: 0.333 0.905
+epoch 04 - train loss/acc: 0.306 0.913, valid loss/acc: 0.314 0.909
+epoch 05 - train loss/acc: 0.290 0.919, valid loss/acc: 0.299 0.915
+epoch 06 - train loss/acc: 0.277 0.922, valid loss/acc: 0.286 0.918
+epoch 07 - train loss/acc: 0.264 0.926, valid loss/acc: 0.274 0.921
+epoch 08 - train loss/acc: 0.254 0.929, valid loss/acc: 0.265 0.923
+epoch 09 - train loss/acc: 0.245 0.932, valid loss/acc: 0.256 0.926
+epoch 10 - train loss/acc: 0.238 0.933, valid loss/acc: 0.250 0.927
+epoch 11 - train loss/acc: 0.230 0.937, valid loss/acc: 0.241 0.930
+epoch 12 - train loss/acc: 0.223 0.938, valid loss/acc: 0.234 0.932
+epoch 13 - train loss/acc: 0.216 0.940, valid loss/acc: 0.229 0.933
+epoch 14 - train loss/acc: 0.211 0.942, valid loss/acc: 0.222 0.935
+epoch 15 - train loss/acc: 0.205 0.943, valid loss/acc: 0.218 0.936
+epoch 16 - train loss/acc: 0.200 0.944, valid loss/acc: 0.213 0.937
+epoch 17 - train loss/acc: 0.195 0.945, valid loss/acc: 0.209 0.940
+epoch 18 - train loss/acc: 0.190 0.947, valid loss/acc: 0.203 0.941
+epoch 19 - train loss/acc: 0.186 0.949, valid loss/acc: 0.199 0.941
+epoch 20 - train loss/acc: 0.182 0.950, valid loss/acc: 0.195 0.943
+epoch 21 - train loss/acc: 0.178 0.950, valid loss/acc: 0.192 0.944
+epoch 22 - train loss/acc: 0.174 0.952, valid loss/acc: 0.189 0.945
+epoch 23 - train loss/acc: 0.171 0.952, valid loss/acc: 0.186 0.946
+epoch 24 - train loss/acc: 0.167 0.953, valid loss/acc: 0.182 0.947
+epoch 25 - train loss/acc: 0.164 0.954, valid loss/acc: 0.179 0.947
+epoch 26 - train loss/acc: 0.160 0.955, valid loss/acc: 0.176 0.948
+epoch 27 - train loss/acc: 0.157 0.957, valid loss/acc: 0.173 0.950
+epoch 28 - train loss/acc: 0.154 0.957, valid loss/acc: 0.170 0.950
+epoch 29 - train loss/acc: 0.151 0.958, valid loss/acc: 0.168 0.951
+epoch 30 - train loss/acc: 0.148 0.959, valid loss/acc: 0.165 0.952
+epoch 31 - train loss/acc: 0.146 0.959, valid loss/acc: 0.163 0.953
+epoch 32 - train loss/acc: 0.143 0.960, valid loss/acc: 0.160 0.955
+epoch 33 - train loss/acc: 0.141 0.961, valid loss/acc: 0.159 0.954
+epoch 34 - train loss/acc: 0.139 0.961, valid loss/acc: 0.157 0.956
+epoch 35 - train loss/acc: 0.136 0.962, valid loss/acc: 0.155 0.956
+epoch 36 - train loss/acc: 0.134 0.963, valid loss/acc: 0.152 0.958
+epoch 37 - train loss/acc: 0.132 0.963, valid loss/acc: 0.150 0.958
+epoch 38 - train loss/acc: 0.130 0.964, valid loss/acc: 0.149 0.958
+epoch 39 - train loss/acc: 0.128 0.965, valid loss/acc: 0.148 0.959</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="35">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>Y_hat, _ <span class="op">=</span> model_relu.forward(X_test)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>test_loss <span class="op">=</span> model_relu.compute_loss(Y_test, Y_hat)</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>test_acc <span class="op">=</span> model_relu.evaluate(Y_test, Y_hat)</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Final test loss = </span><span class="sc">{:.3f}</span><span class="st">, acc = </span><span class="sc">{:.3f}</span><span class="st">"</span>.<span class="bu">format</span>(test_loss, test_acc))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Final test loss = 0.142, acc = 0.960</code></pre>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+      <div class="nav-footer-center">
+        <ul class="footer-items list-unstyled">
+    <li class="nav-item">
+ © 2022 Sangwon Ju
+  </li>  
+</ul>
+      </div>
+  </div>
+</footer>
+
+
+
+</body></html>

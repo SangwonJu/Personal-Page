@@ -54,9 +54,8 @@ Republic of Korea, Germany, Finland, United Kingdom, Japan, Australia
 
     -   Finally, the keyword was selected. By closely examining the analysis result - combination of beta (β), which is the probability that the topic will be included in the topic, and gamma (γ), which is the probability that the topic will be included in each country's report -, topic and major keywords were determined.
 
-:::{.column-body}
-![](https://www.tidytextmining.com/images/tmwr_0601.png)
-Figure: A flowchart of a text analysis that incorporates topic modeling  (Silge & Robinson, 2017)
+::: column-body
+![](https://www.tidytextmining.com/images/tmwr_0601.png) Figure: A flowchart of a text analysis that incorporates topic modeling (Silge & Robinson, 2017)
 :::
 
 ## Loading Package & Setting Working Directory
@@ -2238,7 +2237,7 @@ austrailia_g %>%
 ```{r, fig.align='center',fig.width=10,fig.height=10, warning = FALSE, message = FALSE}
 #| column: page
 korea_tokenized %>% 
-    mutate(key="Republic_of_Korea") %>% 
+    mutate(key="Korea") %>% 
     full_join(germany_tokenized %>%
                   mutate(key="Germany")) %>% 
     full_join(finland_tokenized %>%
@@ -2330,7 +2329,7 @@ Words that are far from the line are words that are found more in one set of tex
 # expect a warning about rows with missing values being removed
 set.seed(2022)
 compare_six %>%
-    ggplot(aes(x = proportion, y = Republic_of_Korea, color = abs(Republic_of_Korea - proportion))) +
+    ggplot(aes(x = proportion, y = Korea, color = abs(Korea - proportion))) +
     geom_abline(color = "darkgreen", lty = 2, size=1.5) +
     geom_jitter(alpha = 0.1, size = 1.5, width = 0.3, height = 0.3) +
     geom_text(aes(label = words), check_overlap = TRUE, vjust = 1.5, family="Nanum Gothic",size=9) +
@@ -2517,6 +2516,7 @@ remove_punct_dict = dict((ord(punct), None) for punct in string.punctuation)
 def LemNormalize(text):
     text_new = text.lower().translate(remove_punct_dict)
     word_tokens = nltk.word_tokenize(text_new)
+    
     return LemTokens(word_tokens)
 
 # nltk.download('punkt')

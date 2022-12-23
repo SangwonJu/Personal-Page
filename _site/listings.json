@@ -2,6 +2,11 @@
   {
     "listing": "/data_analytics.html",
     "items": [
+      "/posts/MLDL IV1/hw4_rnn.html",
+      "/posts/MLDL IV2/hw4_translation.html",
+      "/posts/MLDL III1/hw3_1_knn.html",
+      "/posts/MLDL III2/hw3_2_2nn.html",
+      "/posts/MLDL III3/hw3_3_cnn.html",
       "/posts/MLDL II/2021-29725_hw2.html",
       "/posts/MLDL I/2021-29725_hw1-personal.html",
       "/posts/EBPPM LAB/index.html",

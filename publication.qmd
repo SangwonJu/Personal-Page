@@ -1,29 +1,42 @@
 ---
-"title": Publications / Working Papers
+"title": Publications
 ---
 
-## Publications
+# Papers
 
-1.  To be updated
+::: justify
+1.  **주상원,** 이재호, & 김병조. (2022). 증거기반정책의 발전과 성숙: 미얀마, 인도네시아, 홍콩, 일본, 한국 사례 비교분석. 한국사회와 행정연구, 33(3), 97--131.\
+    DOI: <https://doi.org/10.53865/KSPA.2022.11.33.3.97>\
+    (**Ju, S.,** Lee, J. & Kim, B.J. (2022). Evidence-Based Policy in Asian Countries: A Comparative Analysis of Evidence-Based Policy Implementation in Myanmar, Indonesia, Hong Kong, Japan, and South Korea. Korean Society and Public Administration, 33(3), 97-131.)
 
-## Working Papers
+    -   Abstract: The present study explores the process of evidence-based policy (EBP) implementation in five Asian countries including Myanmar, Indonesia, Hong Kong, Japan, and South Korea. Building on the model of Evidence-based Practice Implementation (EPIS framework; Aarons et al., 2011; Moullin et al., 2019), this study conducted an exploratory comparative case study on five policy cases--a single policy case from each of the five Asian countries--and evaluated the extent to which each policy case has accomplished each of the four levels (i.e., exploration, preparation, implementation, sustainment) of EBP implementation suggested by the EPIS framework. Our findings suggest that the evaluation of the five EBP cases in Asian countries ranged from level 1 (exploration) to level 2 (preparation) out of a total of four levels. We discuss the theoretical and practical implications of our findings.
+:::
 
+# Working Papers
+
+::: justify
 i.  Evidence-Based Policy and Management
 
-    -   **Ju, S.W.** & Lee, J., Kim, B.J. (2022), Evidence-Based Policy in Asian Countries: A Comparative Analysis of Evidence-Based Practice Implementation in Myanmar, Indonesia, Hong Kong, and Japan \[in Korean\], Korean Journal of Public Administration, Under Review
-        -   Abstract:
+    -   Kim, B.J., **Ju, S.** (2023), Proactivity and Evidence Use in Korean Public Organizations: Interactions with Performance Feedback: Analysis Finished, Writing In Progress
 
-            The purpose of this research is to theorize evidence-based policy(EBP) in Asian countries by comparing 4 EBP cases in Hong Kong, Indonesia, Japan, and Myanmar under consistent comparative framework. EBP in Asian countries were not mature enough in that each case only achieved 0.3 to 2 out of 4 stages based on The Model of Evidence-Based Practice Implementation (Aaron et al., 2011). The current research has the following significance as an exploratory comparative research of EBP in Asian countries. First, it is one of the first studies to compare and analyze the maturity of evidence-based policies at the national level. Second, by exploring potential characteristics that may influence the formation and implementation of EBPs, the current research identified the need for further research on the role of political-institutional characteristics. Third, the advantages and disadvantages of The Model of Evidence-Based Practice Implementation were verified and theoretical relevance of the model was identified. Subsequent research on developing an analytic framework that encompasses overall phases in evidence-based policy process from the formulation to implementation and on empirically validating the role of political contexts by expanding the scope of policy cases and nations in Asia is needed.
+ii. Strategic Decision-making
 
-ii. Organizational Decision-making
-
-    -   **Ju, S.W.** (2023), Evidence-based decision-making, problemistic search and blame avoidance : decomposing the evidence utilization contexts and mechanisms in Korean public organizations
-        -   Master's thesis at Seoul National University (2023)
+    -   Kim, B.J., **Ju, S.** (2023), Evidence-based decision-making, problemistic search and blame avoidance : decomposing the evidence utilization contexts and mechanisms in Korean public organizations: Analysis Finished, Writing In Progress
 
 iii. Management Information Systems
 
-     -   TBD
+     -   **Ju, S.** (2023), The Role of Information Technology on Acquring Public Value: Evidence from Korean Public Organizations (in Korean)
+         -   Literature Review
 
-## Academic Presentations
+         -   Master's thesis at Seoul National University (2023)
 
+iv. Computational Social Science
+
+    -   **Ju, S.** & Lee, J., Lee, J.B., Kim, B.J. (2023), Exploring the Challenges and Alternatives of SDGs Implementation: Text-Mining on UN SDG Voluntary National Review of 6 Countries (in Korean): Analysis Finished, Writing in progress
+:::
+
+# Academic Presentations
+
+::: justify
 1.  Ju, S. & Lee, J. (2022), Evidence-Based Policy in Asian Countries: Applying Model of Evidence-Based Practice Implementation for Maturation Stage Analysis \[in Korean, Poster Session\], 2022 Korean Public Administration Summer Conference and Annual KAPA International Conference, Yeosu, Korea, June 2022.
+:::
