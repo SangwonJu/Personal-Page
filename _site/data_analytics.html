@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.1.251">
+<meta name="generator" content="quarto-1.2.335">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -111,43 +111,33 @@ ul.task-list li input[type="checkbox"] {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="./index.html">About Me</a>
-  </li>  
-  <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-research" role="button" data-bs-toggle="dropdown" aria-expanded="false">Research</a>
-    <ul class="dropdown-menu" aria-labelledby="nav-menu-research">    
-        <li>
-    <a class="dropdown-item" href="./research_interests.html">
- <span class="dropdown-text">Interests and Prospects</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="./publication.html">
- <span class="dropdown-text">Publications</span></a>
-  </li>  
-    </ul>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link active" href="./data_analytics.html" aria-current="page">Data Analytics</a>
+    <a class="nav-link" href="./index.html">
+ <span class="menu-text">About Me</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./CV.html">CV (as of January 2023)</a>
+    <a class="nav-link active" href="./data_analytics.html" aria-current="page">
+ <span class="menu-text">Data Analytics</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./cv.qmd">
+ <span class="menu-text">CV (as of January 2023)</span></a>
   </li>  
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item compact">
     <a class="nav-link" href="mailto: sangwon.ju@snu.ac.kr"><i class="bi bi-mailbox2" role="img" aria-label="E-mail">
 </i> 
- </a>
+ <span class="menu-text"></span></a>
   </li>  
   <li class="nav-item compact">
     <a class="nav-link" href="https://github.com/SangwonJu"><i class="bi bi-github" role="img" aria-label="Github">
 </i> 
- </a>
+ <span class="menu-text"></span></a>
   </li>  
   <li class="nav-item compact">
     <a class="nav-link" href="https://www.linkedin.com/in/sangwon-ju-37a6b0216/"><i class="bi bi-linkedin" role="img" aria-label="Linkedin">
 </i> 
- </a>
+ <span class="menu-text"></span></a>
   </li>  
 </ul>
               <div id="quarto-search" class="" title="Search"></div>
@@ -168,6 +158,7 @@ ul.task-list li input[type="checkbox"] {
   <div class="quarto-title-meta">
 
       
+    
       
     </div>
     
@@ -507,7 +498,7 @@ Evidence-Based Research Lab-PPM Projects
 </div>
 <a href="./posts/EBPPM LAB/index.html">
 <div class="listing-description">
-In conclusion, while maintaining the mediating and organizing role of the centralized government, it is necessary to diverge from the current SDGs structure in which all detailed topics are converges to the one centalized entity. Instead, promoting policy development in the direction of strengthening cooperation outward with other countries and strengthening connectivity inward with local communities is the most effective and efficient way to achieve sustainable development goals.
+In conclusion, while maintaining the mediating and organizing role of the centralized government, it is necessary to diverge from the current SDGs structure in which all…
 </div>
 </a>
 </div>
@@ -545,7 +536,7 @@ Data Analytics for Public Data (2021 Fall)
 </div>
 <a href="./posts/Public Data 3/FWA.html">
 <div class="listing-description">
-Sophisticated policy design is required for the public sector flexible work arrangement(FWA) to achieve the original purpose of work-family balance. In addition, the use of FWA due to external pressure (such as department evaluation of penalizing for not choosing to use FWA) rather reduces the adoption rate in a long-term perspective (i.e.&nbsp;stigmatization or psychological issue). Therefore, it is necessary to design a meticulous personnel system that facilitates the adoption through both psychological and material incentives.
+Sophisticated policy design is required for the public sector flexible work arrangement(FWA) to achieve the original purpose of work-family balance. In addition, the use of…
 </div>
 </a>
 </div>
@@ -583,7 +574,7 @@ Data Analytics for Public Data (2021 Fall)
 </div>
 <a href="./posts/Public Data 2/index.html">
 <div class="listing-description">
-Most important part in the unemployment index analysis is how specific figures were calculated, how the definition of the ‘unemployment’ was constructed, and how the data were surveyed and acquired.
+Most important part…
 </div>
 </a>
 </div>
@@ -621,7 +612,7 @@ Data Analytics for Public Data (2021 Fall)
 </div>
 <a href="./posts/Public Data 1/index.html">
 <div class="listing-description">
-The number of local government employees in 2020 decreased by 9.5% (compared to 2018) and 13.32 % (compared to 2019) by on average. This decrease was transitory, since it was affected by The Transition of Fire Officials to National Position (2020).
+The number of local government employees in 2020 decreased by 9.5%…
 </div>
 </a>
 </div>
@@ -989,7 +980,24 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     button.classList.add('code-copy-button-checked');
     var currentTitle = button.getAttribute("title");
     button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
     setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
       button.setAttribute("title", currentTitle);
       button.classList.remove('code-copy-button-checked');
     }, 1000);
@@ -1025,24 +1033,42 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       return note.innerHTML;
     });
   }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
   var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
   for (var i=0; i<bibliorefs.length; i++) {
     const ref = bibliorefs[i];
-    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
-    tippyHover(ref, function() {
-      var popup = window.document.createElement('div');
-      cites.forEach(function(cite) {
-        var citeDiv = window.document.createElement('div');
-        citeDiv.classList.add('hanging-indent');
-        citeDiv.classList.add('csl-entry');
-        var biblioDiv = window.document.getElementById('ref-' + cite);
-        if (biblioDiv) {
-          citeDiv.innerHTML = biblioDiv.innerHTML;
-        }
-        popup.appendChild(citeDiv);
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
       });
-      return popup.innerHTML;
-    });
+    }
   }
 });
 </script>

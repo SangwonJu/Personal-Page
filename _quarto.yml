@@ -19,7 +19,6 @@ website:
     left:
         - text: "About Me"
           file: index.qmd
-        - sidebar:Research
         - text: "Data Analytics"
           file: data_analytics.qmd
         - text: "CV (as of January 2023)"
@@ -36,26 +35,6 @@ website:
           href: https://www.linkedin.com/in/sangwon-ju-37a6b0216/
           aria-label: Linkedin
 
-
-  sidebar:
-
-    - id: Research
-      title: "Research"
-      style: "floating"
-      contents:
-        - text: "Interests and Prospects"
-          href: research_interests.qmd
-        - text: "Publications"
-          href: publication.qmd
-
-
-    - id: dummy
-      title: "Research"
-      contents:
-        - text: "Research Interests"
-          href: research_interests.qmd
-        - text: "Publications / Working Papers"
-          href: publication.qmd
 
 format:
   html:
