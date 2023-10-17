@@ -1,3 +1,25 @@
-```{=html}
-<iframe src="https://drive.google.com/file/d/1Un7zJKhfbQl-gwr7ii8DTRWlPlWFbjsw/preview" width="900" height="1100" allow="autoplay"></iframe>
+---
+page-layout: full
+
+links:
+    - icon: mailbox2
+      href: "mailto: sangwon.ju@snu.ac.kr"
+      text: "E-mail: sangwon.ju@snu.ac.kr"
+    - icon: github
+      href: https://github.com/SangwonJu
+      text: Github
+    - icon: linkedin
+      href: https://www.linkedin.com/in/sangwon-ju-37a6b0216/
+      text: Linkedin
+
+format:
+  html:
+    fontsize: 1.2em
+---
+Curriculum Vitae (As of 17 OCT 2023)
+
+:::{.justify}
 ```
+<iframe src="https://drive.google.com/file/d/1Un7zJKhfbQl-gwr7ii8DTRWlPlWFbjsw/preview" width="1200" height="1100" allow="autoplay"></iframe>
+```
+:::
