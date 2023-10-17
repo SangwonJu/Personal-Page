@@ -8,7 +8,7 @@ website:
   page-footer:
     background: dark
     center:
-        - text: "© 2022 Sangwon Ju"
+        - text: "© 2023 Sangwon Ju"
 
   navbar:
     background: dark
