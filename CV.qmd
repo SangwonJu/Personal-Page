@@ -1,3 +1,0 @@
-```{=html}
-<iframe src="https://drive.google.com/file/d/1Un7zJKhfbQl-gwr7ii8DTRWlPlWFbjsw/preview" width="900" height="1100" allow="autoplay"></iframe>
-```

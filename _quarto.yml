@@ -19,10 +19,11 @@ website:
     left:
         - text: "About Me"
           file: index.qmd
+        - text: "Curriculum Vitae"
+          file: CV2.qmd
         - text: "Data Analytics"
           file: data_analytics.qmd
-        - text: "CV (as of OCT 2023)"
-          file: cv.qmd
+
 
     right:
         - icon: mailbox2

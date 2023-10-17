@@ -1,0 +1,12 @@
+---
+title: "Curriculum Vitae (As of 17 OCT 2023)"
+page-layout: full
+format:
+  html:
+    fontsize: 1.2em
+---
+
+```{=html}
+<iframe src="https://drive.google.com/file/d/1Un7zJKhfbQl-gwr7ii8DTRWlPlWFbjsw/preview" width="1200" height="1100" allow="autoplay"></iframe>
+```
+
