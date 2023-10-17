@@ -1,6 +1,6 @@
 ---
 title: "[Sangwon Ju (주상원)]{.smallcaps}"
-description: "A prospective Ph.D. <br> I'm planning to apply for Public affairs or Business (MIS) Ph.D programs in US, Fall 2023"
+description: "A prospective Ph.D. <br> I'm planning to apply for Public affairs or Business (MIS) Ph.D programs in US, 2023-2024"
 page-layout: full
 
 links:
@@ -27,8 +27,8 @@ comments: false
 
 <h3> <b> About Me </b> </h3>
 <p align="justify">
-Hi. I'm currently a Master's student in <A href = "http://gspa.snu.ac.kr/en" target = "blank" > Graduate School of Public Administration</A> at Seoul National University, 
-Republic of Korea. I'm studying strategic decision-making, organization theory, evidence-based practices in public sector, government IT strategy and management, and computational social science. Generally, my works seeks to quantify impact of policies on acquiring public values, understand interaction between information systems and public policy process, and figure out how researchers can contribute to improving organizational decision-making by adequately utilizing evidence-based practices.   
+Hi. I'm currently a Ph.D. student in <A href = "http://gspa.snu.ac.kr/en" target = "blank" > Graduate School of Public Administration</A> at Seoul National University, 
+Republic of Korea. I'm studying public management, organization theory and behavior, AI and evidence-based practices, government IT strategy, and computational social science. Generally, my work focuses on understanding how public organizations and their employees contribute to creating public value. I aim to investigate how researchers can improve organizational decision-making by analyzing the importance of effective knowledge management within and surrounding organizations. Additionally, I study the interaction between humans, artificial intelligence, and information systems within public organizations.
 </p>
 ```
 -   [Korea Research Institute for Local Administration](https://www.krila.re.kr/eng) \| Research Assistant \| 2022
@@ -39,7 +39,7 @@ Republic of Korea. I'm studying strategic decision-making, organization theory, 
 
 -   [Yonsei University, College of Social Science](https://yupa.yonsei.ac.kr/yupa_en/index.do), Seoul, Republic of Korea \| 2015 \~ 2021\
     **B.A.** in Public Policy and Management\
-    **B.A.** in Business Administration\
+    **B.B.A.** in Business Administration\
     **Minor** in Applied Statistics
 :::
 
