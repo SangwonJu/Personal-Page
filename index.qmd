@@ -20,7 +20,7 @@ format:
     fontsize: 1.2em
 comments: false
 website: 
-    google-analytics: "G-2JLWERWXFT"
+
 ---
 
 ::: column-page-inset

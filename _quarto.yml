@@ -3,6 +3,7 @@ project:
   output-dir: _site
 
 website:
+  google-analytics: "G-2JLWERWXFT"
   title: "Sangwon Ju"
   repo-url: https://github.com/SangwonJu/Personal-Page
   page-footer:
