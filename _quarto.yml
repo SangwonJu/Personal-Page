@@ -20,8 +20,10 @@ website:
     left:
         - text: "About Me"
           file: index.qmd
-        - text: "Curriculum Vitae"
+        - text: "Research"
           file: CV2.qmd
+        - text: "Curriculum Vitae"
+          file: publication.qmd
         - text: "Data Analytics"
           file: data_analytics.qmd
 

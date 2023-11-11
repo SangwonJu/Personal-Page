@@ -1,5 +1,5 @@
 ---
-title: "Curriculum Vitae (As of 17 OCT 2023)"
+title: "Curriculum Vitae (As of 11 NOV 2023)"
 page-layout: full
 format:
   html:

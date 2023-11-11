@@ -1,42 +1,47 @@
 ---
-"title": Publications
+"title": Research
 ---
 
-# Papers
+# Publication
 
 ::: justify
-1.  **주상원,** 이재호, & 김병조. (2022). 증거기반정책의 발전과 성숙: 미얀마, 인도네시아, 홍콩, 일본, 한국 사례 비교분석. 한국사회와 행정연구, 33(3), 97--131.\
-    DOI: <https://doi.org/10.53865/KSPA.2022.11.33.3.97>\
-    (**Ju, S.,** Lee, J. & Kim, B.J. (2022). Evidence-Based Policy in Asian Countries: A Comparative Analysis of Evidence-Based Policy Implementation in Myanmar, Indonesia, Hong Kong, Japan, and South Korea. Korean Society and Public Administration, 33(3), 97-131.)
-
-    -   Abstract: The present study explores the process of evidence-based policy (EBP) implementation in five Asian countries including Myanmar, Indonesia, Hong Kong, Japan, and South Korea. Building on the model of Evidence-based Practice Implementation (EPIS framework; Aarons et al., 2011; Moullin et al., 2019), this study conducted an exploratory comparative case study on five policy cases--a single policy case from each of the five Asian countries--and evaluated the extent to which each policy case has accomplished each of the four levels (i.e., exploration, preparation, implementation, sustainment) of EBP implementation suggested by the EPIS framework. Our findings suggest that the evaluation of the five EBP cases in Asian countries ranged from level 1 (exploration) to level 2 (preparation) out of a total of four levels. We discuss the theoretical and practical implications of our findings.
+-  **Ju, S.,** Lee, J. & Kim, B.J. (2022). Evidence-Based Policy in Asian Countries: A Comparative Analysis of Evidence-Based Policy Implementation in Myanmar, Indonesia, Hong Kong, Japan, and South Korea. *Korean Society and Public Administration*, 33(3), 97-131. DOI: <https://doi.org/10.53865/KSPA.2022.11.33.3.97>
+    -   Abstract: <br> The present study explores the process of evidence-based policy (EBP) implementation in five Asian countries including Myanmar, Indonesia, Hong Kong, Japan, and South Korea. Building on the model of Evidence-based Practice Implementation (EPIS framework; Aarons et al., 2011; Moullin et al., 2019), this study conducted an exploratory comparative case study on five policy cases--a single policy case from each of the five Asian countries--and evaluated the extent to which each policy case has accomplished each of the four levels (i.e., exploration, preparation, implementation, sustainment) of EBP implementation suggested by the EPIS framework. Our findings suggest that the evaluation of the five EBP cases in Asian countries ranged from level 1 (exploration) to level 2 (preparation) out of a total of four levels. We discuss the theoretical and practical implications of our findings.
+    - Keywords: Evidence-Based Policy, The Model of Evidence-based Practice Implementation, Comparative Policy
+Research, Collective Case Study, Asian countries 
 :::
 
 # Working Papers
 
 ::: justify
-i.  Evidence-Based Policy and Management
+- **Ju, S.**, Lee, J., & Kim, B.J., How Social Motivation Shapes Compliance in Crisis?: Ideological Self-Categorization in the U.S. and South Korea <br>
+(Submitted to *Public Administration Review*)
+    - Abstract: <br> This article explores the role of social motivation for compliance in the context of uncertainty induced by the COVID-19 pandemic. The focus is on how citizens' calculative (out of deterrent fear) and normative (out of sense of duty) compliance motivation are biased by their ideological self-categorization in response to coercive prevention policies. Thus, this article conducted a three-way interaction analysis using survey data from citizens of the United States and South Korea. The results indicate that there is a comparative influence of ideological identification on the association between compliance motivations and dissonance in compliance. Furthermore, the degree of the categorization effect was affected by the individualistic-collectivistic cultural dimension of the country of residence. By integrating the social identity approach into research on policy compliance, this study emphasizes the importance of considering citizens' propensity to adhere to in-group norms as a crucial factor in effectively managing their cooperation during widespread crises. 
+    - Keywords: Policy Compliance, Compliance Motivations, Self-Categorization Theory, Symbolic Ideological Identification, Individualistic and Collectivistic Cultures, COVID-19 prevention policies
+    
+    
+- **Ju, S. **& Kim, B.J., The Role of Information Technology on Improving Organizational Performance: Evidence from Korean Public Organizations <br>
+(Preparation in manuscript, Target journal: *Government Information Quarterly*)  
+    - Abstract: <br> In the last three decates, e-government researchers focused on various aspects of information technology, including the technology itself, how organizations utilize it, and its application in diverse contexts. However, there's a limited theoretical discussion and empirical evidence on how these factors affect strategic goals in public organizations. This study aims to examine how investing in IT resources can enhance the capabilities of public organizations and subsequently improve the overall performance of the organization. Based on the resource-based view (RBV) and public value theory, this study empirically examines the influence of IT on public-sector organizations. To examine the impact of IT investment on organizational performance, while considering the role of operational capabilities as a mediator, this article analyzed four-year panel data from 482 South Korean public enterprises and quasi-governmental institutions. The findings indicate that there is a positive relationship between the total investment in IT and operational capabilities. Furthermore, there was a positive correlation between investing in IT resources and organizational performance, where operational capabilities act as a mediator, differentiating the impact of investing in infrastructure for capacity-building from spending on software and hardware maintenance. The results indicate that only the former leads to improved performance. The article contributes to the understanding of e-government performance by discussing how investing in information technology can improve organizational outcomes. It also emphasizes the importance of strategic IT investment in gaining a competitive advantage in the political reputation market. In sum, this study sheds light on the intricate connection between IT resources and public organizational performance.
+    - Keywords: Public Sector IT Strategy, IT Resource, Organizational Performance, Public Value Theory, Resource Based View, E-Government
+    
+- **Ju, S.**, The Psychological Micro-Foundations of Evidence-Based Practice: Social and Epistemic Motivation Among Public Sector Employees <br>
+(Gathering preliminary findings) <br>
 
-    -   Kim, B.J., **Ju, S.** (2023), Proactivity and Evidence Use in Korean Public Organizations: Interactions with Performance Feedback: Analysis Finished, Writing In Progress
+- **Ju, S.**, Performance feedback and Ambidexterity in Public Sector: Boundary Condition of Political Environment
+Dynamics <br>
+(Gathering preliminary findings) <br>
 
-ii. Strategic Decision-making
-
-    -   Kim, B.J., **Ju, S.** (2023), Evidence-based decision-making, problemistic search and blame avoidance : decomposing the evidence utilization contexts and mechanisms in Korean public organizations: Analysis Finished, Writing In Progress
-
-iii. Management Information Systems
-
-     -   **Ju, S.** (2023), The Role of Information Technology on Acquring Public Value: Evidence from Korean Public Organizations (in Korean)
-         -   Literature Review
-
-         -   Master's thesis at Seoul National University (2023)
-
-iv. Computational Social Science
-
-    -   **Ju, S.** & Lee, J., Lee, J.B., Kim, B.J. (2023), Exploring the Challenges and Alternatives of SDGs Implementation: Text-Mining on UN SDG Voluntary National Review of 6 Countries (in Korean): Analysis Finished, Writing in progress
+- Lee, B., **Ju, S.**, Lee, J., & Kim, B.J., Exploring the Challenges and Alternatives of SDGs Implementation:
+Text-Mining on UN SDG Voluntary National Review of 6 Countries [in Korean] <br>
+(Completed data analysis and Writing in progress)<br>
 :::
 
 # Academic Presentations
 
 ::: justify
-1.  Ju, S. & Lee, J. (2022), Evidence-Based Policy in Asian Countries: Applying Model of Evidence-Based Practice Implementation for Maturation Stage Analysis \[in Korean, Poster Session\], 2022 Korean Public Administration Summer Conference and Annual KAPA International Conference, Yeosu, Korea, June 2022.
+- **Ju, S.** & Lee, J. (2024), How does Self-Categorization shape Compliance?: Political Ideology and COVID-19, 2024 ASPA Annual Conference: Building Resilient Communities, Minneapolis, MN, April 2024.
+
+-  **Ju, S.** & Lee, J. (2022), Evidence-Based Policy in Asian Countries: Applying Model of Evidence-Based Practice Implementation for Maturation Stage Analysis \[in Korean, Poster Session\], 2022 Korean Public Administration Summer Conference and Annual KAPA International Conference, Yeosu, Korea, June 2022.
 :::
+
