@@ -14,10 +14,10 @@ Research, Collective Case Study, Asian countries
 # Working Papers
 
 ::: justify
-- **Ju, S.**, Lee, J., & Kim, B.J., How Social Motivation Shapes Compliance in Crisis?: Ideological Self-Categorization in the U.S. and South Korea <br>
-(Submitted to *Public Administration Review*)
-    - Abstract: <br> This article explores the role of social motivation for compliance in the context of uncertainty induced by the COVID-19 pandemic. The focus is on how citizens' calculative (out of deterrent fear) and normative (out of sense of duty) compliance motivation are biased by their ideological self-categorization in response to coercive prevention policies. Thus, this article conducted a three-way interaction analysis using survey data from citizens of the United States and South Korea. The results indicate that there is a comparative influence of ideological identification on the association between compliance motivations and dissonance in compliance. Furthermore, the degree of the categorization effect was affected by the individualistic-collectivistic cultural dimension of the country of residence. By integrating the social identity approach into research on policy compliance, this study emphasizes the importance of considering citizens' propensity to adhere to in-group norms as a crucial factor in effectively managing their cooperation during widespread crises. 
-    - Keywords: Policy Compliance, Compliance Motivations, Self-Categorization Theory, Symbolic Ideological Identification, Individualistic and Collectivistic Cultures, COVID-19 prevention policies
+- Lee, J.\*, **Ju, S.**\* & Kim, B.J., Social Motivation and Policy Compliance in Crisis: Moderating Role of Ideological Self-Categorization in the United States and South Korea <br>
+(Submitted to *Public Administration Review*, \* First and Second Author Contributed Equally)
+    - Abstract: <br> This article explores the role of social motivation for policy compliance in the context of uncertainty induced by the COVID-19 pandemic. The focus is on how citizens' calculative (out of deterrent fear) and normative (out of a sense of duty) compliance motivation are affected by their ideological self-categorization in response to coercive prevention policies. Results from a three-way interaction analysis using survey data from the United States and South Korea suggests potential role of ideological identification on the association between motivations for compliance and dissonance in compliance. The degree of the categorization effect was moderated by the individualistic-collectivistic cultural dimension of the two countries. By integrating the social identity approach into research on policy compliance, this article concludes that policymakers should consider citizens' propensity to conform to in-group norms when shaping the policy response to widespread crises as it plays a critical role in effectively managing their cooperation.
+    - Keywords: social motivation, self-categorization theory, policy compliance, ideological identification
     
     
 - **Ju, S. **& Kim, B.J., The Role of Information Technology on Improving Organizational Performance: Evidence from Korean Public Organizations <br>
@@ -28,8 +28,7 @@ Research, Collective Case Study, Asian countries
 - **Ju, S.**, The Psychological Micro-Foundations of Evidence-Based Practice: Social and Epistemic Motivation Among Public Sector Employees <br>
 (Gathering preliminary findings) <br>
 
-- **Ju, S.**, Performance feedback and Ambidexterity in Public Sector: Boundary Condition of Political Environment
-Dynamics <br>
+- **Ju, S.**, Public-Private Collaboration and Ambidexterity in Public Sector: Boundary Condition of Political Environment <br>
 (Gathering preliminary findings) <br>
 
 - Lee, B., **Ju, S.**, Lee, J., & Kim, B.J., Exploring the Challenges and Alternatives of SDGs Implementation:
@@ -40,8 +39,10 @@ Text-Mining on UN SDG Voluntary National Review of 6 Countries [in Korean] <br>
 # Academic Presentations
 
 ::: justify
-- **Ju, S.** & Lee, J. (2024), How does Self-Categorization shape Compliance?: Political Ideology and COVID-19, 2024 ASPA Annual Conference: Building Resilient Communities, Minneapolis, MN, April 2024.
+- **Ju, S.** & Lee, J. (2024), How does Self-Categorization shape Compliance?: Political Ideology and COVID-19, *2024 ASPA Annual Conference: Building Resilient Communities*, Minneapolis, MN, April 2024.
 
--  **Ju, S.** & Lee, J. (2022), Evidence-Based Policy in Asian Countries: Applying Model of Evidence-Based Practice Implementation for Maturation Stage Analysis \[in Korean, Poster Session\], 2022 Korean Public Administration Summer Conference and Annual KAPA International Conference, Yeosu, Korea, June 2022.
+- **Ju, S** (2024), The Psychological Micro-Foundations of Evidence-Based Practice: Epistemic and Pro-social Motivation Among Public Service Managers, *2024 University of Auckland - Seoul National University Joint International Conference: BK21 FOUR \& 10-10 Project*, Auckland, New Zealand, January 2024
+
+-  **Ju, S.** & Lee, J. (2022), Evidence-Based Policy in Asian Countries: Applying Model of Evidence-Based Practice Implementation for Maturation Stage Analysis \[in Korean, Poster Session\], *2022 Korean Public Administration Summer Conference and Annual KAPA International Conference*, Yeosu, Korea, June 2022.
 :::
 
