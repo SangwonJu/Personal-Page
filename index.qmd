@@ -30,7 +30,7 @@ website:
 <h3> <b> About Me </b> </h3>
 <p align="justify">
 Hi. I'm currently a Ph.D. student in <A href = "http://gspa.snu.ac.kr/en" target = "blank" > Graduate School of Public Administration</A> at Seoul National University, 
-Republic of Korea. I'm studying public management, cross-sector collaboration, organization theory and behavior, information technology in public organizations, behavioral public administration, and computational social science. Generally, my work focuses on understanding how public organizations and their employees contribute to creating public value. Furthermore, I aim to investigate how researchers can improve organizational routines by examining the importance of effective learning and knowledge management within and surrounding organizations. Lastly, I study the interaction between humans, artificial intelligence, and information systems within public organizations.
+Republic of Korea. I'm studying strategic public management, organization theory and behavior, information technology in public organizations, and computational social science. Generally, my work focuses on understanding how public organizations and their employees contribute to creating public value. Furthermore, I aim to investigate how researchers can improve organizational routines by examining the importance of effective learning and knowledge management within and surrounding organizations. Lastly, I study the interaction between humans, artificial intelligence, and information systems within public organizations.
 </p>
 ```
 -   [Seoul National University, GSPA](http://gspa.snu.ac.kr/en), Seoul, Republic of Korea \| 2021 \~ \
